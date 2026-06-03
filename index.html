@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<!-- Snorkl Impact Measurement Assessment -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impact Measurement Assessment — Snorkl</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ──────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --cobalt:    #1a6fff;
+  --cobalt-d:  #1458cc;
+  --cobalt-l:  #e8f0ff;
+  --cobalt-ll: #f4f7ff;
+  --amber:     #d97706;
+  --amber-l:   #fffbeb;
+  --green:     #059669;
+  --green-l:   #d1fae5;
+  --ink:       #0f1923;
+  --mid:       #4a5568;
+  --muted:     #718096;
+  --rule:      #e2e8f0;
+  --bg:        #ffffff;
+  --sidebar-w: 252px;
+  --content-pad: 52px;
+  --serif: 'Source Serif 4', Georgia, serif;
+  --sans:  'Source Sans 3', system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 15px; }
+
+/* ── LAYOUT ─────────────────────────────────────────────── */
+#app { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ────────────────────────────────────────────── */
+#sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--ink);
+  position: fixed;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 28px 20px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.sidebar-org {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 3px;
+}
+.sidebar-doc {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+}
+.sidebar-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  margin-top: 5px;
+}
+
+nav { padding: 12px 0; flex: 1; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  text-decoration: none;
+  line-height: 1.3;
+}
+.nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.nav-item.active { color: #fff; border-left-color: var(--cobalt); background: rgba(26,111,255,0.12); }
+.nav-item.sub {
+  padding-left: 34px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.38);
+}
+.nav-item.sub:hover { color: rgba(255,255,255,0.75); }
+.nav-item.sub.active { color: rgba(255,255,255,0.9); border-left-color: var(--cobalt); }
+
+.nav-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.45);
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: auto;
+}
+.nav-item.active .nav-badge { background: var(--cobalt); color: #fff; }
+
+.nav-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 6px 16px; }
+
+.sidebar-footer {
+  padding: 14px 20px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-size: 11px;
+  color: rgba(255,255,255,0.22);
+  line-height: 1.5;
+}
+
+/* ── MAIN ───────────────────────────────────────────────── */
+#main { margin-left: var(--sidebar-w); flex: 1; }
+
+/* ── COVER ──────────────────────────────────────────────── */
+#cover {
+  background: linear-gradient(135deg, var(--ink) 0%, #1a2744 100%);
+  padding: 56px var(--content-pad) 48px;
+  position: relative;
+  overflow: hidden;
+}
+#cover::before {
+  content:'';
+  position:absolute;
+  top:-80px;right:-80px;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(26,111,255,0.14) 0%,transparent 70%);
+  pointer-events:none;
+}
+.cover-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  margin-bottom: 10px;
+}
+.cover-client {
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+.cover-subtitle {
+  font-size: 15px;
+  color: rgba(255,255,255,0.4);
+  font-style: italic;
+  margin-bottom: 36px;
+}
+.cover-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 20px 40px;
+  width: fit-content;
+}
+.cover-meta-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  margin-bottom: 3px;
+}
+.cover-meta-value { font-size: 13.5px; font-weight: 600; color: rgba(255,255,255,0.82); }
+
+/* ── SECTION ────────────────────────────────────────────── */
+.section {
+  padding: 44px var(--content-pad);
+  border-bottom: 1px solid var(--rule);
+}
+.section:last-of-type { border-bottom: none; }
+
+/* Logo in narrative */
+.narrative-logo {
+  height: 36px;
+  width: auto;
+  display: block;
+  margin-bottom: 18px;
+}
+
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+.section-num {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  white-space: nowrap;
+}
+.section-title {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.section-rule {
+  height: 2px;
+  background: linear-gradient(90deg, var(--cobalt) 0%, transparent 100%);
+  margin-bottom: 22px;
+  border-radius: 1px;
+}
+
+.section p,
+.section ul,
+.section ol,
+.model-table,
+.matrix-wrap,
+.figure-wrap,
+.priority-cards,
+.next-steps-grid,
+.track-intro {
+  max-width: 100%;
+  width: 100%;
+}
+
+.section p { color: var(--mid); margin-bottom: 13px; }
+.section p:last-child { margin-bottom: 0; }
+.section p strong { color: var(--ink); }
+
+/* ── FIGURE ─────────────────────────────────────────────── */
+.figure-wrap {
+  margin: 22px 0;
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  cursor: pointer;
+}
+.figure-wrap svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.figure-hint {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 6px;
+  margin-bottom: 0 !important;
+}
+
+/* ── TABLES ─────────────────────────────────────────────── */
+.model-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 13.5px;
+}
+.model-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.model-table td {
+  padding: 11px 14px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule);
+  line-height: 1.55;
+  color: var(--mid);
+}
+.model-table tr:last-child td { border-bottom: none; }
+.model-table tr:nth-child(even) td { background: var(--cobalt-ll); }
+.model-table td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; width: 175px; }
+
+.matrix-wrap { margin: 20px 0; overflow-x: auto; border: 1.5px solid var(--rule); border-radius: 8px; }
+.matrix-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.matrix-table th {
+  padding: 10px 10px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.matrix-table th:nth-child(3) { text-align: left; }
+.matrix-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--rule);
+  text-align: center;
+  vertical-align: middle;
+}
+.matrix-table tr:last-child td { border-bottom: none; }
+.matrix-table tr:nth-child(even) td { background: var(--cobalt-ll); }
+.matrix-table td:nth-child(3) { text-align: left; font-weight: 600; color: var(--ink); }
+.matrix-table td:nth-child(4) { font-size: 12px; }
+.m-badge { display:inline-block; font-size:11px; font-weight:700; color:#fff; padding:2px 8px; border-radius:4px; }
+.m-dot-full { color: var(--cobalt); font-size: 15px; }
+.m-dot-open { color: #c0cce0; font-size: 15px; }
+.m-dot-none { color: #dde4ee; font-size: 13px; }
+.matrix-legend { font-size: 12px; color: var(--muted); padding: 9px 14px; border-top: 1px solid var(--rule); background: var(--cobalt-ll); }
+
+/* ── SUBSECTION HEADER ──────────────────────────────────── */
+.sub-header {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 30px 0 4px;
+}
+.sub-rule { height: 1.5px; background: linear-gradient(90deg, var(--cobalt) 0%, transparent 100%); margin-bottom: 16px; border-radius: 1px; }
+
+/* ── PRIORITY CARDS ─────────────────────────────────────── */
+.priority-cards { display: flex; flex-direction: column; gap: 10px; }
+
+.priority-card {
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.priority-card:hover { box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+.priority-card.open  { box-shadow: 0 3px 16px rgba(0,0,0,0.09); }
+
+.priority-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  background: #fff;
+  transition: background 0.15s;
+}
+.priority-card-header:hover { background: var(--cobalt-ll); }
+.priority-card.open .priority-card-header { background: var(--cobalt-ll); }
+
+.priority-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  padding: 3px 9px;
+  border-radius: 5px;
+  white-space: nowrap;
+  min-width: 34px;
+  text-align: center;
+}
+.priority-card-title { font-size: 14.5px; font-weight: 600; color: var(--ink); flex: 1; line-height: 1.3; }
+.priority-card-horizon {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  border: 1px solid var(--rule);
+  padding: 2px 9px;
+  border-radius: 20px;
+}
+.priority-card-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.tag-green  { background: var(--green-l);  color: var(--green); }
+.tag-cobalt { background: var(--cobalt-l); color: var(--cobalt); }
+.tag-amber  { background: var(--amber-l);  color: var(--amber); }
+.tag-mid    { background: #f1f5f9; color: var(--muted); }
+
+.priority-chevron { font-size: 10px; color: var(--muted); transition: transform 0.2s; margin-left: 2px; }
+.priority-card.open .priority-chevron { transform: rotate(180deg); }
+
+.priority-card-body {
+  display: none;
+  padding: 4px 18px 18px;
+  border-top: 1px solid var(--rule);
+  background: #fff;
+}
+.priority-card.open .priority-card-body { display: block; }
+
+.priority-card-body p {
+  font-size: 13.5px;
+  color: var(--mid);
+  margin-top: 14px;
+  margin-bottom: 8px;
+  max-width: 100%;
+}
+.priority-card-body p.italic {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 13px;
+  border-left: 2px solid var(--cobalt-l);
+  padding-left: 12px;
+  margin-top: 12px;
+}
+.priority-card-body h4 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 16px;
+  margin-bottom: 7px;
+}
+.priority-card-body ul { list-style: none; padding: 0; margin: 0; }
+.priority-card-body ul li {
+  font-size: 13.5px;
+  color: var(--mid);
+  padding: 4px 0 4px 16px;
+  position: relative;
+  max-width: 100%;
+}
+.priority-card-body ul li::before { content:"·"; position:absolute; left:3px; color:var(--cobalt); font-weight:700; }
+
+/* ── NEXT STEPS ─────────────────────────────────────────── */
+.next-steps-list { margin-top: 20px; }
+.next-step { display: flex; gap: 12px; margin-bottom: 13px; align-items: flex-start; }
+.next-step-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--cobalt);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.next-step-body { font-size: 13.5px; color: var(--mid); line-height: 1.55; }
+.next-step-body strong { color: var(--ink); }
+
+/* ── FOOTER ─────────────────────────────────────────────── */
+#report-footer {
+  background: var(--ink);
+  padding: 28px var(--content-pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-brand { font-size: 14px; font-weight: 600; color: #fff; }
+.footer-tagline { font-size: 11.5px; color: rgba(255,255,255,0.3); margin-top: 2px; font-style: italic; }
+.footer-contact { font-size: 13px; color: rgba(255,255,255,0.45); text-align: right; }
+.footer-contact a { color: var(--cobalt); text-decoration: none; }
+
+/* ── NODE DETAIL PANEL ──────────────────────────────────── */
+#dp-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 200;
+}
+#dp-panel {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 201;
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.dp-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: #fff; z-index: 1; }
+.dp-cat { font-family: monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.dp-title { font-size: 17px; font-weight: 600; color: var(--ink); }
+.dp-body { padding: 16px 20px 20px; }
+.dp-tip { background: var(--cobalt-ll); border-left: 3px solid var(--cobalt); padding: 10px 14px; border-radius: 0 4px 4px 0; margin-bottom: 14px; font-size: 12px; color: var(--mid); line-height: 1.6; font-style: italic; }
+.badge { display: inline-block; font-family: monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 3px; margin-bottom: 12px; }
+.b-ok  { background: var(--green-l); color: #065f46; }
+.b-par { background: #fef3c7; color: #92400e; }
+.b-gap { background: #fee2e2; color: #991b1b; }
+.dp-sec-lbl { font-family: monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 14px 0 5px; }
+.dp-sec-lbl.gap { color: #b45309; }
+.dp-content { font-size: 13px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; }
+.dp-editable {
+  border: 1.5px solid transparent;
+  border-radius: 3px;
+  padding: 6px 8px;
+  margin: -6px -8px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+  cursor: text;
+  min-height: 1.4em;
+}
+.dp-editable:focus { border-color: var(--cobalt); background: var(--cobalt-ll); }
+.dp-editable:hover:not(:focus) { border-color: var(--rule); }
+.dp-content.gap { font-size: 12px; color: #92400e; font-style: italic; }
+.dp-close-btn {
+  display: block; width: 100%; margin-top: 18px; padding: 8px;
+  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  border: 2px solid var(--ink); border-radius: 3px;
+  background: var(--ink); color: #fff; cursor: pointer;
+}
+.dp-close-btn:hover { background: var(--cobalt); border-color: var(--cobalt); }
+
+/* ── FIGURE TOGGLE ──────────────────────────────────────────── */
+.figure-toggle-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  border: 1.5px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+  width: fit-content;
+}
+.fig-toggle-btn {
+  padding: 7px 18px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: #fff;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.fig-toggle-btn:first-child { border-right: 1.5px solid var(--rule); }
+.fig-toggle-btn.active {
+  background: var(--cobalt);
+  color: #fff;
+}
+.fig-toggle-btn:hover:not(.active) { background: var(--cobalt-ll); color: var(--cobalt); }
+
+.figure-view { display: none; }
+.figure-view.active { display: block; }
+
+.meas-hint {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 6px;
+  margin-bottom: 0 !important;
+}
+
+/* priority popup in measurement view */
+#priority-popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  padding: 20px 20px 16px;
+  width: 360px;
+  box-shadow: 6px 6px 0 var(--ink);
+  z-index: 300;
+  font-size: 13px;
+}
+#pp-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 299;
+}
+.pp-close-x {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: color 0.15s, background 0.15s;
+}
+.pp-close-x:hover { color: var(--ink); background: var(--rule); }
+#priority-popup .pp-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 7px;
+}
+#priority-popup .pp-title {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+#priority-popup .pp-body {
+  color: var(--mid);
+  line-height: 1.55;
+  font-size: 12.5px;
+}
+#priority-popup .pp-link {
+  display: block;
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cobalt);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.figure-meas-wrap {
+  position: relative;
+  margin: 0;
+}
+
+/* ── PRINT ──────────────────────────────────────────────── */
+.print-btn {
+  position: fixed;
+  bottom: 22px; right: 22px;
+  background: var(--cobalt);
+  color: #fff;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(26,111,255,0.35);
+  z-index: 190;
+  transition: background 0.15s;
+}
+.print-btn:hover { background: var(--cobalt-d); }
+
+@media print {
+  #sidebar,.print-btn { display: none !important; }
+  #main { margin-left: 0 !important; }
+  .priority-card-body { display: block !important; }
+  .priority-chevron { display: none; }
+  #cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #report-footer { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+@media (max-width: 860px) {
+  :root { --sidebar-w: 0px; --content-pad: 24px; }
+  #sidebar { display: none; }
+  .cover-meta-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div id="pp-overlay" onclick="hidePriorityPopup()"></div>
+<div id="app">
+
+<!-- ── SIDEBAR ───────────────────────────────────────────────────── -->
+<aside id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-org">Cobalt Collective</div>
+    <div class="sidebar-doc">Impact Measurement Assessment</div>
+    <div class="sidebar-meta">Snorkl · June 1, 2026</div>
+  </div>
+  <nav>
+    <a class="nav-item" href="#about">01 &nbsp; About This Report</a>
+    <a class="nav-item active" href="#model">02 &nbsp; Impact Process Model</a>
+    <div class="nav-divider"></div>
+    <a class="nav-item" href="#opportunities">03 &nbsp; Measurement Opportunities</a>
+    <a class="nav-item sub" href="#card-p1">1 — Measure Implementation Quality</a>
+    <a class="nav-item sub" href="#card-p2">2 — Implementation → Outcomes</a>
+    <a class="nav-item sub" href="#card-p3">3 — PD → Implementation</a>
+    <a class="nav-item sub" href="#card-p4">4 — Oral Language &amp; Metacognition</a>
+    <div class="nav-divider"></div>
+    <a class="nav-item" href="#nextsteps">04 &nbsp; Recommended Next Steps</a>
+  </nav>
+  <div class="sidebar-footer">Working Draft &nbsp;·&nbsp; cobaltcollective.org</div>
+</aside>
+
+<!-- ── MAIN ──────────────────────────────────────────────────────── -->
+<main id="main">
+
+  <!-- COVER -->
+  <div id="cover">
+    <div class="cover-label">Impact Measurement Assessment</div>
+    <div class="cover-client">Snorkl</div>
+    <div class="cover-subtitle">Working Draft</div>
+    <div class="cover-meta-grid">
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Prepared by</div>
+        <div class="cover-meta-value">Cobalt Collective</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Prepared for</div>
+        <div class="cover-meta-value">Jon Laven, Co-Founder &amp; COO</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Date</div>
+        <div class="cover-meta-value">June 1, 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 01 ABOUT -->
+  <section class="section" id="about">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">About This Report</h2>
+    </div>
+    <div class="section-rule"></div>
+    <p>This report has two purposes: first, to articulate a working model of the mechanisms through which Snorkl produces impact — from product through teacher implementation and student use to intended student outcomes; and second, to use that model to identify and prioritize opportunities for impact measurement. The model is the analytical foundation. The measurement priorities follow directly from it.</p>
+    <p>The analysis draws on three sources: a discovery conversation with Snorkl co-founder Jon Laven on June 1, 2026; Snorkl's pre-conversation questionnaire response; and publicly available information at snorkl.app. It is a first-pass working draft, not a final assessment. We expect it to sharpen as Snorkl shares more about its internal data, district relationships, and strategic priorities.</p>
+    <p>Our aim is not to evaluate Snorkl's impact, but to help Snorkl's leadership see clearly where the causal chain is well understood, where it is assumed but untested, and where the most useful measurement investments should go — in what order, and why. Throughout, we favor measurement that can be built into how the company already operates, rather than externally imposed research projects that consume scarce startup time.</p>
+  </section>
+
+  <!-- 02 PROCESS MODEL -->
+  <section class="section" id="model">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">The Impact Process Model</h2>
+    </div>
+    <div class="section-rule"></div>
+    <p>The figure below maps Snorkl's causal chain — from product to intended outcome — and the context in which the product and its users interact. Snorkl has two user populations: teachers, whose implementation choices are the key mediating variable, and students, whose in-tool behavior is shaped by those choices. Amber-bordered boxes represent areas where provisional logic exists but has not yet been formalized or measured. The "active ingredient" is the voice-plus-feedback-plus-revision loop — and whether teachers use the tool in a way that activates it.</p>
+    <div class="figure-toggle-bar">
+      <button class="fig-toggle-btn active" id="btn-model" onclick="switchView('model')">▶ Model View</button>
+      <button class="fig-toggle-btn" id="btn-meas" onclick="switchView('meas')">● Measurement View</button>
+    </div>
+
+    <!-- MODEL VIEW -->
+    <div class="figure-view active" id="view-model">
+      <p class="figure-hint">ℹ️ Click any box to see detailed notes and open questions.</p>
+      <div class="figure-wrap">
+<svg viewBox="0 0 980 530" xmlns="http://www.w3.org/2000/svg" width="980" height="530">
+  <defs>
+    <marker id="ah-ink" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#1a1a1a"/>
+    </marker>
+    <marker id="ah-ctx" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <rect width="980" height="530" fill="white"/>
+
+  <!-- ══ ROW 1: IMPLEMENTATION CONTEXT ══ -->
+  <rect x="270" y="18" width="440" height="68" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+  <text x="490" y="36" text-anchor="middle" font-family="Arial" font-size="10.5" font-weight="700" fill="#065f46" letter-spacing="1">IMPLEMENTATION CONTEXT</text>
+  <text x="490" y="53" text-anchor="middle" font-family="Arial" font-size="12" font-weight="500" fill="#065f46">K–12 classrooms · all subjects · math, world languages, ELL wedges</text>
+  <text x="490" y="69" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#065f46">10,000+ schools · HQIM partnerships (IM, JUMP) · free PD · buyer = tech director</text>
+
+  <!-- context → main nodes (green dashed) -->
+  <line x1="370" y1="86" x2="145" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx)"/>
+  <line x1="490" y1="86" x2="490" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx)"/>
+  <line x1="610" y1="86" x2="838" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx)"/>
+
+  <!-- ══ ROW 2: MAIN CHAIN ══ -->
+
+  <!-- PRODUCT -->
+  <rect x="40" y="148" width="210" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="145" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">PRODUCT</text>
+  <text x="145" y="184" text-anchor="middle" font-family="Arial" font-size="13.5" font-weight="700" fill="#1a1a1a">Snorkl</text>
+  <text x="145" y="201" text-anchor="middle" font-family="Arial" font-size="11" fill="#555555">Multimodal AI formative assessment</text>
+
+  <!-- arrow Product → User Behavior -->
+  <line x1="250" y1="182" x2="381" y2="182" stroke="#1a1a1a" stroke-width="2" marker-end="url(#ah-ink)"/>
+  <text x="316" y="172" text-anchor="middle" font-family="Arial" font-size="9.5" fill="#888888">mechanism ↓</text>
+
+  <!-- USER BEHAVIOR — CONFIRMED (white fill, solid black border) -->
+  <rect x="383" y="148" width="214" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="490" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">USER BEHAVIOR</text>
+  <text x="490" y="188" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">Students solve problems</text>
+  <text x="490" y="204" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">on Snorkl</text>
+
+  <!-- arrow User Behavior → Outcome -->
+  <line x1="597" y1="182" x2="729" y2="182" stroke="#1a1a1a" stroke-width="2" marker-end="url(#ah-ink)"/>
+  <text x="664" y="172" text-anchor="middle" font-family="Arial" font-size="9.5" fill="#888888">mechanism ↓</text>
+
+  <!-- INTENDED OUTCOME -->
+  <rect x="731" y="148" width="210" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="836" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">INTENDED OUTCOME</text>
+  <text x="836" y="184" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">Students learn more,</text>
+  <text x="836" y="200" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">explain thinking better</text>
+
+  <!-- ══ ROW 3: STUDENT BEHAVIOR + MECHANISM ══ -->
+
+  <!-- MECHANISM 1 — Teacher Instructional Practices (blue) -->
+  <rect x="181" y="258" width="270" height="72" rx="4" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+  <rect x="181" y="258" width="270" height="19" rx="4" fill="#2563eb"/>
+  <rect x="181" y="269" width="270" height="8" fill="#2563eb"/>
+  <text x="316" y="271" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="white" letter-spacing="0.5">MECHANISM 1</text>
+  <text x="316" y="295" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">Teacher assigns problems, sets</text>
+  <text x="316" y="311" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">voice norms, coaches revision</text>
+
+  <!-- MECHANISM 2 — Explain→Feedback→Revise Loop (blue) -->
+  <rect x="529" y="258" width="270" height="72" rx="4" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+  <rect x="529" y="258" width="270" height="19" rx="4" fill="#2563eb"/>
+  <rect x="529" y="269" width="270" height="8" fill="#2563eb"/>
+  <text x="664" y="271" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="white" letter-spacing="0.5">MECHANISM 2</text>
+  <text x="664" y="295" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">Explain → feedback → revise</text>
+  <text x="664" y="311" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">loop drives mastery</text>
+
+  <!-- ══ ROW 4: USER / POPULATION CONTEXT ══ -->
+  <rect x="270" y="378" width="440" height="68" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+  <text x="490" y="397" text-anchor="middle" font-family="Arial" font-size="10.5" font-weight="700" fill="#065f46" letter-spacing="1">USER / POPULATION CONTEXT</text>
+  <text x="490" y="414" text-anchor="middle" font-family="Arial" font-size="11" font-weight="500" fill="#065f46">Teachers (assign, coach, read insights) &amp; students (record, revise)</text>
+  <text x="490" y="430" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#065f46">Implementation strength tracks teacher mindset &amp; coaching</text>
+
+  <!-- user-context arrows -->
+  <polyline points="270,412 12,412 12,182 40,182" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx)"/>
+  <line x1="490" y1="378" x2="490" y2="216" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx)"/>
+  <polyline points="710,412 968,412 968,182 941,182" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx)"/>
+
+  <!-- ══ LEGEND ══ -->
+  <rect x="10" y="472" width="12" height="12" rx="2" fill="white" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="28" y="483" font-family="Arial" font-size="11" fill="#888888">Confirmed</text>
+
+  <rect x="108" y="472" width="12" height="12" rx="2" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+  <text x="126" y="483" font-family="Arial" font-size="11" fill="#888888">Context</text>
+
+  <rect x="196" y="472" width="12" height="12" rx="2" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="214" y="483" font-family="Arial" font-size="11" fill="#888888">Mechanism</text>
+
+  <!-- ── CLICKABLE OVERLAYS ── -->
+  <rect x="270" y="18" width="440" height="68" fill="transparent" style="cursor:pointer" onclick="show('impl')" rx="4"/>
+  <rect x="40" y="148" width="210" height="68" fill="transparent" style="cursor:pointer" onclick="show('product')" rx="4"/>
+  <rect x="383" y="148" width="214" height="68" fill="transparent" style="cursor:pointer" onclick="show('behavior')" rx="4"/>
+  <rect x="731" y="148" width="210" height="68" fill="transparent" style="cursor:pointer" onclick="show('outcome')" rx="4"/>
+  <rect x="181" y="258" width="270" height="72" fill="transparent" style="cursor:pointer" onclick="show('mech1')" rx="4"/>
+  <rect x="529" y="258" width="270" height="72" fill="transparent" style="cursor:pointer" onclick="show('mech2')" rx="4"/>
+  <rect x="270" y="378" width="440" height="68" fill="transparent" style="cursor:pointer" onclick="show('user')" rx="4"/>
+</svg>
+      </div>
+    </div><!-- /view-model -->
+
+    <!-- MEASUREMENT VIEW -->
+    <div class="figure-view" id="view-meas">
+      <p class="meas-hint">ℹ️ Hover a badge to highlight the connected model element. Click to see the full priority detail.</p>
+      <div class="figure-meas-wrap">
+        <div class="figure-wrap" style="margin:0">
+<svg id="meas-svg" viewBox="0 0 980 530" xmlns="http://www.w3.org/2000/svg" width="980" height="530">
+  <defs>
+    <marker id="ah-ink2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#1a1a1a"/>
+    </marker>
+    <marker id="ah-ctx2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#059669"/>
+    </marker>
+    <filter id="badge-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.3)"/>
+    </filter>
+  </defs>
+
+  <rect width="980" height="530" fill="white"/>
+
+  <!-- ══ ROW 1: IMPLEMENTATION CONTEXT ══ -->
+  <rect x="270" y="18" width="440" height="68" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+  <text x="490" y="36" text-anchor="middle" font-family="Arial" font-size="10.5" font-weight="700" fill="#065f46" letter-spacing="1">IMPLEMENTATION CONTEXT</text>
+  <text x="490" y="53" text-anchor="middle" font-family="Arial" font-size="12" font-weight="500" fill="#065f46">K–12 classrooms · all subjects · math, world languages, ELL wedges</text>
+  <text x="490" y="69" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#065f46">10,000+ schools · HQIM partnerships (IM, JUMP) · free PD · buyer = tech director</text>
+
+  <line x1="370" y1="86" x2="145" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
+  <line x1="490" y1="86" x2="490" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
+  <line x1="610" y1="86" x2="838" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
+
+  <!-- ══ ROW 2: MAIN CHAIN ══ -->
+  <rect x="40" y="148" width="210" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="145" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">PRODUCT</text>
+  <text x="145" y="184" text-anchor="middle" font-family="Arial" font-size="13.5" font-weight="700" fill="#1a1a1a">Snorkl</text>
+  <text x="145" y="201" text-anchor="middle" font-family="Arial" font-size="11" fill="#555555">Multimodal AI formative assessment</text>
+
+  <line x1="250" y1="182" x2="381" y2="182" stroke="#1a1a1a" stroke-width="2" marker-end="url(#ah-ink2)"/>
+  <text x="316" y="172" text-anchor="middle" font-family="Arial" font-size="9.5" fill="#888888">mechanism ↓</text>
+
+  <!-- USER BEHAVIOR — CONFIRMED -->
+  <rect x="383" y="148" width="214" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="490" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">USER BEHAVIOR</text>
+  <text x="490" y="188" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">Students solve problems</text>
+  <text x="490" y="204" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">on Snorkl</text>
+
+  <line x1="597" y1="182" x2="729" y2="182" stroke="#1a1a1a" stroke-width="2" marker-end="url(#ah-ink2)"/>
+  <text x="664" y="172" text-anchor="middle" font-family="Arial" font-size="9.5" fill="#888888">mechanism ↓</text>
+
+  <rect x="731" y="148" width="210" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="836" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">INTENDED OUTCOME</text>
+  <text x="836" y="184" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">Students learn more,</text>
+  <text x="836" y="200" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">explain thinking better</text>
+
+  <!-- ══ ROW 3 ══ -->
+  <!-- MECHANISM 1 — Teacher Instructional Practices (blue) -->
+  <rect x="181" y="258" width="270" height="72" rx="4" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+  <rect x="181" y="258" width="270" height="19" rx="4" fill="#2563eb"/>
+  <rect x="181" y="269" width="270" height="8" fill="#2563eb"/>
+  <text x="316" y="271" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="white" letter-spacing="0.5">MECHANISM 1</text>
+  <text x="316" y="295" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">Teacher assigns problems, sets</text>
+  <text x="316" y="311" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">voice norms, coaches revision</text>
+
+  <!-- MECHANISM 2 — Explain→Feedback→Revise Loop (blue) -->
+  <rect x="529" y="258" width="270" height="72" rx="4" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+  <rect x="529" y="258" width="270" height="19" rx="4" fill="#2563eb"/>
+  <rect x="529" y="269" width="270" height="8" fill="#2563eb"/>
+  <text x="664" y="271" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="white" letter-spacing="0.5">MECHANISM 2</text>
+  <text x="664" y="295" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">Explain → feedback → revise</text>
+  <text x="664" y="311" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">loop drives mastery</text>
+
+  <!-- ══ ROW 4 ══ -->
+  <rect x="270" y="378" width="440" height="68" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+  <text x="490" y="397" text-anchor="middle" font-family="Arial" font-size="10.5" font-weight="700" fill="#065f46" letter-spacing="1">USER / POPULATION CONTEXT</text>
+  <text x="490" y="414" text-anchor="middle" font-family="Arial" font-size="11" font-weight="500" fill="#065f46">Teachers (assign, coach, read insights) &amp; students (record, revise)</text>
+  <text x="490" y="430" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#065f46">Implementation strength tracks teacher mindset &amp; coaching</text>
+
+  <polyline points="270,412 12,412 12,182 40,182" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
+  <line x1="490" y1="378" x2="490" y2="216" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
+  <polyline points="710,412 968,412 968,182 941,182" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
+
+  <!-- LEGEND -->
+  <rect x="10" y="472" width="12" height="12" rx="2" fill="white" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="28" y="483" font-family="Arial" font-size="11" fill="#888888">Confirmed</text>
+  <rect x="108" y="472" width="12" height="12" rx="2" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+  <text x="126" y="483" font-family="Arial" font-size="11" fill="#888888">Context</text>
+  <rect x="196" y="472" width="12" height="12" rx="2" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="214" y="483" font-family="Arial" font-size="11" fill="#888888">Mechanism</text>
+
+  <!-- DIM OVERLAYS -->
+  <rect class="dim-overlay" data-node="behavior" x="383" y="148" width="214" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+  <rect class="dim-overlay" data-node="outcome" x="731" y="148" width="210" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+  <rect class="dim-overlay" data-node="mech1" x="181" y="258" width="270" height="72" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+  <rect class="dim-overlay" data-node="mech2" x="529" y="258" width="270" height="72" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+  <rect class="dim-overlay" data-node="product" x="40" y="148" width="210" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+  <rect class="dim-overlay" data-node="impl" x="270" y="18" width="440" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+  <rect class="dim-overlay" data-node="user" x="270" y="378" width="440" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+
+  <!-- PRIORITY BADGES -->
+  <g class="priority-badge-group" data-priority="1" onclick="openPriorityCard('1')" style="cursor:pointer">
+    <circle cx="420" cy="152" r="16" fill="#1a6fff" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+    <text x="420" y="152" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">1</text>
+  </g>
+  <g class="priority-badge-group" data-priority="2" onclick="openPriorityCard('2')" style="cursor:pointer">
+    <circle cx="788" cy="152" r="16" fill="#059669" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+    <text x="788" y="152" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">2</text>
+  </g>
+  <g class="priority-badge-group" data-priority="3" onclick="openPriorityCard('3')" style="cursor:pointer">
+    <circle cx="380" cy="240" r="16" fill="#d97706" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+    <text x="380" y="240" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">3</text>
+  </g>
+  <g class="priority-badge-group" data-priority="4" onclick="openPriorityCard('4')" style="cursor:pointer">
+    <circle cx="730" cy="305" r="16" fill="#718096" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+    <text x="730" y="305" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">4</text>
+  </g>
+
+  <!-- CONNECTOR LINES -->
+  <line class="connector-line" data-priority="1" x1="420" y1="152" x2="490" y2="182" stroke="#1a6fff" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+  <line class="connector-line" data-priority="2" x1="788" y1="152" x2="836" y2="182" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+  <line class="connector-line" data-priority="2" x1="788" y1="168" x2="664" y2="258" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+  <line class="connector-line" data-priority="3" x1="380" y1="240" x2="490" y2="200" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+  <line class="connector-line" data-priority="3" x1="380" y1="256" x2="316" y2="258" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+  <line class="connector-line" data-priority="4" x1="730" y1="305" x2="664" y2="294" stroke="#718096" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+  <line class="connector-line" data-priority="4" x1="730" y1="289" x2="836" y2="200" stroke="#718096" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+</svg>
+        </div>
+        <div id="priority-popup"></div>
+      </div>
+    </div><!-- /view-meas -->
+
+    <h3 class="sub-header">Model Description</h3>
+    <div class="sub-rule"></div>
+    <table class="model-table">
+      <thead><tr><th>Element</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Product</td><td>Snorkl — a cross-curricular, multimodal AI formative-assessment tool. Students record explanations of their thinking (voice, drawing, writing) on a whiteboard; AI gives immediate feedback and a score on the explanation, not just the answer; students revise and resubmit. Free for teachers; Premium adds Snorkl Coach, district libraries, and dedicated support.</td></tr>
+        <tr><td>Implementation Context</td><td>K–12 classrooms across all subjects; math, world languages, and ELL are primary wedges. 10,000+ schools. HQIM partnerships (Illustrative Mathematics, JUMP Math, EduProtocols). Free PD offered (typically 1–2 calls). Primary buyer is the tech director, for whom usage alone is often sufficient evidence.</td></tr>
+        <tr><td>User / Population Context</td><td>Two user populations: teachers (assign activities, set norms, coach revision, read insights) and students (record, receive feedback, revise). Implementation strength tracks teacher mindset toward student voice and the presence of a tech or instructional coach.</td></tr>
+        <tr><td>Teacher Implementation Behavior</td><td>The key mediating variable. High-fidelity use: students required to explain verbally, multiple revision cycles, teacher coaches use of feedback and class discussion. Low-fidelity use: optional voice, single attempts, minimal engagement with the data. Currently observed anecdotally on classroom visits; not yet instrumented.</td></tr>
+        <tr><td>Student Behavior</td><td>What students actually do in the tool: explaining aloud vs. whiteboard-only, number of attempts and revisions, time on task, use of Snorkl Coach. Largely captured in the backend (avg. 2+ attempts) but not yet surfaced as an analytic implementation-quality signal.</td></tr>
+        <tr><td>Mechanism — Active Ingredients</td><td>Why well-implemented Snorkl should produce learning: students articulate reasoning, receive specific feedback, and revise toward mastery; teachers gain insight into thinking and misconceptions. The voice + feedback + revision loop is the hypothesized engine. The dose-response relationship is unknown and confounded by time-on-task differences across classrooms.</td></tr>
+        <tr><td>Intended Outcome</td><td>Students learn more and grow more confident; students explain their thinking better; ELL oral-language development; teachers gain better insight into student learning. Achievement outcomes (state tests, interim assessments, WIDA) are the evidence larger academic buyers increasingly require.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 03 MEASUREMENT OPPORTUNITIES -->
+  <section class="section" id="opportunities">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Impact Measurement Opportunities</h2>
+    </div>
+    <div class="section-rule"></div>
+    <p>A central finding of this analysis is that Snorkl's measurement opportunity is unusually well-defined. The constructs that matter — how the tool is used, and whether better use produces better outcomes — are all measurable with existing methods. There is no new instrument to invent. The challenge is to instrument and connect what Snorkl already has, and to do so in a way that serves the business without consuming the time and energy that external research partnerships have.</p>
+    <p>This is reinforced by Snorkl's buyer reality. Today the primary buyer is the <strong>tech director</strong>, for whom usage alone is often sufficient — a low evidence bar. But academic buyers, and larger districts running formal procurement, increasingly want evidence of impact on state tests, interim assessments, and ELL scores. Snorkl does not yet need to win the hardest evidentiary argument; it needs to be ready for it as the buyer mix shifts. The priorities below are sequenced to build that readiness without over-investing ahead of demand.</p>
+    <p>We organize the opportunities as a single sequenced track of four priorities. Each is more powerful once the prior one is in place, but the first three can all begin within the next 6–12 months using data Snorkl largely already holds. The fourth is a longer-horizon differentiator.</p>
+
+    <h3 class="sub-header">Measurement Strategy at a Glance</h3>
+    <div class="sub-rule"></div>
+    <p style="font-size:13px;margin-bottom:12px;">● = primary driver &nbsp; ○ = contributing factor &nbsp; – = not applicable</p>
+    <div class="matrix-wrap">
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th style="width:58px">Priority</th>
+            <th style="width:108px">Horizon</th>
+            <th>Measurement Focus</th>
+            <th style="width:88px">Renewal (Tech Buyer)</th>
+            <th style="width:88px">Academic / District Sales</th>
+            <th style="width:88px">Product &amp; PD Decisions</th>
+            <th style="width:88px">Field Differentiation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="m-badge" style="background:var(--cobalt)">1</span></td><td style="font-size:12px;color:var(--green);font-weight:600">Now</td><td>Measure Implementation Quality</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td></tr>
+          <tr><td><span class="m-badge" style="background:var(--green)">2</span></td><td style="font-size:12px;color:var(--amber);font-weight:600">6–12 mo</td><td>Link Implementation to Student Outcomes</td><td class="m-dot-full">●</td><td class="m-dot-full">●</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td></tr>
+          <tr><td><span class="m-badge" style="background:var(--amber)">3</span></td><td style="font-size:12px;color:var(--amber);font-weight:600">6–12 mo</td><td>PD → Implementation Link</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td><td class="m-dot-none">–</td></tr>
+          <tr><td><span class="m-badge" style="background:#718096">4</span></td><td style="font-size:12px;color:var(--muted);font-weight:600">12–24 mo</td><td>Differentiated Measures (Oral Language / Metacognition)</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td></tr>
+        </tbody>
+      </table>
+      <div class="matrix-legend">● Primary driver &nbsp;&nbsp; ○ Contributing factor &nbsp;&nbsp; – Not applicable</div>
+    </div>
+  </section>
+
+  <!-- 04 THE FOUR PRIORITIES -->
+  <section class="section" id="priorities">
+    <div class="section-header">
+      <h2 class="section-title" style="font-size:21px">The Four Priorities</h2>
+    </div>
+    <div class="section-rule"></div>
+    <p>The priorities are sequenced: each is more meaningful if the prior one is in place. Priorities 1 through 3 draw largely on data Snorkl already holds and can begin in the near term; Priority 4 is a longer-horizon differentiator.</p>
+    <div class="priority-cards">
+      <div class="priority-card" id="card-p1">
+        <div class="priority-card-header" onclick="toggleCard('card-p1')">
+          <span class="priority-badge" style="background:var(--cobalt)">1</span>
+          <span class="priority-card-title">Measure Implementation Quality — The Behavioral Foundation</span>
+          <span class="priority-card-horizon">Now</span>
+          <span class="priority-card-tag tag-cobalt">Start Here</span>
+          <span class="priority-chevron">▼</span>
+        </div>
+        <div class="priority-card-body">
+          <p>This is the right place to start because it requires no new data collection — only turning data Snorkl already captures into an analytic signal. Jon's single most-wanted answer is whether strong implementation produces better outcomes than weak or no implementation. That question is unanswerable until implementation quality is defined as a measurable variable rather than something observed anecdotally on classroom visits. The backend already knows whether a student used voice or whiteboard-only, how many attempts they made, and whether they revised — Snorkl reports an average of 2+ attempts per student. These are the operational signatures of the high-fidelity use Jon describes. A caution: in-platform mastery scores are not a clean outcome measure — a student who attempts an activity five times scores higher than one who attempts it once, reflecting time on task, not necessarily more learning. Keep implementation metrics (how the tool is used) separate from outcomes (Priority 2).</p>
+          <h4>What to measure</h4>
+          <ul>
+            <li>Voice vs. whiteboard-only use, by classroom / school / district</li>
+            <li>Revision behavior — share of activities with 2+ attempts; attempts per activity</li>
+            <li>Dosage — frequency and consistency of use over the year</li>
+            <li>Teacher-side engagement — use of the insights dashboard; Snorkl Coach availability</li>
+          </ul>
+          <p class="italic">This data is almost entirely internal and available now. The opportunity is to treat it as impact-relevant implementation data, not just usage volume.</p>
+        </div>
+      </div>
+      <div class="priority-card" id="card-p2">
+        <div class="priority-card-header" onclick="toggleCard('card-p2')">
+          <span class="priority-badge" style="background:var(--green)">2</span>
+          <span class="priority-card-title">Link Implementation to Student Outcomes — The Core Evidence</span>
+          <span class="priority-card-horizon">6–12 mo</span>
+          <span class="priority-card-tag tag-green">The Central Study</span>
+          <span class="priority-chevron">▼</span>
+        </div>
+        <div class="priority-card-body">
+          <p>This produces evidence larger academic buyers increasingly require. It connects the implementation-quality index from Priority 1 to external achievement data, asking whether classrooms that use Snorkl well show stronger growth than those that use it weakly or not at all.</p>
+          <p>Student outcomes cannot be measured from Snorkl's internal data alone. The tractable path is the model used by Paloma (another Reach portfolio company): include de-identified data sharing in the terms of service, obtain district benchmark data (i-Ready, STAR, MAP, or state interim/WIDA scores) for fall and spring, and analyze growth internally. Houston ISD's own data pull is a likely prototype — obtaining that report is a concrete first step. Methodologically this is an ESSA Level III (correlational) design: credible, business-aligned, and directly actionable, and it can be strengthened where a district rolls out to some schools before others.</p>
+          <h4>What to measure</h4>
+          <ul>
+            <li>District-provided benchmark or interim assessment scores, fall and spring (de-identified)</li>
+            <li>Growth associated with each implementation-quality dimension from Priority 1</li>
+            <li>ELL / WIDA outcomes for districts using Snorkl specifically for language development</li>
+            <li>Weak-vs-strong or phased-rollout comparisons to approximate a counterfactual where possible</li>
+          </ul>
+          <p class="italic">Start with one or two willing districts (Houston, Des Moines, Twin Rivers) and, ideally, secure data retroactively for the past year so the analysis need not wait for a full cycle.</p>
+        </div>
+      </div>
+      <div class="priority-card" id="card-p3">
+        <div class="priority-card-header" onclick="toggleCard('card-p3')">
+          <span class="priority-badge" style="background:var(--amber)">3</span>
+          <span class="priority-card-title">The PD → Implementation Link — What Moves Fidelity</span>
+          <span class="priority-card-horizon">6–12 mo</span>
+          <span class="priority-card-tag tag-amber">Informs the PD Decision</span>
+          <span class="priority-chevron">▼</span>
+        </div>
+        <div class="priority-card-body">
+          <p>Jon raised an open strategic question: how much should Snorkl invest in wraparound professional development, and should it be built internally or partnered out? Strategically collected data can inform that decision. With the implementation-quality index from Priority 1 in hand, Snorkl can test whether districts that received PD show stronger implementation than those that did not. In addition, understanding what dimensions of implementation are most strongly associated with outcomes (also Priority 2) can guide the focus of PD to help educators focus on the "active ingredients" of Snorkl.</p>
+          <h4>What to measure</h4>
+          <ul>
+            <li>Implementation-quality index for districts that received PD vs. those that did not</li>
+            <li>Dose of PD (number/length of calls) against implementation strength</li>
+            <li>Which specific practices (voice, revision, discussion) PD most reliably shifts</li>
+            <li>What to focus on in PD (from Priority 2 findings)</li>
+          </ul>
+          <p class="italic">If PD reliably raises implementation quality — and Priority 2 shows implementation quality drives outcomes — Snorkl has a defensible case for investing in (and pricing) PD as an impact lever.</p>
+        </div>
+      </div>
+      <div class="priority-card" id="card-p4">
+        <div class="priority-card-header" onclick="toggleCard('card-p4')">
+          <span class="priority-badge" style="background:#718096">4</span>
+          <span class="priority-card-title">Differentiated Measures — Oral Language &amp; Metacognition</span>
+          <span class="priority-card-horizon">12–24 mo</span>
+          <span class="priority-card-tag tag-mid">High Value, Longer Horizon</span>
+          <span class="priority-chevron">▼</span>
+        </div>
+        <div class="priority-card-body">
+          <p>Snorkl sits on an asset almost no other tool has: a longitudinal archive of students explaining their reasoning aloud. That verbal data is a direct window into two things that are hard to measure elsewhere — oral-language development (especially for English language learners) and metacognitive skill. Districts are already using Snorkl specifically to track ELL oral-language proficiency over time. Developing a measure that converts recorded explanations into an oral-language or metacognition signal would be genuinely differentiated — the one place Snorkl could contribute something new to the field. It is sequenced last because it depends on the foundational work above and requires specialist measurement partnership.</p>
+          <h4>What to measure</h4>
+          <ul>
+            <li>Confirm whether students' verbal responses are archived and retrievable for analysis</li>
+            <li>Partner with a measurement / linguistics specialist to define a scorable construct</li>
+            <li>Pilot an oral-language-growth metric with districts already using Snorkl for ELL</li>
+            <li>Explore a metacognition signal derived from explanation transcripts over time</li>
+          </ul>
+          <p class="italic">Cobalt Collective can help scope this and connect Snorkl to the right measurement expertise. It is a differentiator worth pursuing once Priorities 1–3 are underway.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 NEXT STEPS -->
+  <section class="section" id="nextsteps">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Recommended Next Steps</h2>
+    </div>
+    <div class="section-rule"></div>
+    <p>The structure above implies a specific set of near-term actions. The first four are low-lift and use data Snorkl largely already holds; the last two set up the longer-horizon work.</p>
+    <div class="next-steps-list">
+      <div class="next-step"><div class="next-step-num">1</div><div class="next-step-body"><strong>Implementation-quality dashboard scoping.</strong> Define an implementation-quality index from existing backend data — voice vs. whiteboard-only, revision/attempt counts, dosage, dashboard engagement — and scope an admin-level view at the school and district level. A focused working session with the product/data team would be sufficient to start.</div></div>
+      <div class="next-step"><div class="next-step-num">2</div><div class="next-step-body"><strong>Get the Houston ISD report.</strong> Obtain the data Houston pulled relating Snorkl usage to student outcomes. Whether rigorous or self-serving, it is a prototype for the Priority 2 study and a fast way to learn what district data is reachable.</div></div>
+      <div class="next-step"><div class="next-step-num">3</div><div class="next-step-body"><strong>PD-effect analysis.</strong> Cross-reference which districts received PD with their implementation-quality index to test whether PD moves fidelity. Low-cost, internal, and directly informs the build-vs-partner PD decision.</div></div>
+      <div class="next-step"><div class="next-step-num">4</div><div class="next-step-body"><strong>Data-sharing terms exploration.</strong> Assess what it would take — operationally and contractually — to include de-identified benchmark-data sharing in district terms of service, modeled on Paloma. Start with one or two willing districts (Houston, Des Moines, Twin Rivers) rather than a blanket change.</div></div>
+      <div class="next-step"><div class="next-step-num">5</div><div class="next-step-body"><strong>Priority 2 study design.</strong> With one district's benchmark data in hand (ideally retroactive for the past year), design the implementation-to-outcome analysis as an ESSA Level III correlational study, with opportunistic phased-rollout comparisons where available.</div></div>
+      <div class="next-step"><div class="next-step-num">6</div><div class="next-step-body"><strong>Differentiated-measure scoping.</strong> Confirm whether students' verbal responses are archived, and scope a partnership to convert them into an oral-language or metacognition measure — the longer-horizon differentiator. Cobalt Collective can help identify the right measurement expertise.</div></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="report-footer">
+    <div>
+      <div class="footer-brand">Cobalt Collective</div>
+      <div class="footer-tagline">Bringing together evidence and innovation to improve outcomes at scale.</div>
+    </div>
+    <div class="footer-contact">
+      cobaltcollective.org<br>
+      <a href="mailto:clark@cobaltcollective.org">clark@cobaltcollective.org</a>
+    </div>
+  </footer>
+
+</main>
+</div><!-- #app -->
+
+<!-- Print button -->
+<button class="print-btn" onclick="window.print()">↓ Save as PDF</button>
+
+<!-- Node detail panel -->
+<div id="dp-overlay" onclick="discardAndClose()"></div>
+<div id="dp-panel">
+  <div class="dp-header">
+    <div class="dp-cat" id="dp-cat"></div>
+    <div class="dp-title"><span id="dp-title-text"></span><span id="dp-edited" style="display:none;font-size:10px;font-family:monospace;font-weight:600;color:#7c3aed;background:#f3e8ff;padding:2px 7px;border-radius:3px;margin-left:8px;vertical-align:middle;">edited</span></div>
+  </div>
+  <div class="dp-body">
+    <div class="dp-tip" id="dp-tip"></div>
+    <div class="badge" id="dp-badge"></div>
+    <div style="font-size:10px;font-family:monospace;color:#718096;margin-bottom:10px;">✎ Click either field below to edit</div>
+    <div class="dp-sec-lbl">What we know</div>
+    <div class="dp-content dp-editable" id="dp-know" contenteditable="true" spellcheck="false"></div>
+    <div id="dp-gap-wrap" style="display:none">
+      <div class="dp-sec-lbl gap">Open questions</div>
+      <div class="dp-content gap dp-editable" id="dp-gaps" contenteditable="true" spellcheck="false"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="dp-close-btn" style="background:var(--ink)" onclick="saveAndClose()">Save &amp; Close</button>
+      <button class="dp-close-btn" style="background:transparent;color:var(--ink);border-color:#ddd" onclick="discardAndClose()">Discard</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CARD TOGGLE ───────────────────────────────────────────────────────────
+function toggleCard(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ── SCROLL SPY ────────────────────────────────────────────────────────────
+const navMap = {
+  about:         'a[href="#about"]',
+  model:         'a[href="#model"]',
+  opportunities: 'a[href="#opportunities"]',
+  'card-p1':     'a[href="#card-p1"]',
+  'card-p2':     'a[href="#card-p2"]',
+  'card-p3':     'a[href="#card-p3"]',
+  'card-p4':     'a[href="#card-p4"]',
+  nextsteps:     'a[href="#nextsteps"]',
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      const link = document.querySelector(navMap[entry.target.id]);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -75% 0px' });
+
+Object.keys(navMap).forEach(id => {
+  const el = document.getElementById(id);
+  if (el) observer.observe(el);
+});
+
+// ── NODE DETAIL PANEL ─────────────────────────────────────────────────────
+let currentId = null;
+
+const nodes = {
+  product: {
+    cat: 'Product',
+    title: 'Snorkl — Multimodal AI Formative Assessment',
+    tip: 'The product is the core offering — what Snorkl delivers to users. It should be described in terms of what it is, how it works, and what value it creates for teachers and students.',
+    badge: 'ok', badgeText: '✓ Well-defined', edited: false,
+    know: `Snorkl is a cross-curricular, multimodal AI formative-assessment tool designed for K–12 classrooms.
+
+How it works:
+• Students record explanations of their thinking — using voice, drawing, and/or writing — on a digital whiteboard
+• AI gives immediate feedback and a score on the explanation, not just the answer
+• Students revise and resubmit based on the feedback
+• The cycle of explain → feedback → revise is the core learning loop
+
+Product tiers:
+• Free for teachers — core assessment and feedback functionality
+• Premium — adds Snorkl Coach (AI coaching for teachers), district activity libraries, and dedicated support
+
+Cross-curricular by design: works across math, world languages, ELL, science, social studies, and other subjects. Not subject-specific.
+
+HQIM integrations: pre-built activity libraries aligned to Illustrative Mathematics, JUMP Math, and EduProtocols.`,
+    gaps: null
+  },
+  impl: {
+    cat: 'Implementation Context',
+    title: 'K–12 Classrooms · All Subjects · 10,000+ Schools',
+    tip: 'Implementation context describes the setting and conditions under which the product operates — the institutional, organizational, and structural factors that shape whether and how Snorkl is used.',
+    badge: 'ok', badgeText: '✓ Mostly confirmed', edited: false,
+    know: `Deployment: K–12 classrooms across all subjects; math, world languages, and ELL are the primary wedges. 10,000+ schools using the tool.
+
+Curriculum partnerships: HQIM-aligned activity libraries for Illustrative Mathematics, JUMP Math, and EduProtocols. These partnerships lower the barrier to adoption by providing ready-made content.
+
+Professional development: Free PD offered, typically 1–2 calls. This is a lightweight touch — the open strategic question is whether more intensive PD would improve implementation quality (see Priority 3).
+
+Buyer profile: The primary buyer today is the tech director, for whom usage data alone is often sufficient evidence of value. Academic buyers (curriculum directors, superintendents) increasingly require outcome evidence — state tests, interim assessments, WIDA scores.
+
+District relationships: Houston ISD, Des Moines, Twin Rivers, and others. Houston has pulled its own data relating Snorkl usage to student outcomes.`,
+    gaps: 'How does the buyer profile vary across district size and type? What share of renewals are tech-director-driven vs. academic-buyer-driven? This matters for prioritizing which evidence to build first.'
+  },
+  behavior: {
+    cat: 'User Behavior',
+    title: 'Students Solve Problems on Snorkl',
+    tip: 'User behavior is what students do with the product — the specific actions that constitute using Snorkl. This is the proximal behavioral input shaped by teacher instructional practices (Mechanism 1).',
+    badge: 'ok', badgeText: '✓ Confirmed', edited: false,
+    know: `User behavior in Snorkl is what students actually do when they interact with the tool:
+
+• Students receive a problem assigned by their teacher
+• Students record explanations of their thinking — using voice, drawing, and/or writing — on a digital whiteboard
+• AI provides immediate feedback and a score on the explanation (not just the answer)
+• Students revise and resubmit based on the feedback
+• The cycle repeats: explain → feedback → revise
+
+Key behavioral signals captured in the backend:
+• Voice vs. whiteboard-only use (whether students explain aloud or only draw/write)
+• Number of attempts and revisions per activity (avg. 2+ attempts)
+• Time on task
+• Use of Snorkl Coach for feedback interpretation
+
+The quality of this behavior is shaped by teacher instructional practices (Mechanism 1) — whether the teacher sets voice norms, expects revision, and coaches students on using feedback.`,
+    gaps: 'These behavioral signals exist in the backend but are not yet aggregated into a usable implementation-quality metric at the classroom, school, or district level. The opportunity is to treat them as impact-relevant data, not just product analytics.'
+  },
+  mech1: {
+    cat: 'Mechanism 1',
+    title: 'Teacher Instructional Practices',
+    tip: 'Mechanism 1 explains how the product reaches students — through teacher decisions about how to assign problems, set norms for voice use, coach revision, and engage with student data.',
+    badge: 'ok', badgeText: '✓ Confirmed', edited: false,
+    know: `Teacher instructional practices are the mechanism linking Snorkl (the product) to student behavior. The same tool produces very different results depending on how the teacher implements it.
+
+High-fidelity implementation:
+• Teacher assigns problems that require explanation, not just answers
+• Students are required to explain verbally (voice recording, not just whiteboard)
+• Multiple revision cycles are expected and normed
+• Teacher coaches students on how to interpret and act on AI feedback
+• Teacher uses the insights dashboard to identify misconceptions and inform class discussion
+• Snorkl Coach is available and used for implementation guidance
+
+Low-fidelity implementation:
+• Voice is optional — students default to whiteboard-only
+• Single attempts with no revision expectation
+• Minimal teacher engagement with the insights data
+• No classroom discussion connected to Snorkl outputs
+
+The quality of teacher implementation is the key mediating variable in the causal chain — it determines whether the product's active ingredients are activated.`,
+    gaps: 'Implementation quality has not been defined as a measurable construct. What threshold of voice use, revision norming, and teacher engagement constitutes "high-fidelity" vs. "low-fidelity" use? This is what Priority 1 addresses.'
+  },
+  mech2: {
+    cat: 'Mechanism 2',
+    title: 'The Voice + Feedback + Revision Loop',
+    tip: 'The mechanism explains why well-implemented Snorkl should produce learning. This is the theoretical engine connecting tool use to outcomes.',
+    badge: 'ok', badgeText: '✓ Confirmed', edited: false,
+    know: `The hypothesized mechanism is the explain → feedback → revise loop:
+
+1. Students articulate their reasoning (ideally aloud, activating verbal processing)
+2. AI provides specific feedback on the quality of the explanation, not just correctness
+3. Students revise their explanation based on the feedback
+4. The cycle repeats, driving toward mastery through iterative refinement
+
+Why this should produce learning:
+• Verbal explanation forces students to organize and externalize their thinking
+• Specific feedback on the explanation (not just the answer) targets understanding, not performance
+• Revision normalizes iteration and growth mindset
+• Teachers gain insight into student thinking and misconceptions through the insights dashboard
+
+For teachers: the insights dashboard surfaces patterns in student explanations, enabling targeted instruction and class discussion grounded in actual student thinking.`,
+    gaps: 'The dose-response relationship is unknown — how much use, and of what quality, is needed to produce meaningful learning gains? This is confounded by time-on-task differences across classrooms. A student who attempts an activity five times scores higher in-platform, but that may reflect time on task rather than deeper learning. Separating implementation quality from dosage effects is the key analytic challenge.'
+  },
+  outcome: {
+    cat: 'Intended Outcome',
+    title: 'Students Learn More, Explain Thinking Better',
+    tip: 'The intended outcome is the meaningful, lasting change Snorkl aims to produce. It includes both learning outcomes and the quality of student reasoning.',
+    badge: 'ok', badgeText: '✓ Confirmed', edited: false,
+    know: `Snorkl's intended outcomes span multiple dimensions:
+
+For students:
+• Students learn more and grow more confident in their understanding
+• Students explain their thinking better — improved metacognitive and communication skills
+• ELL oral-language development — districts are already using Snorkl specifically for this purpose
+• Growth in achievement as measured by state tests, interim assessments (i-Ready, STAR, MAP), and WIDA scores
+
+For teachers:
+• Teachers gain better insight into student learning — understanding not just what students got wrong, but how they think about the problem
+• Improved instructional decisions informed by real-time data on student reasoning
+
+The evidence bar varies by buyer:
+• Tech directors: usage data is often sufficient
+• Academic buyers: require achievement outcome data (state tests, interim assessments, WIDA)
+• Larger districts with formal procurement: need ESSA-level evidence`,
+    gaps: 'Achievement outcomes are the most important evidence gap. Snorkl does not yet have systematic data linking tool use to external assessment growth. Houston ISD has pulled some of this data independently — obtaining that report is a concrete first step.'
+  },
+  user: {
+    cat: 'User / Population Context',
+    title: 'Teachers & Students · Two User Populations',
+    tip: 'User context describes who the end users are and what they bring to the experience. Snorkl is distinctive in having two user populations whose behaviors interact.',
+    badge: 'ok', badgeText: '✓ Well-characterized', edited: false,
+    know: `Snorkl has two distinct user populations whose behaviors interact:
+
+Teachers:
+• Assign activities (from HQIM libraries or custom)
+• Set classroom norms for voice use and revision expectations
+• Coach students on how to use feedback effectively
+• Read the insights dashboard for patterns in student thinking
+• Implementation quality varies significantly by teacher mindset and support
+
+Students:
+• Record explanations of their thinking (voice, drawing, writing)
+• Receive AI feedback on explanations
+• Revise and resubmit based on feedback
+• Engagement quality shaped by teacher norms and expectations
+
+Key moderators of implementation quality:
+• Teacher mindset toward student voice — some teachers embrace verbal explanation; others default to written-only modes
+• Presence of a tech or instructional coach — coaching support appears to raise implementation quality, though this is currently anecdotal
+• Subject area — math and world languages may activate the voice + feedback loop differently than other subjects`,
+    gaps: 'No systematic characterization of variation across the user population — by subject area, grade level, school context, teacher experience, or student demographics. This variation likely affects how the tool works for different populations.'
+  }
+};
+
+let _origKnow = '', _origGaps = '';
+
+function show(id) {
+  const d = nodes[id];
+  if (!d) return;
+  currentId = id;
+
+  document.getElementById('dp-cat').textContent = d.cat;
+  document.getElementById('dp-title-text').textContent = d.title;
+  document.getElementById('dp-tip').textContent = d.tip;
+
+  const badge = document.getElementById('dp-badge');
+  badge.textContent = d.badgeText;
+  badge.className = 'badge ' + (d.badge === 'ok' ? 'b-ok' : d.badge === 'par' ? 'b-par' : 'b-gap');
+
+  const knowEl = document.getElementById('dp-know');
+  knowEl.textContent = d.know;
+  _origKnow = d.know;
+
+  const gw = document.getElementById('dp-gap-wrap');
+  const gapsEl = document.getElementById('dp-gaps');
+  if (d.gaps) {
+    gw.style.display = 'block';
+    gapsEl.textContent = d.gaps;
+    _origGaps = d.gaps;
+  } else {
+    gw.style.display = 'none';
+    _origGaps = '';
+  }
+
+  document.getElementById('dp-edited').style.display = d.edited ? 'inline' : 'none';
+  document.getElementById('dp-panel').style.display = 'block';
+  document.getElementById('dp-overlay').style.display = 'block';
+  document.getElementById('dp-panel').scrollTop = 0;
+}
+
+function saveAndClose() {
+  if (currentId) {
+    const d = nodes[currentId];
+    const newKnow = document.getElementById('dp-know').textContent;
+    const newGaps = document.getElementById('dp-gaps').textContent;
+    if (newKnow !== _origKnow || (d.gaps !== null && newGaps !== _origGaps)) {
+      d.edited = true;
+    }
+    d.know = newKnow;
+    if (d.gaps !== null) d.gaps = newGaps;
+  }
+  closePanel();
+}
+
+function discardAndClose() {
+  document.getElementById('dp-know').textContent = _origKnow;
+  if (currentId && nodes[currentId] && nodes[currentId].gaps !== null) {
+    document.getElementById('dp-gaps').textContent = _origGaps;
+  }
+  closePanel();
+}
+
+function closePanel() {
+  document.getElementById('dp-panel').style.display = 'none';
+  document.getElementById('dp-overlay').style.display = 'none';
+  currentId = null;
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') discardAndClose(); });
+
+// ── PRIORITY DATA FOR MEASUREMENT VIEW ───────────────────────────────────
+const priorityData = {
+  '1': {
+    label: '1', color: '#1a6fff',
+    title: 'Measure Implementation Quality — The Behavioral Foundation',
+    tag: 'Start Here',
+    body: 'Turn data Snorkl already captures into an analytic signal: voice vs. whiteboard-only, revision behavior, dosage, and teacher-side engagement. This is the foundation everything else depends on.',
+    nodes: ['behavior'],
+    sectionId: 'card-p1',
+  },
+  '2': {
+    label: '2', color: '#059669',
+    title: 'Link Implementation to Student Outcomes — The Core Evidence',
+    tag: 'The Central Study',
+    body: 'Connect the implementation-quality index to external achievement data (i-Ready, STAR, MAP, WIDA). Start with one or two willing districts and ideally secure retroactive data.',
+    nodes: ['outcome', 'mech2'],
+    sectionId: 'card-p2',
+  },
+  '3': {
+    label: '3', color: '#d97706',
+    title: 'The PD → Implementation Link — What Moves Fidelity',
+    tag: 'Informs the PD Decision',
+    body: 'Test whether districts that received PD show stronger implementation quality. Directly informs Snorkl\'s open strategic question about how much to invest in wraparound PD.',
+    nodes: ['behavior', 'mech1'],
+    sectionId: 'card-p3',
+  },
+  '4': {
+    label: '4', color: '#718096',
+    title: 'Differentiated Measures — Oral Language & Metacognition',
+    tag: 'High Value, Longer Horizon',
+    body: 'Develop a measure that converts Snorkl\'s longitudinal archive of student verbal explanations into an oral-language or metacognition signal — genuinely differentiated and new to the field.',
+    nodes: ['mech2', 'outcome'],
+    sectionId: 'card-p4',
+  },
+};
+
+// ── VIEW TOGGLE ───────────────────────────────────────────────────────────
+function switchView(view) {
+  document.getElementById('view-model').classList.toggle('active', view === 'model');
+  document.getElementById('view-meas').classList.toggle('active', view === 'meas');
+  document.getElementById('btn-model').classList.toggle('active', view === 'model');
+  document.getElementById('btn-meas').classList.toggle('active',  view === 'meas');
+  if (view !== 'meas') hidePriorityPopup();
+}
+
+// ── BADGE HOVER: dim/highlight nodes ─────────────────────────────────────
+let _hoveredPriority = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const measSvg = document.getElementById('meas-svg');
+  if (!measSvg) return;
+
+  measSvg.querySelectorAll('.priority-badge-group').forEach(badge => {
+    const pid = badge.dataset.priority;
+
+    badge.addEventListener('mouseenter', () => {
+      _hoveredPriority = pid;
+      const connectedNodes = priorityData[pid].nodes;
+
+      measSvg.querySelectorAll('.connector-line').forEach(line => {
+        line.style.opacity = line.dataset.priority === pid ? '1' : '0';
+      });
+
+      measSvg.querySelectorAll('.dim-overlay').forEach(overlay => {
+        const isConnected = connectedNodes.includes(overlay.dataset.node);
+        overlay.style.opacity = isConnected ? '0' : '0.6';
+      });
+    });
+
+    badge.addEventListener('mouseleave', () => {
+      _hoveredPriority = null;
+      measSvg.querySelectorAll('.connector-line').forEach(l => l.style.opacity = '0');
+      measSvg.querySelectorAll('.dim-overlay').forEach(o => o.style.opacity = '0');
+    });
+  });
+});
+
+// ── PRIORITY POPUP ────────────────────────────────────────────────────────
+function openPriorityCard(pid) {
+  const d = priorityData[pid];
+  if (!d) return;
+
+  const popup = document.getElementById('priority-popup');
+  popup.innerHTML = `
+    <span class="pp-close-x" onclick="hidePriorityPopup()">&#215;</span>
+    <span class="pp-badge" style="background:${d.color}">${d.label}</span>
+    <span style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+      padding:2px 8px;border-radius:4px;background:var(--cobalt-l);color:var(--cobalt);
+      margin-left:6px">${d.tag}</span>
+    <div class="pp-title" style="margin-top:8px">${d.title}</div>
+    <div class="pp-body">${d.body}</div>
+    <span class="pp-link" onclick="jumpToCard('${d.sectionId}')">
+      &#8594; See full detail in the report
+    </span>
+  `;
+  popup.style.display = 'block';
+  document.getElementById('pp-overlay').style.display = 'block';
+}
+
+function hidePriorityPopup() {
+  document.getElementById('priority-popup').style.display = 'none';
+  document.getElementById('pp-overlay').style.display = 'none';
+}
+
+function jumpToCard(cardId) {
+  hidePriorityPopup();
+  switchView('model');
+  setTimeout(() => {
+    const card = document.getElementById(cardId);
+    if (card) {
+      card.classList.add('open');
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 150);
+}
+</script>
+
+</body></html>
