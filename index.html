@@ -645,8 +645,12 @@ nav { padding: 12px 0; flex: 1; }
 }
 .print-btn:hover { background: var(--cobalt-d); }
 
+/* Hidden on screen, restored in print */
+.print-only { display: none; }
+
 @media print {
   #sidebar,.print-btn { display: none !important; }
+  .print-only { display: block !important; }
   #main { margin-left: 0 !important; }
   .priority-card-body { display: block !important; }
   .priority-chevron { display: none; }
@@ -1055,6 +1059,7 @@ nav { padding: 12px 0; flex: 1; }
       </div>
     </div><!-- /view-meas -->
 
+    <div class="print-only">
     <h3 class="sub-header">Model Description</h3>
     <div class="sub-rule"></div>
     <table class="model-table">
@@ -1069,6 +1074,7 @@ nav { padding: 12px 0; flex: 1; }
         <tr><td>Intended Outcome</td><td>Students learn more and grow more confident; students explain their thinking better; ELL oral-language development; teachers gain better insight into student learning. Achievement outcomes (state tests, interim assessments, WIDA) are the evidence larger academic buyers increasingly require.</td></tr>
       </tbody>
     </table>
+    </div><!-- /print-only Model Description -->
   </section>
 
 
