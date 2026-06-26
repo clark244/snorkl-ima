@@ -65,34 +65,44 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-
 }
 
 /* ── SIDEBAR ────────────────────────────────────────────── */
+/* Full-height left column so the logo and the card can pin independently. */
 #sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
-  /* Sticky within #layout, pinned to the vertical center of the viewport
-     (top:50vh + translateY(-50%)). Hugs its own content height. Hidden until
-     the reader scrolls past the About band, then fades in (.toc-visible). */
-  position: sticky;
-  top: 50vh;
-  transform: translateY(-50%);
-  align-self: flex-start;
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.45s ease;
-}
-#sidebar.toc-visible {
-  opacity: 1;
-  pointer-events: auto;
+  align-self: stretch;
 }
 
-/* The TOC card: light, links only. */
+/* Logo: pinned to the top of the page as you scroll. */
+.toc-logo {
+  position: sticky;
+  top: 24px;
+  display: block;
+  width: 40px;
+  color: var(--ink);
+}
+.toc-logo svg { width: 100%; height: auto; display: block; }
+
+/* The TOC card: light, links only. Sticky-centered in the viewport
+   (top:50vh + translateY(-50%)), hidden until the reader scrolls past the
+   About band, then it rises into place and fades in (.toc-visible). */
 .toc-card {
   background: #fff;
   border: 1px solid var(--rule);
   border-radius: 10px;
   box-shadow: 0 1px 3px rgba(15, 25, 35, 0.04);
-  overflow: hidden;
+  position: sticky;
+  top: 50vh;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(calc(-50% + 18px));
+  pointer-events: none;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.toc-card.toc-visible {
+  opacity: 1;
+  transform: translateY(-50%);
+  pointer-events: auto;
 }
 
 nav { padding: 8px 0; }
@@ -133,27 +143,6 @@ nav { padding: 8px 0; }
 
 .nav-divider { height: 1px; background: var(--rule); margin: 6px 14px; }
 
-/* Meta beneath the card: draft badge + date / site. */
-.toc-meta { padding: 16px 4px 0; }
-.toc-badge {
-  display: inline-block;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--amber);
-  background: var(--amber-l);
-  border: 1px solid #f3d9a4;
-  padding: 3px 9px;
-  border-radius: 4px;
-}
-.toc-metaline {
-  font-size: var(--text-xs);
-  color: var(--muted);
-  line-height: 1.45;
-  margin-top: 6px;
-}
-.toc-metaline:first-of-type { margin-top: 12px; }
 
 /* ── MAIN ───────────────────────────────────────────────── */
 #main { flex: 1; min-width: 0; }
@@ -164,7 +153,8 @@ nav { padding: 8px 0; }
    max(0px,…) lets the content sit right after the TOC once space runs short. */
 @media (min-width: 1080px) {
   .section,
-  .kf-inner {
+  .kf-inner,
+  .about-content {
     max-width: var(--content-max);
     margin-left: max(0px, calc((100vw - var(--content-max)) / 2
                                - var(--content-pad) - var(--sidebar-w) - var(--toc-gap)));
@@ -240,15 +230,68 @@ nav { padding: 8px 0; }
 }
 .section:last-of-type { border-bottom: none; }
 
-/* #about is a full-width band above the TOC (a direct child of #app), so it
-   centers its content on screen like the cover/footer rather than using the
-   TOC-offset .section centering. (100% = #app = viewport width.) */
+/* #about (full-width band above the TOC) mirrors the #layout columns: an
+   eyebrow label in a TOC-width left column + a content column whose inner
+   .about-content matches the main sections (joins their centering rule). */
 #about {
-  max-width: none;
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: max(var(--content-pad), calc((100% - var(--content-max)) / 2 + var(--content-pad)));
-  padding-right: max(var(--content-pad), calc((100% - var(--content-max)) / 2 + var(--content-pad)));
+  display: flex;
+  align-items: flex-start;
+  gap: var(--toc-gap);
+  padding: 44px var(--content-pad);
+  border-bottom: 1px solid var(--rule);
+}
+.about-eyebrow {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  line-height: 1.4;
+}
+.about-main { flex: 1; min-width: 0; }
+.about-content p { color: var(--mid); margin-bottom: 13px; }
+.about-content p:last-child { margin-bottom: 0; }
+/* "Two purposes" as a numbered list with cobalt badges (matches Next Steps). */
+.about-list {
+  list-style: none;
+  counter-reset: about-item;
+  margin: 14px 0 16px;
+}
+.about-list li {
+  counter-increment: about-item;
+  position: relative;
+  padding-left: 40px;
+  margin-bottom: 14px;
+  /* section-header size, but lighter weight */
+  font-family: var(--serif);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.about-list li:last-child { margin-bottom: 0; }
+.about-list li::before {
+  content: counter(about-item);
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--cobalt);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Stack the eyebrow above the content once the TOC column drops out. */
+@media (max-width: 860px) {
+  #about { flex-direction: column; gap: 14px; }
+  .about-eyebrow { width: auto; }
 }
 
 /* Logo in narrative */
@@ -286,6 +329,7 @@ nav { padding: 8px 0; }
 .section > p,
 .section > ul,
 .section > ol,
+.about-content > p,
 .track-intro {
   max-width: var(--measure);
 }
@@ -351,9 +395,59 @@ nav { padding: 8px 0; }
 .model-table tr:last-child td { border-bottom: none; }
 .model-table tr:nth-child(even) td { background: var(--cobalt-ll); }
 .model-table td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; width: 175px; }
-#evidence-table td:first-child { white-space: normal; width: 160px; }
+#evidence-table td:first-child { white-space: normal; width: 165px; }
 #evidence-table td { font-size: var(--text-sm); }
 #evidence-table th { font-size: var(--text-xs); }
+.ev-asset { font-weight: 600; color: var(--ink); }
+/* Inline source icon + hover/focus tooltip */
+.ev-src {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  color: var(--muted);
+  cursor: help;
+  position: relative;
+  vertical-align: middle;
+}
+.ev-src svg { display: block; }
+.ev-src:hover, .ev-src:focus-visible { color: var(--cobalt); outline: none; }
+.ev-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  width: max-content;
+  max-width: 230px;
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  padding: 8px 11px;
+  border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(15, 25, 35, 0.18);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 60;
+}
+.ev-src:hover .ev-tip,
+.ev-src:focus-visible .ev-tip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+.ev-tip-label {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 3px;
+}
 
 .matrix-wrap { margin: 20px 0; overflow-x: auto; border: 1.5px solid var(--rule); border-radius: 8px; }
 .matrix-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
@@ -726,7 +820,7 @@ nav { padding: 8px 0; }
      and let content flow full-width. */
   #layout { display: block !important; padding: 0 !important; }
   #main { margin-left: 0 !important; }
-  .section, .kf-inner { max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
+  .section, .kf-inner, .about-content { max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
   #cover, #report-footer { padding-left: var(--content-pad) !important; padding-right: var(--content-pad) !important; }
   .kf-section::before { display: none !important; }
   .priority-card-body { display: block !important; }
@@ -848,16 +942,20 @@ nav { padding: 8px 0; }
   </div>
 </div>
 
-<!-- ── ABOUT THIS REPORT (full-width band, above the TOC) ─────────── -->
-<section class="section" id="about">
-  <div class="section-header">
-    <span class="section-num">01</span>
-    <h2 class="section-title">About This Report</h2>
+<!-- ── ABOUT THIS REPORT (eyebrow column + content column, mirrors #layout) ── -->
+<section id="about">
+  <div class="about-eyebrow">About This Report</div>
+  <div class="about-main">
+    <div class="about-content">
+      <p>This report has two purposes:</p>
+      <ol class="about-list">
+        <li>Articulate a working model of the mechanisms through which Snorkl produces impact — from product through teacher implementation and student use to intended student outcomes.</li>
+        <li>Use that model to identify and prioritize opportunities for impact measurement. The model is the analytical foundation; the measurement priorities follow directly from it.</li>
+      </ol>
+      <p>The analysis draws on three sources. It is a first-pass working draft, not a final assessment. We expect it to sharpen as Snorkl shares more about its internal data, district relationships, and strategic priorities.</p>
+      <p>Our aim is not to evaluate Snorkl's impact, but to help Snorkl's leadership see clearly where the causal chain is well understood, where it is assumed but untested, and where the most useful measurement investments should go — in what order, and why. Throughout, we favor measurement that can be built into how the company already operates, rather than externally imposed research projects that consume scarce startup time.</p>
+    </div>
   </div>
-  <div class="section-rule"></div>
-  <p>This report has two purposes: first, to articulate a working model of the mechanisms through which Snorkl produces impact — from product through teacher implementation and student use to intended student outcomes; and second, to use that model to identify and prioritize opportunities for impact measurement. The model is the analytical foundation. The measurement priorities follow directly from it.</p>
-  <p>The analysis draws on three sources: a discovery conversation with Snorkl co-founder Jon Laven on June 1, 2026; Snorkl's pre-conversation questionnaire response; and publicly available information at snorkl.app. It is a first-pass working draft, not a final assessment. We expect it to sharpen as Snorkl shares more about its internal data, district relationships, and strategic priorities.</p>
-  <p>Our aim is not to evaluate Snorkl's impact, but to help Snorkl's leadership see clearly where the causal chain is well understood, where it is assumed but untested, and where the most useful measurement investments should go — in what order, and why. Throughout, we favor measurement that can be built into how the company already operates, rather than externally imposed research projects that consume scarce startup time.</p>
 </section>
 
 <!-- ── BODY: table of contents + content ─────────────────────────── -->
@@ -865,6 +963,12 @@ nav { padding: 8px 0; }
 
 <!-- ── TABLE OF CONTENTS (sticky) ────────────────────────────────── -->
 <aside id="sidebar">
+  <a class="toc-logo" href="#" aria-label="Cobalt Collective">
+    <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M511.762 65.1744C516.48 62.4505 522.293 62.4505 527.011 65.1744L589.346 101.164C594.064 103.888 596.97 108.922 596.97 114.369V186.348C596.97 191.796 594.064 196.83 589.346 199.554L527.011 235.543C522.293 238.267 516.48 238.267 511.762 235.543L449.427 199.554C444.709 196.83 441.802 191.796 441.802 186.348V114.369C441.802 108.922 444.709 103.888 449.427 101.164L511.762 65.1744Z" fill="currentColor"/>
+      <path d="M252.301 8.57782C257.018 5.85416 262.831 5.85454 267.548 8.57782L329.886 44.5683C334.603 47.2924 337.51 52.3261 337.51 57.7734V129.751C337.51 135.198 334.603 140.232 329.886 142.956L267.548 178.947C262.831 181.67 257.018 181.67 252.301 178.947L208.726 153.786C198.31 147.772 185.488 147.724 175.027 153.66C164.41 159.685 157.849 170.951 157.849 183.159V234.836C157.849 240.283 154.942 245.317 150.225 248.041L105.299 273.977C95.2028 279.805 88.983 290.578 88.983 302.236C88.983 313.893 95.2023 324.665 105.298 330.494L150.225 356.433C154.942 359.157 157.849 364.191 157.849 369.638V418.568C157.849 430.642 164.338 441.785 174.84 447.743C185.185 453.613 197.865 453.565 208.165 447.618L252.301 422.137C257.018 419.413 262.831 419.414 267.548 422.137L310.22 446.773C320.82 452.893 333.869 452.942 344.515 446.902C355.324 440.77 362.003 429.302 362.003 416.875V369.638C362.003 364.19 364.909 359.157 369.627 356.433L431.962 320.442C436.679 317.719 442.492 317.719 447.209 320.442L509.547 356.433C514.264 359.157 517.171 364.191 517.171 369.638V441.615C517.171 447.063 514.264 452.096 509.547 454.821L447.209 490.811C442.492 493.534 436.679 493.535 431.962 490.811L387.07 464.892C376.924 459.034 364.435 458.987 354.246 464.767C343.902 470.636 337.51 481.611 337.51 493.504V543.31C337.51 548.758 334.603 553.791 329.886 556.515L267.548 592.506C262.831 595.229 257.018 595.23 252.301 592.506L189.966 556.515C185.248 553.792 182.342 548.758 182.342 543.31V495.197C182.342 482.952 175.761 471.651 165.11 465.609C154.619 459.657 141.761 459.706 131.316 465.737L87.8873 490.811C83.1695 493.534 77.3574 493.535 72.6397 490.811L10.3052 454.821C5.58731 452.097 2.68141 447.063 2.68141 441.615V369.638C2.68141 364.19 5.58725 359.157 10.3052 356.433L50.8819 333.003C61.8733 326.656 68.6441 314.928 68.6441 302.236C68.6441 289.543 61.8727 277.814 50.8806 271.468L10.3052 248.041C5.58733 245.317 2.68141 240.284 2.68141 234.836V162.858C2.68141 157.41 5.58725 152.377 10.3052 149.653L72.6397 113.663C77.3573 110.939 83.1696 110.939 87.8873 113.663L127.452 136.506C138.689 142.994 152.522 143.046 163.807 136.643C175.263 130.143 182.342 117.987 182.342 104.815V57.7734C182.342 52.3256 185.248 47.2922 189.966 44.5683L252.301 8.57782Z" fill="currentColor"/>
+    </svg>
+  </a>
   <div class="toc-card">
     <nav>
       <a class="nav-item" href="#keyfindings">Key Findings</a>
@@ -878,10 +982,6 @@ nav { padding: 8px 0; }
       <a class="nav-item" href="#nextsteps">Recommended Next Steps</a>
     </nav>
   </div>
-  <div class="toc-meta">
-    <div class="toc-metaline">June 1, 2026</div>
-    <div class="toc-metaline">cobaltcollective.org</div>
-  </div>
 </aside>
 
 <!-- ── MAIN ──────────────────────────────────────────────────────── -->
@@ -894,24 +994,20 @@ nav { padding: 8px 0; }
     <div class="kf-header">Key Findings</div>
     <div class="kf-grid">
       <div class="kf-card">
-        <div class="kf-num">1</div>
         <div class="kf-title">The active ingredients can be identified from data Snorkl already has</div>
-        <div class="kf-desc">The core question — which student behaviors within the tool (voice, feedback, revision) are associated with learning gains — is testable using data Snorkl’s backend already captures. The gap is not data collection but instrumentation: turning usage logs into an implementation quality signal that distinguishes high-fidelity from low-fidelity use.</div>
+        <div class="kf-desc">Whether voice, feedback, and revision drive learning gains is testable from usage logs Snorkl already captures. The gap is instrumentation, not data collection.</div>
       </div>
       <div class="kf-card">
-        <div class="kf-num">2</div>
         <div class="kf-title">Internally owned measurement complements the external research already underway</div>
-        <div class="kf-desc">The Gates/WestEd QED study, the NSVF/Lean Lab qualitative work, and the IM/AIR ENCORE study will contribute to Snorkl’s evidence base. Complementary internal measurement can address questions those studies weren’t designed for: what high-quality implementation looks like in practice, which active ingredients drive outcomes, and whether PD moves teachers toward those practices.</div>
+        <div class="kf-desc">External studies (Gates, NSVF, IM/AIR) build the evidence base. Internal measurement answers what they can’t — what good implementation looks like and what drives outcomes.</div>
       </div>
       <div class="kf-card">
-        <div class="kf-num">3</div>
         <div class="kf-title">The buyer landscape is shifting — and the evidence bar is rising with it</div>
-        <div class="kf-desc">Today’s primary buyer is the tech director, for whom usage volume is often sufficient. But academic buyers and larger districts increasingly require evidence of impact on state tests, interim assessments, and ELL scores. Snorkl doesn’t need to win that argument today, but it needs to be ready as the buyer mix shifts.</div>
+        <div class="kf-desc">Today’s tech-director buyer accepts usage data; academic buyers and larger districts increasingly want outcome evidence. Snorkl should be ready as the mix shifts.</div>
       </div>
       <div class="kf-card">
-        <div class="kf-num">4</div>
         <div class="kf-title">Snorkl’s verbal response archive is a genuinely differentiated asset</div>
-        <div class="kf-desc">A longitudinal archive of students explaining their reasoning aloud is something almost no other tool has. It is a direct window into oral-language development and metacognitive skill — constructs that are hard to measure elsewhere and increasingly valued by districts.</div>
+        <div class="kf-desc">A longitudinal archive of students reasoning aloud is rare — a direct window into oral-language and metacognitive growth that districts increasingly value.</div>
       </div>
     </div>
    </div>
@@ -920,7 +1016,6 @@ nav { padding: 8px 0; }
   <!-- 02 PROCESS MODEL -->
   <section class="section" id="model">
     <div class="section-header">
-      <span class="section-num">02</span>
       <h2 class="section-title">The Impact Process Model</h2>
     </div>
     <div class="section-rule"></div>
@@ -1187,47 +1282,52 @@ nav { padding: 8px 0; }
   <!-- 03 EVIDENCE LANDSCAPE -->
   <section class="section" id="evidence">
     <div class="section-header">
-      <span class="section-num">03</span>
       <h2 class="section-title">Evidence Landscape</h2>
     </div>
     <div class="section-rule"></div>
     <p>Before identifying measurement priorities, it is useful to take stock of what evidence Snorkl already has — or has in motion. Snorkl has invested meaningfully in external research partnerships. The table below catalogs these assets and their limitations.</p>
     <table class="model-table" id="evidence-table">
-      <thead><tr><th>Evidence Asset</th><th>Source</th><th>What It Shows</th><th>Limitations</th></tr></thead>
+      <thead><tr><th>Evidence Asset</th><th>What It Shows</th><th>Limitations</th></tr></thead>
       <tbody>
         <tr>
-          <td>NSVF / Lean Lab Qualitative Study</td>
-          <td>New Schools Venture Fund; Lean Lab (research partner)</td>
+          <td>
+            <div class="ev-asset">NSVF / Lean Lab Qualitative Study<span class="ev-src" tabindex="0" role="note" aria-label="Source: New Schools Venture Fund; Lean Lab (research partner)"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>New Schools Venture Fund; Lean Lab (research partner)</span></span></div>
+          </td>
           <td>Small qualitative study with 8 teachers at a Missouri school. Feedback interviews conducted; ~5–6 implemented with fidelity.</td>
           <td>Very small sample; Jon has not yet seen the final Lean Lab report. Qualitative only — no outcome data. Cannot support causal or correlational claims.</td>
         </tr>
         <tr>
-          <td>Gates Foundation / WestEd QED Study</td>
-          <td>Gates Foundation ENCORE grant ($750K); WestEd (research partner)</td>
+          <td>
+            <div class="ev-asset">Gates Foundation / WestEd QED Study<span class="ev-src" tabindex="0" role="note" aria-label="Source: Gates Foundation ENCORE grant ($750K); WestEd (research partner)"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>Gates Foundation ENCORE grant ($750K); WestEd (research partner)</span></span></div>
+          </td>
           <td>Quasi-experimental design planned for fall 2026. Two partner districts: Des Moines and Twin Rivers (CA). Originally scoped as feature-specific (Snorkl Coach, dashboards); Gates shifted to broader math achievement impact.</td>
           <td>In planning stage — no data yet. Process described by Jon as "rather messy" and more time-consuming than anticipated. Results not expected until 2027 at earliest.</td>
         </tr>
         <tr>
-          <td>Illustrative Mathematics / AIR ENCORE Study</td>
-          <td>Illustrative Mathematics (lead); AIR (research partner); Gates Foundation (funder)</td>
+          <td>
+            <div class="ev-asset">Illustrative Mathematics / AIR ENCORE Study<span class="ev-src" tabindex="0" role="note" aria-label="Source: Illustrative Mathematics (lead); AIR (research partner); Gates Foundation (funder)"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>Illustrative Mathematics (lead); AIR (research partner); Gates Foundation (funder)</span></span></div>
+          </td>
           <td>Examines instructional coherence of AI tools supplemental to HQIM curricula. Snorkl is one of two partner companies. Focus on curriculum alignment and implementation support.</td>
           <td>Snorkl is a participant, not the lead. Study scope is HQIM coherence, not Snorkl-specific impact. Snorkl will not own or control the findings or publication timeline.</td>
         </tr>
         <tr>
-          <td>Houston ISD Internal Data Pull</td>
-          <td>Houston ISD (district-initiated)</td>
+          <td>
+            <div class="ev-asset">Houston ISD Internal Data Pull<span class="ev-src" tabindex="0" role="note" aria-label="Source: Houston ISD (district-initiated)"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>Houston ISD (district-initiated)</span></span></div>
+          </td>
           <td>District correlated Snorkl usage data with internal academic metrics to justify continued purchasing. Houston subsequently requested pricing for expansion, suggesting positive results.</td>
           <td>Jon has not yet debriefed on the specifics. Analysis was district-initiated and district-controlled — methodology unknown. May be advocacy-driven rather than rigorous. Snorkl does not own the report.</td>
         </tr>
         <tr>
-          <td>Backend Behavioral Data (2+ Avg. Attempts)</td>
-          <td>Snorkl platform (internal)</td>
+          <td>
+            <div class="ev-asset">Backend Behavioral Data (2+ Avg. Attempts)<span class="ev-src" tabindex="0" role="note" aria-label="Source: Snorkl platform (internal)"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>Snorkl platform (internal)</span></span></div>
+          </td>
           <td>Platform records whether students use voice or whiteboard-only, number of attempts per activity (avg. 2+), revision behavior, and time on task. Admin dashboards show district-level usage.</td>
           <td>Currently treated as operational/usage data, not framed as impact evidence. No implementation-quality index derived from it. In-platform mastery scores confounded by time-on-task variation across classrooms.</td>
         </tr>
         <tr>
-          <td>Testimonials and Anecdotal Feedback</td>
-          <td>Customer conversations, classroom visits, Intercom support</td>
+          <td>
+            <div class="ev-asset">Testimonials and Anecdotal Feedback<span class="ev-src" tabindex="0" role="note" aria-label="Source: Customer conversations, classroom visits, Intercom support"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>Customer conversations, classroom visits, Intercom support</span></span></div>
+          </td>
           <td>Qualitative feedback from teachers on perceived value. Jon and co-founder conduct regular classroom visits observing implementation quality variation firsthand.</td>
           <td>Unsystematic. Not collected in a structured or analyzable format. Cannot support evidence claims for academic buyers or procurement processes requiring quantitative data.</td>
         </tr>
@@ -1239,7 +1339,6 @@ nav { padding: 8px 0; }
   <!-- 04 MEASUREMENT OPPORTUNITIES -->
   <section class="section" id="opportunities">
     <div class="section-header">
-      <span class="section-num">04</span>
       <h2 class="section-title">Impact Measurement Opportunities</h2>
     </div>
     <div class="section-rule"></div>
@@ -1362,7 +1461,6 @@ nav { padding: 8px 0; }
   <!-- 05 NEXT STEPS -->
   <section class="section" id="nextsteps">
     <div class="section-header">
-      <span class="section-num">05</span>
       <h2 class="section-title">Recommended Next Steps</h2>
     </div>
     <div class="section-rule"></div>
@@ -1475,12 +1573,14 @@ Object.keys(navMap).forEach(id => {
 // The boundingClientRect check distinguishes "scrolled past" (above) from
 // "not yet reached" (below the fold on load).
 const aboutBand = document.getElementById('about');
-const tocEl = document.getElementById('sidebar');
+const tocEl = document.querySelector('.toc-card');
 if (aboutBand && tocEl) {
+  // rootMargin shrinks the viewport top by 160px so the TOC reveals a bit
+  // earlier — while the tail of About is still leaving the top.
   new IntersectionObserver(([entry]) => {
     const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 0;
     tocEl.classList.toggle('toc-visible', scrolledPast);
-  }, { threshold: 0 }).observe(aboutBand);
+  }, { threshold: 0, rootMargin: '-160px 0px 0px 0px' }).observe(aboutBand);
 }
 
 // ── NODE DETAIL PANEL ─────────────────────────────────────────────────────
