@@ -29,6 +29,7 @@
   --measure: 680px;
   --content-max: 1100px;
   --toc-gap: 40px;
+  --row-top: 32px;   /* top gap below the cover, shared by #layout and the KF band */
   --serif: 'Source Serif 4', Georgia, serif;
   --sans:  'Source Sans 3', system-ui, sans-serif;
 
@@ -51,7 +52,7 @@ html { font-size: 100%; scroll-behavior: smooth; }
 body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.65; font-size: var(--text-base); }
 
 /* ── LAYOUT ─────────────────────────────────────────────── */
-#app { min-height: 100vh; }
+#app { min-height: 100vh; overflow-x: clip; }   /* contain the KF full-bleed breakout */
 
 /* Body row: sticky TOC on the left + content. Cover/footer sit outside this,
    so they stay full-bleed. align-items:flex-start lets the TOC hug its own
@@ -60,7 +61,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-
   display: flex;
   align-items: flex-start;
   gap: var(--toc-gap);
-  padding: 32px var(--content-pad) 0;
+  padding: var(--row-top) var(--content-pad) 0;
 }
 
 /* ── SIDEBAR ────────────────────────────────────────────── */
@@ -161,8 +162,9 @@ nav { padding: 8px 0; }
                                - var(--content-pad) - var(--sidebar-w) - var(--toc-gap)));
     margin-right: auto;
   }
-  /* Cover & footer keep full-bleed backgrounds, but their content is padded to
-     line up with the screen-centered column. (100% = #app = viewport width.) */
+  /* Full-bleed bands (cover, footer): backgrounds span the screen, but their
+     content is padded to line up with the screen-centered column.
+     (100% = #app = viewport width.) */
   #cover,
   #report-footer {
     padding-left: max(var(--content-pad), calc((100% - var(--content-max)) / 2 + var(--content-pad)));
@@ -707,6 +709,7 @@ nav { padding: 8px 0; }
   #main { margin-left: 0 !important; }
   .section, .kf-section { max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
   #cover, #report-footer { padding-left: var(--content-pad) !important; padding-right: var(--content-pad) !important; }
+  .kf-section::before { display: none !important; }
   .priority-card-body { display: block !important; }
   .priority-chevron { display: none; }
   #cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -721,8 +724,22 @@ nav { padding: 8px 0; }
 
 /* ── KEY FINDINGS ───────────────────────────────────────── */
 .kf-section {
-  background: var(--cobalt-ll);
+  position: relative;
   padding: 40px var(--content-pad);
+}
+/* Full-bleed tinted background: the cards stay in the centered column (via the
+   .section centering rule), but this layer breaks out to span the screen and
+   extends up by --row-top so the band sits flush under the cover. */
+.kf-section::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: calc(-1 * var(--row-top));
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background: var(--cobalt-ll);
   border-bottom: 1px solid var(--rule);
 }
 .kf-header {
@@ -831,7 +848,7 @@ nav { padding: 8px 0; }
 <!-- ── MAIN ──────────────────────────────────────────────────────── -->
 <main id="main">
 
-  <!-- KEY FINDINGS -->
+  <!-- KEY FINDINGS (constrained cards; background breaks out full-bleed) -->
   <div class="kf-section" id="keyfindings">
     <div class="kf-header">Key Findings</div>
     <div class="kf-grid">
