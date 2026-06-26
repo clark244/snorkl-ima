@@ -25,10 +25,10 @@
   --rule:      #e2e8f0;
   --bg:        #ffffff;
   --sidebar-w: 252px;
-  --content-pad: 52px;
+  --content-pad: 40px;
   --measure: 680px;
   --content-max: 1100px;
-  --toc-gap: 40px;
+  --toc-gap: 32px;
   --row-top: 32px;   /* top gap below the cover, shared by #layout and the KF band */
   --serif: 'Source Serif 4', Georgia, serif;
   --sans:  'Source Sans 3', system-ui, sans-serif;
@@ -68,14 +68,22 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-
 #sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
-  /* Sticky within #layout: scrolls with the page, then pins below the top as
-     you read. Hugs its own content height (no min-height: 100vh). Transparent
-     container — the light card and the meta below it are the visible pieces. */
+  /* Sticky within #layout, pinned to the vertical center of the viewport
+     (top:50vh + translateY(-50%)). Hugs its own content height. Hidden until
+     the reader scrolls past the About band, then fades in (.toc-visible). */
   position: sticky;
-  top: 24px;
+  top: 50vh;
+  transform: translateY(-50%);
   align-self: flex-start;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+#sidebar.toc-visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* The TOC card: light, links only. */
@@ -227,10 +235,21 @@ nav { padding: 8px 0; }
 
 /* ── SECTION ────────────────────────────────────────────── */
 .section {
-  padding: 44px var(--content-pad);
+  padding: 44px 0;
   border-bottom: 1px solid var(--rule);
 }
 .section:last-of-type { border-bottom: none; }
+
+/* #about is a full-width band above the TOC (a direct child of #app), so it
+   centers its content on screen like the cover/footer rather than using the
+   TOC-offset .section centering. (100% = #app = viewport width.) */
+#about {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: max(var(--content-pad), calc((100% - var(--content-max)) / 2 + var(--content-pad)));
+  padding-right: max(var(--content-pad), calc((100% - var(--content-max)) / 2 + var(--content-pad)));
+}
 
 /* Logo in narrative */
 .narrative-logo {
@@ -716,8 +735,16 @@ nav { padding: 8px 0; }
   #report-footer { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
+/* Below 1280px the layout gutter (the space left of the TOC and right of the
+   content — content/cards now sit flush to the column edges) ramps linearly
+   with the viewport: 16px at 860px up to 40px at 1280px, fluid with no
+   breakpoint jump. Fixed 40px above 1280px; the 860px rule pins 16px under. */
+@media (max-width: 1280px) {
+  :root { --content-pad: clamp(16px, calc(16px + (100vw - 860px) * 24 / 420), 40px); }
+}
+
 @media (max-width: 860px) {
-  :root { --sidebar-w: 0px; --content-pad: 24px; --toc-gap: 0px; }
+  :root { --sidebar-w: 0px; --content-pad: 16px; --toc-gap: 0px; }
   #sidebar { display: none; }
   .cover-meta-grid { grid-template-columns: 1fr 1fr; }
 }
@@ -727,9 +754,9 @@ nav { padding: 8px 0; }
    edge is deterministically at #main's left edge. .kf-inner does the centering. */
 .kf-section {
   position: relative;
-  padding: 40px 0;
+  padding: 20px 0 40px 0;
 }
-.kf-inner { padding: 0 var(--content-pad); }
+.kf-inner { padding: 0; }
 .kf-card { min-width: 0; }   /* prevent grid items from blowing out the column */
 /* Full-bleed tinted background. .kf-section's left edge sits exactly #main's
    left offset (content-pad + TOC + gap) from the screen edge, so shifting the
@@ -757,6 +784,10 @@ nav { padding: 8px 0; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+}
+/* Collapse the key-findings cards to a single column on narrow viewports. */
+@media (max-width: 799px) {
+  .kf-grid { grid-template-columns: 1fr; }
 }
 .kf-card {
   background: #fff;
@@ -817,6 +848,18 @@ nav { padding: 8px 0; }
   </div>
 </div>
 
+<!-- ── ABOUT THIS REPORT (full-width band, above the TOC) ─────────── -->
+<section class="section" id="about">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">About This Report</h2>
+  </div>
+  <div class="section-rule"></div>
+  <p>This report has two purposes: first, to articulate a working model of the mechanisms through which Snorkl produces impact — from product through teacher implementation and student use to intended student outcomes; and second, to use that model to identify and prioritize opportunities for impact measurement. The model is the analytical foundation. The measurement priorities follow directly from it.</p>
+  <p>The analysis draws on three sources: a discovery conversation with Snorkl co-founder Jon Laven on June 1, 2026; Snorkl's pre-conversation questionnaire response; and publicly available information at snorkl.app. It is a first-pass working draft, not a final assessment. We expect it to sharpen as Snorkl shares more about its internal data, district relationships, and strategic priorities.</p>
+  <p>Our aim is not to evaluate Snorkl's impact, but to help Snorkl's leadership see clearly where the causal chain is well understood, where it is assumed but untested, and where the most useful measurement investments should go — in what order, and why. Throughout, we favor measurement that can be built into how the company already operates, rather than externally imposed research projects that consume scarce startup time.</p>
+</section>
+
 <!-- ── BODY: table of contents + content ─────────────────────────── -->
 <div id="layout">
 
@@ -825,24 +868,17 @@ nav { padding: 8px 0; }
   <div class="toc-card">
     <nav>
       <a class="nav-item" href="#keyfindings">Key Findings</a>
-      <a class="nav-item" href="#recommendation">Recommendation at a Glance</a>
       <div class="nav-divider"></div>
-      <a class="nav-item" href="#about">01 &nbsp; About This Report</a>
-      <a class="nav-item active" href="#model">02 &nbsp; Impact Process Model</a>
+      <a class="nav-item active" href="#model">Impact Process Model</a>
       <div class="nav-divider"></div>
-      <a class="nav-item" href="#evidence">03 &nbsp; Evidence Landscape</a>
+      <a class="nav-item" href="#evidence">Evidence Landscape</a>
       <div class="nav-divider"></div>
-      <a class="nav-item" href="#opportunities">04 &nbsp; Measurement Opportunities</a>
-      <a class="nav-item sub" href="#card-p1">1 — Measure Implementation Quality</a>
-      <a class="nav-item sub" href="#card-p2">2 — Implementation → Outcomes</a>
-      <a class="nav-item sub" href="#card-p3">3 — PD → Implementation</a>
-      <a class="nav-item sub" href="#card-p4">4 — Oral Language &amp; Metacognition</a>
+      <a class="nav-item" href="#opportunities">Measurement Opportunities</a>
       <div class="nav-divider"></div>
-      <a class="nav-item" href="#nextsteps">05 &nbsp; Recommended Next Steps</a>
+      <a class="nav-item" href="#nextsteps">Recommended Next Steps</a>
     </nav>
   </div>
   <div class="toc-meta">
-    <span class="toc-badge">Working Draft</span>
     <div class="toc-metaline">June 1, 2026</div>
     <div class="toc-metaline">cobaltcollective.org</div>
   </div>
@@ -880,49 +916,6 @@ nav { padding: 8px 0; }
     </div>
    </div>
   </div>
-
-  <!-- RECOMMENDATION AT A GLANCE -->
-  <section class="section" id="recommendation">
-    <div class="section-header">
-      <h2 class="section-title">The Recommendation at a Glance</h2>
-    </div>
-    <div class="section-rule"></div>
-    <p>Snorkl's measurement opportunity is unusually well-defined: the constructs that matter — how the tool is used, and whether better use produces better outcomes — are measurable by instrumenting data the company already holds. We recommend a single sequenced track of four priorities. The first three can begin within 6–12 months; the fourth is a longer-horizon differentiator. Each is detailed in <a href="#opportunities">Section 04</a>.</p>
-    <div class="matrix-wrap">
-      <table class="matrix-table">
-        <thead>
-          <tr>
-            <th style="width:58px">Priority</th>
-            <th style="width:108px">Horizon</th>
-            <th>Measurement Focus</th>
-            <th style="width:88px">Renewal (Tech Buyer)</th>
-            <th style="width:88px">Academic / District Sales</th>
-            <th style="width:88px">Product &amp; PD Decisions</th>
-            <th style="width:88px">Field Differentiation</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td><span class="m-badge" style="background:var(--cobalt)">1</span></td><td style="font-size:var(--text-sm);color:var(--green);font-weight:600">Now</td><td>Measure Implementation Quality</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td></tr>
-          <tr><td><span class="m-badge" style="background:var(--green)">2</span></td><td style="font-size:var(--text-sm);color:var(--amber);font-weight:600">6–12 mo</td><td>Link Implementation to Student Outcomes</td><td class="m-dot-full">●</td><td class="m-dot-full">●</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td></tr>
-          <tr><td><span class="m-badge" style="background:var(--amber)">3</span></td><td style="font-size:var(--text-sm);color:var(--amber);font-weight:600">6–12 mo</td><td>PD → Implementation Link</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td><td class="m-dot-none">–</td></tr>
-          <tr><td><span class="m-badge" style="background:#718096">4</span></td><td style="font-size:var(--text-sm);color:var(--muted);font-weight:600">12–24 mo</td><td>Differentiated Measures (Oral Language / Metacognition)</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td></tr>
-        </tbody>
-      </table>
-      <div class="matrix-legend">● Primary driver &nbsp;&nbsp; ○ Contributing factor &nbsp;&nbsp; – Not applicable</div>
-    </div>
-  </section>
-
-  <!-- 01 ABOUT -->
-  <section class="section" id="about">
-    <div class="section-header">
-      <span class="section-num">01</span>
-      <h2 class="section-title">About This Report</h2>
-    </div>
-    <div class="section-rule"></div>
-    <p>This report has two purposes: first, to articulate a working model of the mechanisms through which Snorkl produces impact — from product through teacher implementation and student use to intended student outcomes; and second, to use that model to identify and prioritize opportunities for impact measurement. The model is the analytical foundation. The measurement priorities follow directly from it.</p>
-    <p>The analysis draws on three sources: a discovery conversation with Snorkl co-founder Jon Laven on June 1, 2026; Snorkl's pre-conversation questionnaire response; and publicly available information at snorkl.app. It is a first-pass working draft, not a final assessment. We expect it to sharpen as Snorkl shares more about its internal data, district relationships, and strategic priorities.</p>
-    <p>Our aim is not to evaluate Snorkl's impact, but to help Snorkl's leadership see clearly where the causal chain is well understood, where it is assumed but untested, and where the most useful measurement investments should go — in what order, and why. Throughout, we favor measurement that can be built into how the company already operates, rather than externally imposed research projects that consume scarce startup time.</p>
-  </section>
 
   <!-- 02 PROCESS MODEL -->
   <section class="section" id="model">
@@ -1252,7 +1245,32 @@ nav { padding: 8px 0; }
     <div class="section-rule"></div>
     <p>A central finding of this analysis is that Snorkl's measurement opportunity is unusually well-defined. The constructs that matter — how the tool is used, and whether better use produces better outcomes — are all measurable with existing methods. There is no new instrument to invent. The challenge is to instrument and connect what Snorkl already has, and to do so in a way that serves the business without consuming the time and energy that external research partnerships have.</p>
     <p>This is reinforced by Snorkl's buyer reality. Today the primary buyer is the <strong>tech director</strong>, for whom usage alone is often sufficient — a low evidence bar. But academic buyers, and larger districts running formal procurement, increasingly want evidence of impact on state tests, interim assessments, and ELL scores. Snorkl does not yet need to win the hardest evidentiary argument; it needs to be ready for it as the buyer mix shifts. The priorities below are sequenced to build that readiness without over-investing ahead of demand.</p>
-    <p>The opportunities are organized as a single sequenced track of four priorities — summarized in the matrix at the top of this report and detailed below.</p>
+    <p>The opportunities are organized as a single sequenced track of four priorities, summarized in the matrix below and detailed in the cards that follow.</p>
+
+    <h3 class="sub-header">Measurement Strategy at a Glance</h3>
+    <div class="sub-rule"></div>
+    <div class="matrix-wrap">
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th style="width:58px">Priority</th>
+            <th style="width:108px">Horizon</th>
+            <th>Measurement Focus</th>
+            <th style="width:88px">Renewal (Tech Buyer)</th>
+            <th style="width:88px">Academic / District Sales</th>
+            <th style="width:88px">Product &amp; PD Decisions</th>
+            <th style="width:88px">Field Differentiation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="m-badge" style="background:var(--cobalt)">1</span></td><td style="font-size:var(--text-sm);color:var(--green);font-weight:600">Now</td><td>Measure Implementation Quality</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td></tr>
+          <tr><td><span class="m-badge" style="background:var(--green)">2</span></td><td style="font-size:var(--text-sm);color:var(--amber);font-weight:600">6–12 mo</td><td>Link Implementation to Student Outcomes</td><td class="m-dot-full">●</td><td class="m-dot-full">●</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td></tr>
+          <tr><td><span class="m-badge" style="background:var(--amber)">3</span></td><td style="font-size:var(--text-sm);color:var(--amber);font-weight:600">6–12 mo</td><td>PD → Implementation Link</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td><td class="m-dot-none">–</td></tr>
+          <tr><td><span class="m-badge" style="background:#718096">4</span></td><td style="font-size:var(--text-sm);color:var(--muted);font-weight:600">12–24 mo</td><td>Differentiated Measures (Oral Language / Metacognition)</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td></tr>
+        </tbody>
+      </table>
+      <div class="matrix-legend">● Primary driver &nbsp;&nbsp; ○ Contributing factor &nbsp;&nbsp; – Not applicable</div>
+    </div>
 
     <h3 class="sub-header" id="priorities">The Four Priorities</h3>
     <div class="sub-rule"></div>
@@ -1431,15 +1449,9 @@ function toggleCard(id) {
 // ── SCROLL SPY ────────────────────────────────────────────────────────────
 const navMap = {
   keyfindings:    'a[href="#keyfindings"]',
-  recommendation: 'a[href="#recommendation"]',
-  about:         'a[href="#about"]',
   model:         'a[href="#model"]',
   evidence:      'a[href="#evidence"]',
   opportunities: 'a[href="#opportunities"]',
-  'card-p1':     'a[href="#card-p1"]',
-  'card-p2':     'a[href="#card-p2"]',
-  'card-p3':     'a[href="#card-p3"]',
-  'card-p4':     'a[href="#card-p4"]',
   nextsteps:     'a[href="#nextsteps"]',
 };
 
@@ -1457,6 +1469,19 @@ Object.keys(navMap).forEach(id => {
   const el = document.getElementById(id);
   if (el) observer.observe(el);
 });
+
+// Fade the TOC in once the reader scrolls past the About band (i.e. it has
+// scrolled fully ABOVE the viewport), and back out when About returns to view.
+// The boundingClientRect check distinguishes "scrolled past" (above) from
+// "not yet reached" (below the fold on load).
+const aboutBand = document.getElementById('about');
+const tocEl = document.getElementById('sidebar');
+if (aboutBand && tocEl) {
+  new IntersectionObserver(([entry]) => {
+    const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+    tocEl.classList.toggle('toc-visible', scrolledPast);
+  }, { threshold: 0 }).observe(aboutBand);
+}
 
 // ── NODE DETAIL PANEL ─────────────────────────────────────────────────────
 let currentId = null;
