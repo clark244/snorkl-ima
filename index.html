@@ -156,7 +156,7 @@ nav { padding: 8px 0; }
    max(0px,…) lets the content sit right after the TOC once space runs short. */
 @media (min-width: 1080px) {
   .section,
-  .kf-section {
+  .kf-inner {
     max-width: var(--content-max);
     margin-left: max(0px, calc((100vw - var(--content-max)) / 2
                                - var(--content-pad) - var(--sidebar-w) - var(--toc-gap)));
@@ -707,7 +707,7 @@ nav { padding: 8px 0; }
      and let content flow full-width. */
   #layout { display: block !important; padding: 0 !important; }
   #main { margin-left: 0 !important; }
-  .section, .kf-section { max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
+  .section, .kf-inner { max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
   #cover, #report-footer { padding-left: var(--content-pad) !important; padding-right: var(--content-pad) !important; }
   .kf-section::before { display: none !important; }
   .priority-card-body { display: block !important; }
@@ -717,28 +717,31 @@ nav { padding: 8px 0; }
 }
 
 @media (max-width: 860px) {
-  :root { --sidebar-w: 0px; --content-pad: 24px; }
+  :root { --sidebar-w: 0px; --content-pad: 24px; --toc-gap: 0px; }
   #sidebar { display: none; }
   .cover-meta-grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* ── KEY FINDINGS ───────────────────────────────────────── */
+/* .kf-section spans the full width of #main (no max-width/margin), so its left
+   edge is deterministically at #main's left edge. .kf-inner does the centering. */
 .kf-section {
   position: relative;
-  padding: 40px var(--content-pad);
+  padding: 40px 0;
 }
-/* Full-bleed tinted background: the cards stay in the centered column (via the
-   .section centering rule), but this layer breaks out to span the screen and
-   extends up by --row-top so the band sits flush under the cover. */
+.kf-inner { padding: 0 var(--content-pad); }
+.kf-card { min-width: 0; }   /* prevent grid items from blowing out the column */
+/* Full-bleed tinted background. .kf-section's left edge sits exactly #main's
+   left offset (content-pad + TOC + gap) from the screen edge, so shifting the
+   band left by that offset pins it to the screen edge; 100vw fills across. */
 .kf-section::before {
   content: '';
   position: absolute;
   z-index: -1;
   top: calc(-1 * var(--row-top));
   bottom: 0;
-  left: 50%;
+  left: calc(-1 * (var(--content-pad) + var(--sidebar-w) + var(--toc-gap)));
   width: 100vw;
-  transform: translateX(-50%);
   background: var(--cobalt-ll);
   border-bottom: 1px solid var(--rule);
 }
@@ -848,8 +851,10 @@ nav { padding: 8px 0; }
 <!-- ── MAIN ──────────────────────────────────────────────────────── -->
 <main id="main">
 
-  <!-- KEY FINDINGS (constrained cards; background breaks out full-bleed) -->
+  <!-- KEY FINDINGS — .kf-section is full-width (its ::before bleeds the bg
+       to the screen); .kf-inner constrains the cards to the centered column. -->
   <div class="kf-section" id="keyfindings">
+   <div class="kf-inner">
     <div class="kf-header">Key Findings</div>
     <div class="kf-grid">
       <div class="kf-card">
@@ -873,6 +878,7 @@ nav { padding: 8px 0; }
         <div class="kf-desc">A longitudinal archive of students explaining their reasoning aloud is something almost no other tool has. It is a direct window into oral-language development and metacognitive skill — constructs that are hard to measure elsewhere and increasingly valued by districts.</div>
       </div>
     </div>
+   </div>
   </div>
 
   <!-- RECOMMENDATION AT A GLANCE -->
