@@ -254,9 +254,17 @@ nav { padding: 8px 0; }
   display: block;
 }
 .cover-logo svg { height: 100%; width: auto; display: block; }
+/* The actions box tracks the main content column. The topbar's inner box (set by
+   its padding-inline) equals the #layout inner box, so the content column is the
+   space AFTER the TOC sidebar + gap, right-aligned and capped at --content-max.
+   width:min() reproduces that column exactly — it's the lesser of the cap and the
+   space left of the TOC column — and margin-left:auto right-aligns it so the box
+   sits under the content on wide screens and lines up with the content's left
+   edge as the viewport narrows, instead of drifting with a fixed 1100px basis. */
 .cover-topbar-actions {
   margin-left: auto;
-  flex: 0 1 var(--content-max);
+  flex: 0 0 auto;
+  width: min(var(--content-max), 100% - var(--sidebar-w) - var(--toc-gap));
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -266,31 +274,34 @@ nav { padding: 8px 0; }
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 7px 14px;
+  padding: 10px 22px;
   font-family: var(--sans);
   font-size: var(--text-sm);
   font-weight: 600;
   color: rgba(255, 255, 255, 0.85);
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 6px;
+  border-radius: 999px;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 .cover-about-btn:hover { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.45); color: #fff; }
 .cover-about-btn svg { display: block; }
+/* The in-cover About button appears only below 860px (see the breakpoint), where
+   it replaces the topbar copy that gets hidden. Sits under the meta grid. */
+.cover-about-btn--meta { display: none; }
 .cover-download-btn {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 8px 16px;
+  padding: 10px 24px;
   font-family: var(--sans);
   font-size: var(--text-sm);
   font-weight: 600;
   color: #fff;
   background: var(--cobalt);
   border: none;
-  border-radius: 6px;
+  border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;
@@ -636,7 +647,7 @@ nav { padding: 8px 0; }
 .m-dot-full { color: var(--cobalt); font-size: var(--text-base); }
 .m-dot-open { color: #c0cce0; font-size: var(--text-base); }
 .m-dot-none { color: #dde4ee; font-size: var(--text-sm); }
-.matrix-legend { font-size: var(--text-sm); color: var(--muted); padding: 9px 14px; border-top: 1px solid var(--rule); background: var(--cobalt-ll); }
+.matrix-legend { font-size: var(--text-sm); color: var(--muted); margin-bottom: 14px; }
 
 /* ── SUBSECTION HEADER ──────────────────────────────────── */
 .sub-header {
@@ -1010,6 +1021,13 @@ nav { padding: 8px 0; }
   :root { --sidebar-w: 0px; --content-pad: 16px; --toc-gap: 0px; }
   #sidebar { display: none; }
   .cover-meta-grid { grid-template-columns: 1fr 1fr; }
+  /* Move About out of the cramped topbar and under the meta grid; leave only
+     the Download button in the topbar. With one button, shrink the actions box
+     to its content and let margin-left:auto right-align it flush to the topbar
+     padding (the wide-screen width:100% would overflow past the logo). */
+  .cover-topbar-actions .cover-about-btn { display: none; }
+  .cover-topbar-actions { width: auto; justify-content: flex-end; }
+  .cover-about-btn--meta { display: inline-flex; align-self: flex-start; margin-top: 28px; }
 }
 
 /* ── KEY FINDINGS ───────────────────────────────────────── */
@@ -1034,14 +1052,6 @@ nav { padding: 8px 0; }
   width: 100vw;
   background: var(--cobalt-ll);
   border-bottom: 1px solid var(--rule);
-}
-.kf-header {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: var(--track-caps);
-  text-transform: uppercase;
-  color: var(--cobalt);
-  margin-bottom: 16px;
 }
 .kf-grid {
   display: grid;
