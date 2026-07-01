@@ -5,917 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Impact Measurement Assessment — Snorkl</title>
 <link rel="preconnect" href="https://fonts.googleapis.com/">
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
-<style>
-/* ── RESET ──────────────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-:root {
-  --cobalt:    #1a6fff;
-  --cobalt-d:  #1458cc;
-  --cobalt-l:  #e8f0ff;
-  --cobalt-ll: #f4f7ff;
-  --amber:     #d97706;
-  --amber-l:   #fffbeb;
-  --green:     #059669;
-  --green-l:   #d1fae5;
-  --ink:       #0f1923;
-  --mid:       #4a5568;
-  --muted:     #718096;
-  --rule:      #e2e8f0;
-  --bg:        #ffffff;
-  --sidebar-w: 252px;
-  --content-pad: 40px;
-  --measure: 680px;
-  --content-max: 1100px;
-  --toc-gap: 32px;
-  --row-top: 32px;   /* top gap below the cover, shared by #layout and the KF band */
-  --serif: 'Source Serif 4', Georgia, serif;
-  --sans:  'Source Sans 3', system-ui, sans-serif;
-
-  /* Type scale — major third (×1.25), body = 1.25rem = 20px.
-     Every font-size references one of these tokens; nothing is hand-set.
-     Floor is pinned at 13px (--text-xs) per the no-smaller-than-13px rule. */
-  --text-xs:   0.8125rem;  /* 13px — eyebrows, badges, micro-labels (floor) */
-  --text-sm:   1rem;       /* 16px — captions, table/card body, dense text  */
-  --text-base: 1.25rem;    /* 20px — body prose (default reading size)      */
-  --text-lg:   1.5625rem;  /* 25px — sub-headers, lead-ins                  */
-  --text-xl:   1.9531rem;  /* 31px — section titles                         */
-  --text-2xl:  2.4414rem;  /* 39px — (reserved) / large headings            */
-  --text-3xl:  3.0518rem;  /* 49px — cover title                            */
-}
-
-/* Global size knob: the --text-* tokens are rem, so they all scale from this
-   one value. 100% = the scale above; raise it to enlarge everything (e.g.
-   106.25% = +6.25%). The diagram's SVG labels are fixed and do not scale. */
-html { font-size: 100%; scroll-behavior: smooth; }
-body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.65; font-size: var(--text-base); }
-
-/* ── LAYOUT ─────────────────────────────────────────────── */
-#app { min-height: 100vh; overflow-x: clip; }   /* contain the KF full-bleed breakout */
-
-/* Body row: sticky TOC on the left + content. Cover/footer sit outside this,
-   so they stay full-bleed. align-items:flex-start lets the TOC hug its own
-   height (and enables position:sticky) instead of stretching to match #main. */
-#layout {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--toc-gap);
-  padding: var(--row-top) var(--content-pad) 0;
-}
-
-/* ── SIDEBAR ────────────────────────────────────────────── */
-/* Full-height left column so the logo and the card can pin independently. */
-#sidebar {
-  width: var(--sidebar-w);
-  flex-shrink: 0;
-  align-self: stretch;
-}
-
-/* Logo: pinned to the top of the page as you scroll. */
-.toc-logo {
-  position: sticky;
-  top: 24px;
-  display: block;
-  width: 40px;
-  color: var(--ink);
-}
-.toc-logo svg { width: 100%; height: auto; display: block; }
-
-/* The TOC card: light, links only. Sticky-centered in the viewport
-   (top:50vh + translateY(-50%)), hidden until the reader scrolls past the
-   About band, then it rises into place and fades in (.toc-visible). */
-.toc-card {
-  background: #fff;
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(15, 25, 35, 0.04);
-  position: sticky;
-  top: 50vh;
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  opacity: 0;
-  transform: translateY(calc(-50% + 18px));
-  pointer-events: none;
-  transition: opacity 0.45s ease, transform 0.45s ease;
-}
-.toc-card.toc-visible {
-  opacity: 1;
-  transform: translateY(-50%);
-  pointer-events: auto;
-}
-
-nav { padding: 8px 0; }
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 18px;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--mid);
-  cursor: pointer;
-  transition: all 0.15s;
-  border-left: 2px solid transparent;
-  text-decoration: none;
-  line-height: 1.3;
-}
-.nav-item:hover { color: var(--ink); background: var(--cobalt-ll); }
-.nav-item.active { color: var(--cobalt); font-weight: 600; border-left-color: var(--cobalt); background: var(--cobalt-l); }
-.nav-item.sub {
-  padding-left: 32px;
-  font-size: var(--text-sm);
-  color: var(--muted);
-}
-.nav-item.sub:hover { color: var(--ink); }
-.nav-item.sub.active { color: var(--cobalt); font-weight: 600; border-left-color: var(--cobalt); }
-
-.nav-badge {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  background: var(--cobalt-l);
-  color: var(--cobalt);
-  padding: 1px 6px;
-  border-radius: 10px;
-  margin-left: auto;
-}
-
-.nav-divider { height: 1px; background: var(--rule); margin: 6px 14px; }
-
-
-/* ── MAIN ───────────────────────────────────────────────── */
-#main { flex: 1; min-width: 0; }
-
-/* On wide screens, cap the body sections to a readable column and center it on
-   the SCREEN (not within #main) — the TOC stays pinned at the left, so the
-   content's left margin backs out the TOC offset (pad + TOC width + gap).
-   max(0px,…) lets the content sit right after the TOC once space runs short. */
-@media (min-width: 1080px) {
-  .section,
-  .kf-inner,
-  .about-content {
-    max-width: var(--content-max);
-    margin-left: max(0px, calc((100vw - var(--content-max)) / 2
-                               - var(--content-pad) - var(--sidebar-w) - var(--toc-gap)));
-    margin-right: auto;
-  }
-  /* Full-bleed bands (cover, footer): backgrounds span the screen, but their
-     content is padded to line up with the screen-centered column.
-     (100% = #app = viewport width.) */
-  #cover,
-  #report-footer {
-    padding-left: max(var(--content-pad), calc((100% - var(--content-max)) / 2 + var(--content-pad)));
-    padding-right: max(var(--content-pad), calc((100% - var(--content-max)) / 2 + var(--content-pad)));
-  }
-}
-
-/* ── COVER ──────────────────────────────────────────────── */
-#cover {
-  background: linear-gradient(135deg, var(--ink) 0%, #1a2744 100%);
-  padding: 56px var(--content-pad) 48px;
-  position: relative;
-  overflow: hidden;
-}
-#cover::before {
-  content:'';
-  position:absolute;
-  top:-80px;right:-80px;
-  width:400px;height:400px;
-  background:radial-gradient(circle,rgba(26,111,255,0.14) 0%,transparent 70%);
-  pointer-events:none;
-}
-.cover-label {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--cobalt);
-  margin-bottom: 10px;
-}
-.cover-client {
-  font-family: var(--serif);
-  font-size: var(--text-3xl);
-  font-weight: 600;
-  color: #fff;
-  line-height: 1.15;
-  margin-bottom: 4px;
-}
-.cover-subtitle {
-  font-size: var(--text-base);
-  color: rgba(255,255,255,0.4);
-  font-style: italic;
-  margin-bottom: 36px;
-}
-.cover-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  gap: 20px 40px;
-  width: fit-content;
-}
-.cover-meta-label {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.28);
-  margin-bottom: 3px;
-}
-.cover-meta-value { font-size: var(--text-sm); font-weight: 600; color: rgba(255,255,255,0.82); }
-
-/* ── SECTION ────────────────────────────────────────────── */
-.section {
-  padding: 44px 0;
-  border-bottom: 1px solid var(--rule);
-}
-.section:last-of-type { border-bottom: none; }
-
-/* #about (full-width band above the TOC) mirrors the #layout columns: an
-   eyebrow label in a TOC-width left column + a content column whose inner
-   .about-content matches the main sections (joins their centering rule). */
-#about {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--toc-gap);
-  padding: 44px var(--content-pad);
-  border-bottom: 1px solid var(--rule);
-}
-.about-eyebrow {
-  width: var(--sidebar-w);
-  flex-shrink: 0;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--cobalt);
-  line-height: 1.4;
-}
-.about-main { flex: 1; min-width: 0; }
-.about-content p { color: var(--mid); margin-bottom: 13px; }
-.about-content p:last-child { margin-bottom: 0; }
-/* "Two purposes" as a numbered list with cobalt badges (matches Next Steps). */
-.about-list {
-  list-style: none;
-  counter-reset: about-item;
-  margin: 14px 0 16px;
-}
-.about-list li {
-  counter-increment: about-item;
-  position: relative;
-  padding-left: 40px;
-  margin-bottom: 14px;
-  /* section-header size, but lighter weight */
-  font-family: var(--serif);
-  font-size: var(--text-xl);
-  font-weight: 400;
-  color: var(--ink);
-  line-height: 1.2;
-}
-.about-list li:last-child { margin-bottom: 0; }
-.about-list li::before {
-  content: counter(about-item);
-  position: absolute;
-  left: 0;
-  top: 6px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--cobalt);
-  color: #fff;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-/* Stack the eyebrow above the content once the TOC column drops out. */
-@media (max-width: 860px) {
-  #about { flex-direction: column; gap: 14px; }
-  .about-eyebrow { width: auto; }
-}
-
-/* Logo in narrative */
-.narrative-logo {
-  height: 36px;
-  width: auto;
-  display: block;
-  margin-bottom: 18px;
-}
-
-.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
-.section-num {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--cobalt);
-  white-space: nowrap;
-}
-.section-title {
-  font-family: var(--serif);
-  font-size: var(--text-xl);
-  font-weight: 600;
-  color: var(--ink);
-  line-height: 1.2;
-}
-.section-rule {
-  height: 2px;
-  background: linear-gradient(90deg, var(--cobalt) 0%, transparent 100%);
-  margin-bottom: 22px;
-  border-radius: 1px;
-}
-
-/* Prose gets a readable measure; data/figures stay full width */
-.section > p,
-.section > ul,
-.section > ol,
-.about-content > p,
-.track-intro {
-  max-width: var(--measure);
-}
-.model-table,
-.matrix-wrap,
-.figure-wrap,
-.priority-cards,
-.next-steps-grid {
-  max-width: 100%;
-  width: 100%;
-}
-
-.section p { color: var(--mid); margin-bottom: 13px; }
-.section p:last-child { margin-bottom: 0; }
-.section p strong { color: var(--ink); }
-
-/* ── FIGURE ─────────────────────────────────────────────── */
-.figure-wrap {
-  margin: 22px 0;
-  border: 1.5px solid var(--rule);
-  border-radius: 8px;
-  overflow: hidden;
-  background: #fff;
-  cursor: pointer;
-}
-.figure-wrap svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-.figure-hint {
-  font-size: var(--text-sm);
-  color: var(--muted);
-  font-style: italic;
-  margin-top: 6px;
-  margin-bottom: 0 !important;
-}
-
-/* ── TABLES ─────────────────────────────────────────────── */
-.model-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  font-size: var(--text-sm);
-}
-.model-table th {
-  text-align: left;
-  padding: 10px 14px;
-  background: var(--ink);
-  color: #fff;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.model-table td {
-  padding: 11px 14px;
-  vertical-align: top;
-  border-bottom: 1px solid var(--rule);
-  line-height: 1.55;
-  color: var(--mid);
-}
-.model-table tr:last-child td { border-bottom: none; }
-.model-table tr:nth-child(even) td { background: var(--cobalt-ll); }
-.model-table td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; width: 175px; }
-#evidence-table td:first-child { white-space: normal; width: 165px; }
-#evidence-table td { font-size: var(--text-sm); }
-#evidence-table th { font-size: var(--text-xs); }
-.ev-asset { font-weight: 600; color: var(--ink); }
-/* Inline source icon + hover/focus tooltip */
-.ev-src {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 5px;
-  color: var(--muted);
-  cursor: help;
-  position: relative;
-  vertical-align: middle;
-}
-.ev-src svg { display: block; }
-.ev-src:hover, .ev-src:focus-visible { color: var(--cobalt); outline: none; }
-.ev-tip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
-  width: max-content;
-  max-width: 230px;
-  background: var(--ink);
-  color: #fff;
-  font-size: var(--text-xs);
-  font-weight: 400;
-  line-height: 1.4;
-  text-align: left;
-  padding: 8px 11px;
-  border-radius: 6px;
-  box-shadow: 0 6px 16px rgba(15, 25, 35, 0.18);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  z-index: 60;
-}
-.ev-src:hover .ev-tip,
-.ev-src:focus-visible .ev-tip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-}
-.ev-tip-label {
-  display: block;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 3px;
-}
-
-.matrix-wrap { margin: 20px 0; overflow-x: auto; border: 1.5px solid var(--rule); border-radius: 8px; }
-.matrix-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
-.matrix-table th {
-  padding: 10px 10px;
-  background: var(--ink);
-  color: #fff;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-align: center;
-}
-.matrix-table th:nth-child(3) { text-align: left; }
-.matrix-table td {
-  padding: 9px 10px;
-  border-bottom: 1px solid var(--rule);
-  text-align: center;
-  vertical-align: middle;
-}
-.matrix-table tr:last-child td { border-bottom: none; }
-.matrix-table tr:nth-child(even) td { background: var(--cobalt-ll); }
-.matrix-table td:nth-child(3) { text-align: left; font-weight: 600; color: var(--ink); }
-.matrix-table td:nth-child(4) { font-size: var(--text-sm); }
-.m-badge { display:inline-block; font-size:var(--text-xs); font-weight:700; color:#fff; padding:2px 8px; border-radius:4px; }
-.m-dot-full { color: var(--cobalt); font-size: var(--text-base); }
-.m-dot-open { color: #c0cce0; font-size: var(--text-base); }
-.m-dot-none { color: #dde4ee; font-size: var(--text-sm); }
-.matrix-legend { font-size: var(--text-sm); color: var(--muted); padding: 9px 14px; border-top: 1px solid var(--rule); background: var(--cobalt-ll); }
-
-/* ── SUBSECTION HEADER ──────────────────────────────────── */
-.sub-header {
-  font-family: var(--serif);
-  font-size: var(--text-lg);
-  font-weight: 600;
-  color: var(--ink);
-  margin: 30px 0 4px;
-}
-.sub-rule { height: 1.5px; background: linear-gradient(90deg, var(--cobalt) 0%, transparent 100%); margin-bottom: 16px; border-radius: 1px; }
-
-/* ── PRIORITY CARDS ─────────────────────────────────────── */
-.priority-cards { display: flex; flex-direction: column; gap: 10px; }
-
-.priority-card {
-  border: 1.5px solid var(--rule);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: box-shadow 0.2s;
-}
-.priority-card:hover { box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.priority-card.open  { box-shadow: 0 3px 16px rgba(0,0,0,0.09); }
-
-.priority-card-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
-  cursor: pointer;
-  user-select: none;
-  background: #fff;
-  transition: background 0.15s;
-}
-.priority-card-header:hover { background: var(--cobalt-ll); }
-.priority-card.open .priority-card-header { background: var(--cobalt-ll); }
-
-.priority-badge {
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: #fff;
-  padding: 3px 9px;
-  border-radius: 5px;
-  white-space: nowrap;
-  min-width: 34px;
-  text-align: center;
-}
-.priority-card-title { font-size: var(--text-base); font-weight: 600; color: var(--ink); flex: 1; line-height: 1.3; }
-.priority-card-horizon {
-  font-size: var(--text-xs);
-  color: var(--muted);
-  white-space: nowrap;
-  border: 1px solid var(--rule);
-  padding: 2px 9px;
-  border-radius: 20px;
-}
-.priority-card-tag {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-.tag-green  { background: var(--green-l);  color: var(--green); }
-.tag-cobalt { background: var(--cobalt-l); color: var(--cobalt); }
-.tag-amber  { background: var(--amber-l);  color: var(--amber); }
-.tag-mid    { background: #f1f5f9; color: var(--muted); }
-
-.priority-chevron { font-size: var(--text-xs); color: var(--muted); transition: transform 0.2s; margin-left: 2px; }
-.priority-card.open .priority-chevron { transform: rotate(180deg); }
-
-.priority-card-body {
-  display: none;
-  padding: 4px 18px 18px;
-  border-top: 1px solid var(--rule);
-  background: #fff;
-}
-.priority-card.open .priority-card-body { display: block; }
-
-.priority-card-body p {
-  font-size: var(--text-sm);
-  color: var(--mid);
-  margin-top: 14px;
-  margin-bottom: 8px;
-  max-width: 100%;
-}
-.priority-card-body p.italic {
-  font-style: italic;
-  color: var(--muted);
-  font-size: var(--text-sm);
-  border-left: 2px solid var(--cobalt-l);
-  padding-left: 12px;
-  margin-top: 12px;
-}
-.priority-card-body h4 {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 16px;
-  margin-bottom: 7px;
-}
-.priority-card-body ul { list-style: none; padding: 0; margin: 0; }
-.priority-card-body ul li {
-  font-size: var(--text-sm);
-  color: var(--mid);
-  padding: 4px 0 4px 16px;
-  position: relative;
-  max-width: 100%;
-}
-.priority-card-body ul li::before { content:"·"; position:absolute; left:3px; color:var(--cobalt); font-weight:700; }
-
-/* ── NEXT STEPS ─────────────────────────────────────────── */
-.next-steps-list { margin-top: 20px; }
-.next-step { display: flex; gap: 12px; margin-bottom: 13px; align-items: flex-start; }
-.next-step-num {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  color: #fff;
-  background: var(--cobalt);
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-.next-step-body { font-size: var(--text-sm); color: var(--mid); line-height: 1.55; }
-.next-step-body strong { color: var(--ink); }
-
-/* ── FOOTER ─────────────────────────────────────────────── */
-#report-footer {
-  background: var(--ink);
-  padding: 28px var(--content-pad);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.footer-brand { font-size: var(--text-sm); font-weight: 600; color: #fff; }
-.footer-tagline { font-size: var(--text-xs); color: rgba(255,255,255,0.3); margin-top: 2px; font-style: italic; }
-.footer-contact { font-size: var(--text-sm); color: rgba(255,255,255,0.45); text-align: right; }
-.footer-contact a { color: var(--cobalt); text-decoration: none; }
-
-/* ── NODE DETAIL PANEL ──────────────────────────────────── */
-#dp-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-  z-index: 200;
-}
-#dp-panel {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  border: 2px solid var(--ink);
-  border-radius: 6px;
-  width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-  z-index: 201;
-  box-shadow: 6px 6px 0 var(--ink);
-}
-.dp-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: #fff; z-index: 1; }
-.dp-cat { font-family: monospace; font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
-.dp-title { font-size: var(--text-base); font-weight: 600; color: var(--ink); }
-.dp-body { padding: 16px 20px 20px; }
-.dp-tip { background: var(--cobalt-ll); border-left: 3px solid var(--cobalt); padding: 10px 14px; border-radius: 0 4px 4px 0; margin-bottom: 14px; font-size: var(--text-sm); color: var(--mid); line-height: 1.6; font-style: italic; }
-.badge { display: inline-block; font-family: monospace; font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 3px; margin-bottom: 12px; }
-.b-ok  { background: var(--green-l); color: #065f46; }
-.b-par { background: #fef3c7; color: #92400e; }
-.b-gap { background: #fee2e2; color: #991b1b; }
-.dp-sec-lbl { font-family: monospace; font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 14px 0 5px; }
-.dp-sec-lbl.gap { color: #b45309; }
-.dp-content { font-size: var(--text-sm); line-height: 1.65; color: var(--ink); white-space: pre-wrap; }
-.dp-editable {
-  border: 1.5px solid transparent;
-  border-radius: 3px;
-  padding: 6px 8px;
-  margin: -6px -8px;
-  outline: none;
-  transition: border-color 0.15s, background 0.15s;
-  cursor: text;
-  min-height: 1.4em;
-}
-.dp-editable:focus { border-color: var(--cobalt); background: var(--cobalt-ll); }
-.dp-editable:hover:not(:focus) { border-color: var(--rule); }
-.dp-content.gap { font-size: var(--text-sm); color: #92400e; font-style: italic; }
-.dp-close-btn {
-  display: block; width: 100%; margin-top: 18px; padding: 8px;
-  font-family: var(--sans); font-size: var(--text-sm); font-weight: 600;
-  border: 2px solid var(--ink); border-radius: 3px;
-  background: var(--ink); color: #fff; cursor: pointer;
-}
-.dp-close-btn:hover { background: var(--cobalt); border-color: var(--cobalt); }
-
-/* ── FIGURE TOGGLE ──────────────────────────────────────────── */
-.figure-toggle-bar {
-  display: flex;
-  gap: 0;
-  margin-bottom: 12px;
-  border: 1.5px solid var(--rule);
-  border-radius: 6px;
-  overflow: hidden;
-  width: fit-content;
-}
-.fig-toggle-btn {
-  padding: 7px 18px;
-  font-family: var(--sans);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  border: none;
-  background: #fff;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.15s;
-  letter-spacing: 0.03em;
-}
-.fig-toggle-btn:first-child { border-right: 1.5px solid var(--rule); }
-.fig-toggle-btn.active {
-  background: var(--cobalt);
-  color: #fff;
-}
-.fig-toggle-btn:hover:not(.active) { background: var(--cobalt-ll); color: var(--cobalt); }
-
-.figure-view { display: none; }
-.figure-view.active { display: block; }
-
-.meas-hint {
-  font-size: var(--text-sm);
-  color: var(--muted);
-  font-style: italic;
-  margin-top: 6px;
-  margin-bottom: 0 !important;
-}
-
-/* priority popup in measurement view */
-#priority-popup {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  border: 2px solid var(--ink);
-  border-radius: 6px;
-  padding: 20px 20px 16px;
-  width: 360px;
-  box-shadow: 6px 6px 0 var(--ink);
-  z-index: 300;
-  font-size: var(--text-sm);
-}
-#pp-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.25);
-  z-index: 299;
-}
-.pp-close-x {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  font-size: var(--text-base);
-  font-weight: 700;
-  color: var(--muted);
-  cursor: pointer;
-  line-height: 1;
-  padding: 2px 4px;
-  border-radius: 3px;
-  transition: color 0.15s, background 0.15s;
-}
-.pp-close-x:hover { color: var(--ink); background: var(--rule); }
-#priority-popup .pp-badge {
-  display: inline-block;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-bottom: 7px;
-}
-#priority-popup .pp-title {
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 8px;
-  line-height: 1.3;
-}
-#priority-popup .pp-body {
-  color: var(--mid);
-  line-height: 1.55;
-  font-size: var(--text-sm);
-}
-#priority-popup .pp-link {
-  display: block;
-  margin-top: 10px;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  color: var(--cobalt);
-  cursor: pointer;
-  text-decoration: underline;
-}
-.figure-meas-wrap {
-  position: relative;
-  margin: 0;
-}
-
-/* ── PRINT ──────────────────────────────────────────────── */
-.print-btn {
-  position: fixed;
-  bottom: 22px; right: 22px;
-  background: var(--cobalt);
-  color: #fff;
-  border: none;
-  padding: 9px 16px;
-  border-radius: 6px;
-  font-family: var(--sans);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(26,111,255,0.35);
-  z-index: 190;
-  transition: background 0.15s;
-}
-.print-btn:hover { background: var(--cobalt-d); }
-
-/* Hidden on screen, restored in print */
-.print-only { display: none; }
-
-@media print {
-  #sidebar,.print-btn { display: none !important; }
-  .print-only { display: block !important; }
-  /* TOC is hidden in print, so drop the layout row + screen-centering offset
-     and let content flow full-width. */
-  #layout { display: block !important; padding: 0 !important; }
-  #main { margin-left: 0 !important; }
-  .section, .kf-inner, .about-content { max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
-  #cover, #report-footer { padding-left: var(--content-pad) !important; padding-right: var(--content-pad) !important; }
-  .kf-section::before { display: none !important; }
-  .priority-card-body { display: block !important; }
-  .priority-chevron { display: none; }
-  #cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  #report-footer { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-}
-
-/* Below 1280px the layout gutter (the space left of the TOC and right of the
-   content — content/cards now sit flush to the column edges) ramps linearly
-   with the viewport: 16px at 860px up to 40px at 1280px, fluid with no
-   breakpoint jump. Fixed 40px above 1280px; the 860px rule pins 16px under. */
-@media (max-width: 1280px) {
-  :root { --content-pad: clamp(16px, calc(16px + (100vw - 860px) * 24 / 420), 40px); }
-}
-
-@media (max-width: 860px) {
-  :root { --sidebar-w: 0px; --content-pad: 16px; --toc-gap: 0px; }
-  #sidebar { display: none; }
-  .cover-meta-grid { grid-template-columns: 1fr 1fr; }
-}
-
-/* ── KEY FINDINGS ───────────────────────────────────────── */
-/* .kf-section spans the full width of #main (no max-width/margin), so its left
-   edge is deterministically at #main's left edge. .kf-inner does the centering. */
-.kf-section {
-  position: relative;
-  padding: 20px 0 40px 0;
-}
-.kf-inner { padding: 0; }
-.kf-card { min-width: 0; }   /* prevent grid items from blowing out the column */
-/* Full-bleed tinted background. .kf-section's left edge sits exactly #main's
-   left offset (content-pad + TOC + gap) from the screen edge, so shifting the
-   band left by that offset pins it to the screen edge; 100vw fills across. */
-.kf-section::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  top: calc(-1 * var(--row-top));
-  bottom: 0;
-  left: calc(-1 * (var(--content-pad) + var(--sidebar-w) + var(--toc-gap)));
-  width: 100vw;
-  background: var(--cobalt-ll);
-  border-bottom: 1px solid var(--rule);
-}
-.kf-header {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--cobalt);
-  margin-bottom: 16px;
-}
-.kf-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-/* Collapse the key-findings cards to a single column on narrow viewports. */
-@media (max-width: 799px) {
-  .kf-grid { grid-template-columns: 1fr; }
-}
-.kf-card {
-  background: #fff;
-  border: 1.5px solid var(--rule);
-  border-radius: 8px;
-  padding: 18px 20px;
-}
-.kf-num {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  color: #fff;
-  background: var(--cobalt);
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-.kf-title {
-  font-family: var(--serif);
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 6px;
-  line-height: 1.3;
-}
-.kf-desc {
-  font-size: var(--text-sm);
-  color: var(--mid);
-  line-height: 1.55;
-}
-</style>
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://use.typekit.net/ezo0rqt.css">
+<link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body>
 <div id="pp-overlay" onclick="hidePriorityPopup()"></div>
@@ -923,14 +16,45 @@ nav { padding: 8px 0; }
 
 <!-- ── COVER (full-bleed banner) ─────────────────────────────────── -->
 <div id="cover">
+  <div class="cover-topbar">
+    <a class="cover-logo" href="#" aria-label="Cobalt Collective">
+      <svg viewBox="0 0 3114 401" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M3113.65 241.751H2972.12C2972.86 280.319 2993.83 308.028 3033.15 308.028C3064.6 308.028 3082.2 291.927 3090.44 265.716L3112.16 274.702C3103.17 306.53 3077.33 330.869 3030.53 330.869C2969.87 330.869 2935.79 290.803 2935.79 235.386C2935.79 179.594 2973.24 140.277 3027.91 140.277C3081.83 140.277 3113.65 175.849 3113.65 232.765V241.751ZM3027.91 162.369C2994.58 162.369 2974.74 183.713 2972.12 221.906H3078.08C3077.33 182.215 3060.11 162.369 3027.91 162.369Z" fill="currentColor"/>
+        <path d="M2795.74 175.849C2798.73 184.462 2828.31 254.483 2843.29 288.931L2890.09 176.224C2892.72 170.607 2888.97 166.488 2884.1 166.488H2863.51V144.771H2941.39V166.488H2924.54C2920.05 166.488 2916.31 168.361 2913.68 175.101L2848.53 328.622H2825.69L2759.79 175.101C2757.17 167.986 2754.92 166.488 2751.18 166.488H2733.2V144.771H2820.45V166.488H2802.1C2796.48 166.488 2793.49 169.484 2795.74 175.849Z" fill="currentColor"/>
+        <path d="M2624.76 330.495C2588.82 330.495 2574.21 315.891 2574.21 278.821V166.489H2546.88V147.017L2564.85 145.894C2574.96 144.396 2580.2 141.026 2581.33 130.168L2584.7 97.2165H2609.79V144.771H2652.76V166.489H2608.66V278.447C2608.66 299.041 2616.53 306.905 2634.12 306.905C2643.11 306.905 2648.35 305.033 2653.22 303.535V326.001C2647.6 327.874 2637.12 330.495 2624.76 330.495Z" fill="currentColor"/>
+        <path d="M2490.04 212.919C2490.04 200.563 2497.91 191.576 2510.26 189.704C2504.27 172.479 2488.17 162.369 2460.46 162.369C2421.9 162.369 2398.68 188.206 2398.68 232.016V236.509C2398.68 280.693 2419.65 307.653 2458.59 307.653C2489.3 307.653 2508.77 293.424 2517 265.341L2538.35 274.328C2528.61 307.653 2503.15 330.869 2457.47 330.869C2397.93 330.869 2362.36 294.173 2362.36 235.011C2362.36 177.347 2400.18 140.277 2458.97 140.277C2508.02 140.277 2539.85 164.99 2539.85 203.184C2539.85 221.906 2528.61 234.637 2512.51 234.637C2499.41 234.637 2490.04 225.276 2490.04 212.919Z" fill="currentColor"/>
+        <path d="M2342.6 241.751H2201.07C2201.81 280.319 2222.78 308.028 2262.1 308.028C2293.55 308.028 2311.15 291.927 2319.39 265.716L2341.11 274.702C2332.12 306.53 2306.28 330.869 2259.48 330.869C2198.82 330.869 2164.74 290.803 2164.74 235.386C2164.74 179.594 2202.19 140.277 2256.86 140.277C2310.78 140.277 2342.6 175.849 2342.6 232.765V241.751ZM2256.86 162.369C2223.53 162.369 2203.69 183.713 2201.07 221.906H2307.03C2306.28 182.215 2289.06 162.369 2256.86 162.369Z" fill="currentColor"/>
+        <path d="M2069.57 326.375V304.658H2090.91C2093.91 304.658 2096.15 303.534 2096.15 296.045V109.573C2096.15 101.709 2094.66 99.4627 2090.91 99.4627H2068.82V77.745H2089.79C2107.01 77.745 2123.86 75.8728 2131.73 74.375V296.045C2131.73 303.534 2133.6 304.658 2136.97 304.658H2157.56V326.375H2069.57Z" fill="currentColor"/>
+        <path d="M1983.63 326.375V304.658H2004.97C2007.96 304.658 2010.21 303.534 2010.21 296.045V109.573C2010.21 101.709 2008.71 99.4626 2004.97 99.4626H1982.88V77.7449H2003.85C2021.07 77.7449 2037.92 75.8727 2045.78 74.3749V296.045C2045.78 303.534 2047.66 304.658 2051.03 304.658H2071.62V326.375H1983.63Z" fill="currentColor"/>
+        <path d="M1478.13 330.495C1442.18 330.495 1427.58 315.891 1427.58 278.821V166.489H1400.24V147.017L1418.22 145.894C1428.33 144.396 1433.57 141.026 1434.69 130.168L1438.06 97.2165H1463.15V144.771H1503.22V166.489H1462.03V278.447C1462.03 299.041 1469.89 306.905 1487.49 306.905C1496.48 306.905 1501.72 305.033 1506.59 303.535V326.001C1500.97 327.874 1490.48 330.495 1478.13 330.495Z" fill="currentColor"/>
+        <path d="M1309.02 326.375V304.658H1330.37C1333.36 304.658 1335.61 303.534 1335.61 296.045V109.573C1335.61 101.709 1334.11 99.4627 1330.37 99.4627H1308.27V77.745H1329.24C1346.47 77.745 1363.32 75.8728 1371.18 74.375V296.045C1371.18 303.534 1373.05 304.658 1376.42 304.658H1397.02V326.375H1309.02Z" fill="currentColor"/>
+        <path d="M1206.25 162.369C1188.65 162.369 1176.29 165.739 1168.43 172.105C1174.42 175.849 1178.16 182.589 1178.16 191.201C1178.16 204.307 1168.43 212.919 1155.7 212.919C1141.09 212.919 1131.73 203.558 1131.73 187.831C1131.73 156.004 1168.43 140.277 1211.49 140.277C1263.54 140.277 1286.38 158.625 1286.38 202.809V296.046C1286.38 302.037 1287.87 304.658 1291.62 304.658H1312.21V326.375H1259.04C1255.3 316.265 1253.43 306.155 1251.55 290.803C1241.44 314.393 1214.11 330.869 1183.03 330.869C1148.96 330.869 1127.24 310.274 1127.24 282.94C1127.24 239.879 1169.55 223.029 1250.81 213.294V203.184C1250.81 174.351 1236.95 162.369 1206.25 162.369ZM1195.39 307.279C1228.71 307.279 1250.81 282.566 1250.81 246.619V231.641C1191.64 238.381 1161.69 248.866 1161.69 277.323C1161.69 295.297 1175.17 307.279 1195.39 307.279Z" fill="currentColor"/>
+        <path d="M1024.32 330.869C994.961 330.869 972.524 318.362 959.024 297.385C956.574 293.579 950.07 294.212 948.932 298.594C945.549 311.623 942.217 323.889 941.94 326.375H920.597C922.095 315.891 922.844 297.918 922.844 264.218V109.573C922.844 101.709 921.72 99.4627 917.602 99.4627H895.884V77.745H916.104C932.954 77.745 950.927 75.8728 958.416 74.375V183.338C970.398 156.378 993.613 140.277 1025.82 140.277C1075.99 140.277 1107.82 177.721 1107.82 235.386C1107.82 293.05 1074.87 330.869 1024.32 330.869ZM1014.58 306.53C1048.66 306.53 1071.12 282.191 1071.12 238.007V233.139C1071.12 188.955 1048.66 164.616 1014.58 164.616C981.631 164.616 958.416 189.329 958.416 233.139V238.007C958.416 281.442 982.006 306.53 1014.58 306.53Z" fill="currentColor"/>
+        <path d="M802.008 330.869C746.59 330.869 709.146 292.301 709.146 235.386C709.146 179.219 747.339 140.277 803.506 140.277C858.174 140.277 895.619 178.845 895.619 235.386C895.619 291.927 857.8 330.869 802.008 330.869ZM802.382 308.028C839.452 308.028 860.047 282.566 860.047 237.258V233.888C860.047 187.831 839.452 163.118 802.757 163.118C765.687 163.118 745.093 188.206 745.093 233.888V237.258C745.093 282.94 765.313 308.028 802.382 308.028Z" fill="currentColor"/>
+        <path d="M618.403 73.2527C649.258 73.2529 673.028 85.2279 686.944 105.624C689.671 109.618 697.159 108.576 697.895 103.796L701.904 77.7461H723.995V133.167C719.482 136.951 706.175 141.903 697.838 159.66C696.791 161.891 692.939 161.642 692.341 159.252C681.663 116.567 657.452 97.9653 622.147 97.9653C572.346 97.9654 541.267 133.539 541.267 197.568V206.553C541.267 270.957 572.72 306.155 622.52 306.156C647.155 306.156 668.232 298.917 682.488 283.043C683.774 281.611 686.217 282.087 686.809 283.918C689.262 291.515 692.316 298.701 695.931 305.436C678.305 321.329 653.421 330.868 621.773 330.869C551.003 330.869 503.448 283.315 503.448 202.436C503.448 123.054 551.378 73.2527 618.403 73.2527Z" fill="currentColor"/>
+        <path d="M1889.19 330.869C1833.78 330.869 1796.33 292.301 1796.33 235.386C1796.33 179.219 1834.52 140.277 1890.69 140.277C1945.36 140.277 1982.8 178.845 1982.8 235.386C1982.8 291.927 1944.99 330.869 1889.19 330.869ZM1889.57 308.028C1926.64 308.028 1947.23 282.566 1947.23 237.258V233.888C1947.23 187.832 1926.64 163.118 1889.94 163.118C1852.87 163.118 1832.28 188.206 1832.28 233.888V237.258C1832.28 282.94 1852.5 308.028 1889.57 308.028Z" fill="currentColor"/>
+        <path d="M1710.28 73.2526C1741.14 73.2529 1764.91 85.2279 1778.82 105.624C1781.55 109.618 1789.04 108.576 1789.77 103.796L1793.78 77.7461H1815.87V133.167C1811.36 136.951 1798.05 141.903 1789.72 159.66C1788.67 161.891 1784.82 161.642 1784.22 159.252C1773.54 116.567 1749.33 97.9653 1714.03 97.9653C1664.23 97.9654 1633.15 133.539 1633.15 197.568V206.553C1633.15 270.957 1664.6 306.155 1714.4 306.156C1739.04 306.156 1760.11 298.917 1774.37 283.043C1775.65 281.611 1778.1 282.087 1778.69 283.918C1781.14 291.515 1784.2 298.701 1787.81 305.436C1770.18 321.329 1745.3 330.868 1713.65 330.868C1642.88 330.868 1595.33 283.315 1595.33 202.436C1595.33 123.054 1643.26 73.2526 1710.28 73.2526Z" fill="currentColor"/>
+        <path d="M2714.44 296.045C2714.44 303.159 2716.31 304.658 2719.68 304.658H2740.27L2747.32 328.724H2678.84V297.316C2678.86 296.914 2678.86 296.49 2678.86 296.045V181.466C2678.86 169.859 2676.99 166.488 2670.63 166.488H2652.28V144.771H2672.5C2689.72 144.771 2706.57 142.9 2714.44 141.402V296.045Z" fill="currentColor"/>
+        <path d="M2696.09 70.6311C2709.94 70.6313 2720.05 81.4906 2720.05 94.596C2720.05 108.076 2709.94 118.935 2696.09 118.935C2681.86 118.935 2672.12 108.076 2672.12 94.596C2672.12 81.4905 2681.86 70.6311 2696.09 70.6311Z" fill="currentColor"/>
+        <path d="M345.238 41.8999C348.438 40.0526 352.38 40.0526 355.58 41.8999L397.853 66.3064C401.052 68.1537 403.023 71.5675 403.023 75.262V124.075C403.023 127.77 401.052 131.183 397.853 133.031L355.58 157.437C352.38 159.284 348.438 159.284 345.238 157.437L302.965 133.031C299.766 131.183 297.795 127.77 297.795 124.075V75.262C297.795 71.5675 299.766 68.1537 302.965 66.3064L345.238 41.8999Z" fill="currentColor"/>
+        <path d="M169.282 3.51829C172.481 1.67121 176.423 1.67146 179.622 3.51829L221.897 27.9256C225.096 29.773 227.068 33.1867 227.068 36.8808V85.6932C227.068 89.3873 225.096 92.801 221.897 94.6484L179.622 119.056C176.423 120.903 172.481 120.903 169.282 119.056L139.731 101.993C132.668 97.9144 123.972 97.8818 116.878 101.907C109.678 105.993 105.229 113.633 105.229 121.912V156.958C105.229 160.652 103.257 164.065 100.058 165.913L69.5914 183.501C62.7444 187.454 58.5264 194.759 58.5264 202.665C58.5264 210.571 62.744 217.876 69.5906 221.829L100.058 239.42C103.257 241.267 105.229 244.681 105.229 248.375V281.557C105.229 289.746 109.629 297.302 116.751 301.343C123.767 305.323 132.366 305.291 139.351 301.258L169.282 283.978C172.481 282.131 176.423 282.131 179.622 283.978L208.56 300.685C215.749 304.835 224.598 304.869 231.818 300.773C239.149 296.614 243.678 288.837 243.678 280.409V248.375C243.678 244.681 245.649 241.267 248.848 239.42L291.121 215.013C294.32 213.165 298.262 213.166 301.461 215.013L343.737 239.42C346.935 241.267 348.907 244.681 348.907 248.375V297.187C348.907 300.882 346.935 304.295 343.737 306.143L301.461 330.55C298.262 332.397 294.32 332.397 291.121 330.55L260.677 312.972C253.797 309 245.327 308.968 238.417 312.888C231.402 316.868 227.068 324.311 227.068 332.376V366.153C227.068 369.847 225.096 373.261 221.897 375.108L179.622 399.515C176.423 401.362 172.481 401.363 169.282 399.515L127.009 375.108C123.81 373.261 121.839 369.847 121.839 366.153V333.524C121.839 325.22 117.376 317.556 110.153 313.459C103.038 309.423 94.3183 309.456 87.2346 313.546L57.7833 330.55C54.5839 332.397 50.6423 332.397 47.443 330.55L5.17017 306.143C1.97067 304.295 0 300.882 0 297.187V248.375C0 244.681 1.97063 241.267 5.17017 239.42L32.6877 223.53C40.1416 219.226 44.7333 211.273 44.7333 202.666C44.7333 194.058 40.1412 186.104 32.6868 181.8L5.17017 165.913C1.97068 164.066 0 160.652 0 156.958V108.145C0 104.451 1.97063 101.037 5.17017 99.19L47.443 74.7827C50.6423 72.9356 54.5839 72.9358 57.7833 74.7827L84.6147 90.2741C92.2352 94.6739 101.616 94.7092 109.269 90.3668C117.038 85.9588 121.839 77.7154 121.839 68.7828V36.8808C121.839 33.1863 123.81 29.7729 127.009 27.9256L169.282 3.51829Z" fill="currentColor"/>
+      </svg>
+    </a>
+    <div class="cover-topbar-actions">
+      <button class="cover-about-btn" type="button" onclick="openAboutModal()">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg>
+        About This Report
+      </button>
+      <button class="cover-download-btn" type="button" onclick="downloadPDF()">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10"/></svg>
+        Download PDF
+      </button>
+    </div>
+  </div>
   <div class="cover-label">Impact Measurement Assessment</div>
-  <div class="cover-client">Snorkl</div>
+  <div class="cover-client">Impact Measurement Assessment | Snorkl</div>
   <div class="cover-subtitle">Working Draft</div>
   <div class="cover-meta-grid">
-    <div class="cover-meta-item">
-      <div class="cover-meta-label">Prepared by</div>
-      <div class="cover-meta-value">Cobalt Collective</div>
-    </div>
     <div class="cover-meta-item">
       <div class="cover-meta-label">Prepared for</div>
       <div class="cover-meta-value">Jon Laven, Co-Founder &amp; COO</div>
@@ -942,38 +66,16 @@ nav { padding: 8px 0; }
   </div>
 </div>
 
-<!-- ── ABOUT THIS REPORT (eyebrow column + content column, mirrors #layout) ── -->
-<section id="about">
-  <div class="about-eyebrow">About This Report</div>
-  <div class="about-main">
-    <div class="about-content">
-      <p>This report has two purposes:</p>
-      <ol class="about-list">
-        <li>Articulate a working model of the mechanisms through which Snorkl produces impact — from product through teacher implementation and student use to intended student outcomes.</li>
-        <li>Use that model to identify and prioritize opportunities for impact measurement. The model is the analytical foundation; the measurement priorities follow directly from it.</li>
-      </ol>
-      <p>The analysis draws on three sources. It is a first-pass working draft, not a final assessment. We expect it to sharpen as Snorkl shares more about its internal data, district relationships, and strategic priorities.</p>
-      <p>Our aim is not to evaluate Snorkl's impact, but to help Snorkl's leadership see clearly where the causal chain is well understood, where it is assumed but untested, and where the most useful measurement investments should go — in what order, and why. Throughout, we favor measurement that can be built into how the company already operates, rather than externally imposed research projects that consume scarce startup time.</p>
-    </div>
-  </div>
-</section>
-
 <!-- ── BODY: table of contents + content ─────────────────────────── -->
 <div id="layout">
 
 <!-- ── TABLE OF CONTENTS (sticky) ────────────────────────────────── -->
 <aside id="sidebar">
-  <a class="toc-logo" href="#" aria-label="Cobalt Collective">
-    <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M511.762 65.1744C516.48 62.4505 522.293 62.4505 527.011 65.1744L589.346 101.164C594.064 103.888 596.97 108.922 596.97 114.369V186.348C596.97 191.796 594.064 196.83 589.346 199.554L527.011 235.543C522.293 238.267 516.48 238.267 511.762 235.543L449.427 199.554C444.709 196.83 441.802 191.796 441.802 186.348V114.369C441.802 108.922 444.709 103.888 449.427 101.164L511.762 65.1744Z" fill="currentColor"/>
-      <path d="M252.301 8.57782C257.018 5.85416 262.831 5.85454 267.548 8.57782L329.886 44.5683C334.603 47.2924 337.51 52.3261 337.51 57.7734V129.751C337.51 135.198 334.603 140.232 329.886 142.956L267.548 178.947C262.831 181.67 257.018 181.67 252.301 178.947L208.726 153.786C198.31 147.772 185.488 147.724 175.027 153.66C164.41 159.685 157.849 170.951 157.849 183.159V234.836C157.849 240.283 154.942 245.317 150.225 248.041L105.299 273.977C95.2028 279.805 88.983 290.578 88.983 302.236C88.983 313.893 95.2023 324.665 105.298 330.494L150.225 356.433C154.942 359.157 157.849 364.191 157.849 369.638V418.568C157.849 430.642 164.338 441.785 174.84 447.743C185.185 453.613 197.865 453.565 208.165 447.618L252.301 422.137C257.018 419.413 262.831 419.414 267.548 422.137L310.22 446.773C320.82 452.893 333.869 452.942 344.515 446.902C355.324 440.77 362.003 429.302 362.003 416.875V369.638C362.003 364.19 364.909 359.157 369.627 356.433L431.962 320.442C436.679 317.719 442.492 317.719 447.209 320.442L509.547 356.433C514.264 359.157 517.171 364.191 517.171 369.638V441.615C517.171 447.063 514.264 452.096 509.547 454.821L447.209 490.811C442.492 493.534 436.679 493.535 431.962 490.811L387.07 464.892C376.924 459.034 364.435 458.987 354.246 464.767C343.902 470.636 337.51 481.611 337.51 493.504V543.31C337.51 548.758 334.603 553.791 329.886 556.515L267.548 592.506C262.831 595.229 257.018 595.23 252.301 592.506L189.966 556.515C185.248 553.792 182.342 548.758 182.342 543.31V495.197C182.342 482.952 175.761 471.651 165.11 465.609C154.619 459.657 141.761 459.706 131.316 465.737L87.8873 490.811C83.1695 493.534 77.3574 493.535 72.6397 490.811L10.3052 454.821C5.58731 452.097 2.68141 447.063 2.68141 441.615V369.638C2.68141 364.19 5.58725 359.157 10.3052 356.433L50.8819 333.003C61.8733 326.656 68.6441 314.928 68.6441 302.236C68.6441 289.543 61.8727 277.814 50.8806 271.468L10.3052 248.041C5.58733 245.317 2.68141 240.284 2.68141 234.836V162.858C2.68141 157.41 5.58725 152.377 10.3052 149.653L72.6397 113.663C77.3573 110.939 83.1696 110.939 87.8873 113.663L127.452 136.506C138.689 142.994 152.522 143.046 163.807 136.643C175.263 130.143 182.342 117.987 182.342 104.815V57.7734C182.342 52.3256 185.248 47.2922 189.966 44.5683L252.301 8.57782Z" fill="currentColor"/>
-    </svg>
-  </a>
   <div class="toc-card">
     <nav>
-      <a class="nav-item" href="#keyfindings">Key Findings</a>
+      <a class="nav-item active" href="#keyfindings">Key Findings</a>
       <div class="nav-divider"></div>
-      <a class="nav-item active" href="#model">Impact Process Model</a>
+      <a class="nav-item" href="#model">Impact Process Model</a>
       <div class="nav-divider"></div>
       <a class="nav-item" href="#evidence">Evidence Landscape</a>
       <div class="nav-divider"></div>
@@ -1019,17 +121,24 @@ nav { padding: 8px 0; }
       <h2 class="section-title">The Impact Process Model</h2>
     </div>
     <div class="section-rule"></div>
-    <p>The figure below maps Snorkl's causal chain — from product to intended outcome — and the context in which the product and its users interact. Snorkl has two user populations: teachers, whose implementation choices are the key mediating variable, and students, whose in-tool behavior is shaped by those choices. Amber-bordered boxes represent areas where provisional logic exists but has not yet been formalized or measured. The "active ingredient" is the voice-plus-feedback-plus-revision loop — and whether teachers use the tool in a way that activates it.</p>
-    <div class="figure-toggle-bar">
-      <button class="fig-toggle-btn active" id="btn-model" onclick="switchView('model')">▶ Model View</button>
-      <button class="fig-toggle-btn" id="btn-meas" onclick="switchView('meas')">● Measurement View</button>
+    <p>The figure below maps Snorkl's causal chain — from product to intended outcome — and the context in which the product and its users interact. Snorkl has two user populations: teachers, whose implementation choices are the key mediating variable, and students, whose in-tool behavior is shaped by those choices. The "active ingredient" is the voice-plus-feedback-plus-revision loop — and whether teachers use the tool in a way that activates it.</p>
+    <div class="figure-controls">
+      <label class="badge-toggle">
+        <input type="checkbox" id="toggle-badges" checked onchange="toggleBadges(this.checked)">
+        <span class="switch"></span>
+        <span>Show measurement priorities</span>
+      </label>
     </div>
 
-    <!-- MODEL VIEW -->
+    <!-- COMBINED MODEL + MEASUREMENT VIEW -->
     <div class="figure-view active" id="view-model">
-      <p class="figure-hint">ℹ️ Click any box to see detailed notes and open questions.</p>
-      <div class="figure-wrap">
-<svg viewBox="0 0 980 530" xmlns="http://www.w3.org/2000/svg" width="980" height="530">
+      <p class="figure-hint">ℹ️ Click any box for model detail; click a numbered badge for the measurement priority it maps to.</p>
+      <div class="figure-wrap" id="model-figure">
+        <button class="fs-btn" type="button" onclick="toggleFullscreen(event)" aria-label="Toggle full screen" title="Full screen">
+          <svg class="fs-ico fs-ico-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+          <svg class="fs-ico fs-ico-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M16 3v3a2 2 0 0 0 2 2h3"/><path d="M8 21v-3a2 2 0 0 0-2-2H3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg>
+        </button>
+<svg id="model-svg" viewBox="0 0 980 530" xmlns="http://www.w3.org/2000/svg" width="980" height="530">
   <defs>
     <marker id="ah-ink" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
       <polygon points="0 0,8 3,0 6" fill="#1a1a1a"/>
@@ -1037,9 +146,12 @@ nav { padding: 8px 0; }
     <marker id="ah-ctx" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
       <polygon points="0 0,8 3,0 6" fill="#059669"/>
     </marker>
+    <filter id="badge-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.3)"/>
+    </filter>
   </defs>
 
-  <rect width="980" height="530" fill="white"/>
+  <rect width="980" height="530" fill="transparent"/>
 
   <!-- ══ ROW 1: IMPLEMENTATION CONTEXT ══ -->
   <rect x="270" y="18" width="440" height="68" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
@@ -1127,138 +239,50 @@ nav { padding: 8px 0; }
   <rect x="181" y="258" width="270" height="72" fill="transparent" style="cursor:pointer" onclick="show('mech1')" rx="4"/>
   <rect x="529" y="258" width="270" height="72" fill="transparent" style="cursor:pointer" onclick="show('mech2')" rx="4"/>
   <rect x="270" y="378" width="440" height="68" fill="transparent" style="cursor:pointer" onclick="show('user')" rx="4"/>
+
+  <!-- ══ MEASUREMENT OVERLAY (toggleable via the checkbox above) ══ -->
+  <g id="meas-layer">
+    <!-- dim overlays -->
+    <rect class="dim-overlay" data-node="behavior" x="383" y="148" width="214" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="outcome" x="731" y="148" width="210" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="mech1" x="181" y="258" width="270" height="72" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="mech2" x="529" y="258" width="270" height="72" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="product" x="40" y="148" width="210" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="impl" x="270" y="18" width="440" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="user" x="270" y="378" width="440" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+
+    <!-- connector lines (shown on badge hover); origin = each badge's corner -->
+    <line class="connector-line" data-priority="1" x1="401" y1="166" x2="490" y2="182" stroke="#1a6fff" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="2" x1="749" y1="166" x2="836" y2="182" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="2" x1="749" y1="166" x2="664" y2="258" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="3" x1="199" y1="276" x2="490" y2="200" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="3" x1="199" y1="276" x2="316" y2="294" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="4" x1="547" y1="276" x2="664" y2="294" stroke="#718096" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="4" x1="547" y1="276" x2="836" y2="200" stroke="#718096" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+
+    <!-- priority badges — each pinned to the top-left corner of its primary box -->
+    <g class="priority-badge-group" data-priority="1" onclick="openPriorityCard('1')" style="cursor:pointer">
+      <circle cx="401" cy="166" r="16" fill="#1a6fff" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+      <text x="401" y="166" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">1</text>
+    </g>
+    <g class="priority-badge-group" data-priority="2" onclick="openPriorityCard('2')" style="cursor:pointer">
+      <circle cx="749" cy="166" r="16" fill="#059669" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+      <text x="749" y="166" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">2</text>
+    </g>
+    <g class="priority-badge-group" data-priority="3" onclick="openPriorityCard('3')" style="cursor:pointer">
+      <circle cx="199" cy="276" r="16" fill="#d97706" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+      <text x="199" y="276" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">3</text>
+    </g>
+    <g class="priority-badge-group" data-priority="4" onclick="openPriorityCard('4')" style="cursor:pointer">
+      <circle cx="547" cy="276" r="16" fill="#718096" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+      <text x="547" y="276" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">4</text>
+    </g>
+  </g>
 </svg>
       </div>
+      <div id="priority-popup"></div>
     </div><!-- /view-model -->
 
-    <!-- MEASUREMENT VIEW -->
-    <div class="figure-view" id="view-meas">
-      <p class="meas-hint">ℹ️ Hover a badge to highlight the connected model element. Click to see the full priority detail.</p>
-      <div class="figure-meas-wrap">
-        <div class="figure-wrap" style="margin:0">
-<svg id="meas-svg" viewBox="0 0 980 530" xmlns="http://www.w3.org/2000/svg" width="980" height="530">
-  <defs>
-    <marker id="ah-ink2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-      <polygon points="0 0,8 3,0 6" fill="#1a1a1a"/>
-    </marker>
-    <marker id="ah-ctx2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-      <polygon points="0 0,8 3,0 6" fill="#059669"/>
-    </marker>
-    <filter id="badge-shadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.3)"/>
-    </filter>
-  </defs>
-
-  <rect width="980" height="530" fill="white"/>
-
-  <!-- ══ ROW 1: IMPLEMENTATION CONTEXT ══ -->
-  <rect x="270" y="18" width="440" height="68" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
-  <text x="490" y="36" text-anchor="middle" font-family="Arial" font-size="10.5" font-weight="700" fill="#065f46" letter-spacing="1">IMPLEMENTATION CONTEXT</text>
-  <text x="490" y="53" text-anchor="middle" font-family="Arial" font-size="12" font-weight="500" fill="#065f46">K–12 classrooms · all subjects · math, world languages, ELL wedges</text>
-  <text x="490" y="69" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#065f46">10,000+ schools · HQIM partnerships (IM, JUMP) · free PD · buyer = tech director</text>
-
-  <line x1="370" y1="86" x2="145" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-  <line x1="490" y1="86" x2="490" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-  <line x1="610" y1="86" x2="838" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-
-  <!-- ══ ROW 2: MAIN CHAIN ══ -->
-  <rect x="40" y="148" width="210" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-  <text x="145" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">PRODUCT</text>
-  <text x="145" y="184" text-anchor="middle" font-family="Arial" font-size="13.5" font-weight="700" fill="#1a1a1a">Snorkl</text>
-  <text x="145" y="201" text-anchor="middle" font-family="Arial" font-size="11" fill="#555555">Multimodal AI formative assessment</text>
-
-  <line x1="250" y1="182" x2="381" y2="182" stroke="#1a1a1a" stroke-width="2" marker-end="url(#ah-ink2)"/>
-  <text x="316" y="172" text-anchor="middle" font-family="Arial" font-size="9.5" fill="#888888">mechanism ↓</text>
-
-  <!-- USER BEHAVIOR — CONFIRMED -->
-  <rect x="383" y="148" width="214" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-  <text x="490" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">USER BEHAVIOR</text>
-  <text x="490" y="188" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">Students solve problems</text>
-  <text x="490" y="204" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">on Snorkl</text>
-
-  <line x1="597" y1="182" x2="729" y2="182" stroke="#1a1a1a" stroke-width="2" marker-end="url(#ah-ink2)"/>
-  <text x="664" y="172" text-anchor="middle" font-family="Arial" font-size="9.5" fill="#888888">mechanism ↓</text>
-
-  <rect x="731" y="148" width="210" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-  <text x="836" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">INTENDED OUTCOME</text>
-  <text x="836" y="184" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">Students learn more,</text>
-  <text x="836" y="200" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">explain thinking better</text>
-
-  <!-- ══ ROW 3 ══ -->
-  <!-- MECHANISM 1 — Teacher Instructional Practices (blue) -->
-  <rect x="181" y="258" width="270" height="72" rx="4" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
-  <rect x="181" y="258" width="270" height="19" rx="4" fill="#2563eb"/>
-  <rect x="181" y="269" width="270" height="8" fill="#2563eb"/>
-  <text x="316" y="271" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="white" letter-spacing="0.5">MECHANISM 1</text>
-  <text x="316" y="295" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">Teacher assigns problems, sets</text>
-  <text x="316" y="311" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">voice norms, coaches revision</text>
-
-  <!-- MECHANISM 2 — Explain→Feedback→Revise Loop (blue) -->
-  <rect x="529" y="258" width="270" height="72" rx="4" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
-  <rect x="529" y="258" width="270" height="19" rx="4" fill="#2563eb"/>
-  <rect x="529" y="269" width="270" height="8" fill="#2563eb"/>
-  <text x="664" y="271" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="white" letter-spacing="0.5">MECHANISM 2</text>
-  <text x="664" y="295" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">Explain → feedback → revise</text>
-  <text x="664" y="311" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">loop drives mastery</text>
-
-  <!-- ══ ROW 4 ══ -->
-  <rect x="270" y="378" width="440" height="68" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
-  <text x="490" y="397" text-anchor="middle" font-family="Arial" font-size="10.5" font-weight="700" fill="#065f46" letter-spacing="1">USER / POPULATION CONTEXT</text>
-  <text x="490" y="414" text-anchor="middle" font-family="Arial" font-size="11" font-weight="500" fill="#065f46">Teachers (assign, coach, read insights) &amp; students (record, revise)</text>
-  <text x="490" y="430" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#065f46">Implementation strength tracks teacher mindset &amp; coaching</text>
-
-  <polyline points="270,412 12,412 12,182 40,182" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-  <line x1="490" y1="378" x2="490" y2="216" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-  <polyline points="710,412 968,412 968,182 941,182" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-
-  <!-- LEGEND -->
-  <rect x="10" y="472" width="12" height="12" rx="2" fill="white" stroke="#1a1a1a" stroke-width="1.5"/>
-  <text x="28" y="483" font-family="Arial" font-size="11" fill="#888888">Confirmed</text>
-  <rect x="108" y="472" width="12" height="12" rx="2" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
-  <text x="126" y="483" font-family="Arial" font-size="11" fill="#888888">Context</text>
-  <rect x="196" y="472" width="12" height="12" rx="2" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
-  <text x="214" y="483" font-family="Arial" font-size="11" fill="#888888">Mechanism</text>
-
-  <!-- DIM OVERLAYS -->
-  <rect class="dim-overlay" data-node="behavior" x="383" y="148" width="214" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="outcome" x="731" y="148" width="210" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="mech1" x="181" y="258" width="270" height="72" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="mech2" x="529" y="258" width="270" height="72" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="product" x="40" y="148" width="210" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="impl" x="270" y="18" width="440" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="user" x="270" y="378" width="440" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-
-  <!-- PRIORITY BADGES -->
-  <g class="priority-badge-group" data-priority="1" onclick="openPriorityCard('1')" style="cursor:pointer">
-    <circle cx="420" cy="152" r="16" fill="#1a6fff" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
-    <text x="420" y="152" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">1</text>
-  </g>
-  <g class="priority-badge-group" data-priority="2" onclick="openPriorityCard('2')" style="cursor:pointer">
-    <circle cx="788" cy="152" r="16" fill="#059669" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
-    <text x="788" y="152" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">2</text>
-  </g>
-  <g class="priority-badge-group" data-priority="3" onclick="openPriorityCard('3')" style="cursor:pointer">
-    <circle cx="380" cy="240" r="16" fill="#d97706" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
-    <text x="380" y="240" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">3</text>
-  </g>
-  <g class="priority-badge-group" data-priority="4" onclick="openPriorityCard('4')" style="cursor:pointer">
-    <circle cx="730" cy="305" r="16" fill="#718096" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
-    <text x="730" y="305" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">4</text>
-  </g>
-
-  <!-- CONNECTOR LINES -->
-  <line class="connector-line" data-priority="1" x1="420" y1="152" x2="490" y2="182" stroke="#1a6fff" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="2" x1="788" y1="152" x2="836" y2="182" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="2" x1="788" y1="168" x2="664" y2="258" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="3" x1="380" y1="240" x2="490" y2="200" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="3" x1="380" y1="256" x2="316" y2="258" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="4" x1="730" y1="305" x2="664" y2="294" stroke="#718096" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="4" x1="730" y1="289" x2="836" y2="200" stroke="#718096" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-</svg>
-        </div>
-        <div id="priority-popup"></div>
-      </div>
-    </div><!-- /view-meas -->
 
     <div class="print-only">
     <h3 class="sub-header">Model Description</h3>
@@ -1482,7 +506,29 @@ nav { padding: 8px 0; }
 <!-- ── FOOTER (full-bleed banner) ────────────────────────────────── -->
 <footer id="report-footer">
   <div>
-    <div class="footer-brand">Cobalt Collective</div>
+    <div class="footer-logo">
+      <svg viewBox="0 0 3114 401" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cobalt Collective">
+        <path d="M3113.65 241.751H2972.12C2972.86 280.319 2993.83 308.028 3033.15 308.028C3064.6 308.028 3082.2 291.927 3090.44 265.716L3112.16 274.702C3103.17 306.53 3077.33 330.869 3030.53 330.869C2969.87 330.869 2935.79 290.803 2935.79 235.386C2935.79 179.594 2973.24 140.277 3027.91 140.277C3081.83 140.277 3113.65 175.849 3113.65 232.765V241.751ZM3027.91 162.369C2994.58 162.369 2974.74 183.713 2972.12 221.906H3078.08C3077.33 182.215 3060.11 162.369 3027.91 162.369Z" fill="currentColor"/>
+        <path d="M2795.74 175.849C2798.73 184.462 2828.31 254.483 2843.29 288.931L2890.09 176.224C2892.72 170.607 2888.97 166.488 2884.1 166.488H2863.51V144.771H2941.39V166.488H2924.54C2920.05 166.488 2916.31 168.361 2913.68 175.101L2848.53 328.622H2825.69L2759.79 175.101C2757.17 167.986 2754.92 166.488 2751.18 166.488H2733.2V144.771H2820.45V166.488H2802.1C2796.48 166.488 2793.49 169.484 2795.74 175.849Z" fill="currentColor"/>
+        <path d="M2624.76 330.495C2588.82 330.495 2574.21 315.891 2574.21 278.821V166.489H2546.88V147.017L2564.85 145.894C2574.96 144.396 2580.2 141.026 2581.33 130.168L2584.7 97.2165H2609.79V144.771H2652.76V166.489H2608.66V278.447C2608.66 299.041 2616.53 306.905 2634.12 306.905C2643.11 306.905 2648.35 305.033 2653.22 303.535V326.001C2647.6 327.874 2637.12 330.495 2624.76 330.495Z" fill="currentColor"/>
+        <path d="M2490.04 212.919C2490.04 200.563 2497.91 191.576 2510.26 189.704C2504.27 172.479 2488.17 162.369 2460.46 162.369C2421.9 162.369 2398.68 188.206 2398.68 232.016V236.509C2398.68 280.693 2419.65 307.653 2458.59 307.653C2489.3 307.653 2508.77 293.424 2517 265.341L2538.35 274.328C2528.61 307.653 2503.15 330.869 2457.47 330.869C2397.93 330.869 2362.36 294.173 2362.36 235.011C2362.36 177.347 2400.18 140.277 2458.97 140.277C2508.02 140.277 2539.85 164.99 2539.85 203.184C2539.85 221.906 2528.61 234.637 2512.51 234.637C2499.41 234.637 2490.04 225.276 2490.04 212.919Z" fill="currentColor"/>
+        <path d="M2342.6 241.751H2201.07C2201.81 280.319 2222.78 308.028 2262.1 308.028C2293.55 308.028 2311.15 291.927 2319.39 265.716L2341.11 274.702C2332.12 306.53 2306.28 330.869 2259.48 330.869C2198.82 330.869 2164.74 290.803 2164.74 235.386C2164.74 179.594 2202.19 140.277 2256.86 140.277C2310.78 140.277 2342.6 175.849 2342.6 232.765V241.751ZM2256.86 162.369C2223.53 162.369 2203.69 183.713 2201.07 221.906H2307.03C2306.28 182.215 2289.06 162.369 2256.86 162.369Z" fill="currentColor"/>
+        <path d="M2069.57 326.375V304.658H2090.91C2093.91 304.658 2096.15 303.534 2096.15 296.045V109.573C2096.15 101.709 2094.66 99.4627 2090.91 99.4627H2068.82V77.745H2089.79C2107.01 77.745 2123.86 75.8728 2131.73 74.375V296.045C2131.73 303.534 2133.6 304.658 2136.97 304.658H2157.56V326.375H2069.57Z" fill="currentColor"/>
+        <path d="M1983.63 326.375V304.658H2004.97C2007.96 304.658 2010.21 303.534 2010.21 296.045V109.573C2010.21 101.709 2008.71 99.4626 2004.97 99.4626H1982.88V77.7449H2003.85C2021.07 77.7449 2037.92 75.8727 2045.78 74.3749V296.045C2045.78 303.534 2047.66 304.658 2051.03 304.658H2071.62V326.375H1983.63Z" fill="currentColor"/>
+        <path d="M1478.13 330.495C1442.18 330.495 1427.58 315.891 1427.58 278.821V166.489H1400.24V147.017L1418.22 145.894C1428.33 144.396 1433.57 141.026 1434.69 130.168L1438.06 97.2165H1463.15V144.771H1503.22V166.489H1462.03V278.447C1462.03 299.041 1469.89 306.905 1487.49 306.905C1496.48 306.905 1501.72 305.033 1506.59 303.535V326.001C1500.97 327.874 1490.48 330.495 1478.13 330.495Z" fill="currentColor"/>
+        <path d="M1309.02 326.375V304.658H1330.37C1333.36 304.658 1335.61 303.534 1335.61 296.045V109.573C1335.61 101.709 1334.11 99.4627 1330.37 99.4627H1308.27V77.745H1329.24C1346.47 77.745 1363.32 75.8728 1371.18 74.375V296.045C1371.18 303.534 1373.05 304.658 1376.42 304.658H1397.02V326.375H1309.02Z" fill="currentColor"/>
+        <path d="M1206.25 162.369C1188.65 162.369 1176.29 165.739 1168.43 172.105C1174.42 175.849 1178.16 182.589 1178.16 191.201C1178.16 204.307 1168.43 212.919 1155.7 212.919C1141.09 212.919 1131.73 203.558 1131.73 187.831C1131.73 156.004 1168.43 140.277 1211.49 140.277C1263.54 140.277 1286.38 158.625 1286.38 202.809V296.046C1286.38 302.037 1287.87 304.658 1291.62 304.658H1312.21V326.375H1259.04C1255.3 316.265 1253.43 306.155 1251.55 290.803C1241.44 314.393 1214.11 330.869 1183.03 330.869C1148.96 330.869 1127.24 310.274 1127.24 282.94C1127.24 239.879 1169.55 223.029 1250.81 213.294V203.184C1250.81 174.351 1236.95 162.369 1206.25 162.369ZM1195.39 307.279C1228.71 307.279 1250.81 282.566 1250.81 246.619V231.641C1191.64 238.381 1161.69 248.866 1161.69 277.323C1161.69 295.297 1175.17 307.279 1195.39 307.279Z" fill="currentColor"/>
+        <path d="M1024.32 330.869C994.961 330.869 972.524 318.362 959.024 297.385C956.574 293.579 950.07 294.212 948.932 298.594C945.549 311.623 942.217 323.889 941.94 326.375H920.597C922.095 315.891 922.844 297.918 922.844 264.218V109.573C922.844 101.709 921.72 99.4627 917.602 99.4627H895.884V77.745H916.104C932.954 77.745 950.927 75.8728 958.416 74.375V183.338C970.398 156.378 993.613 140.277 1025.82 140.277C1075.99 140.277 1107.82 177.721 1107.82 235.386C1107.82 293.05 1074.87 330.869 1024.32 330.869ZM1014.58 306.53C1048.66 306.53 1071.12 282.191 1071.12 238.007V233.139C1071.12 188.955 1048.66 164.616 1014.58 164.616C981.631 164.616 958.416 189.329 958.416 233.139V238.007C958.416 281.442 982.006 306.53 1014.58 306.53Z" fill="currentColor"/>
+        <path d="M802.008 330.869C746.59 330.869 709.146 292.301 709.146 235.386C709.146 179.219 747.339 140.277 803.506 140.277C858.174 140.277 895.619 178.845 895.619 235.386C895.619 291.927 857.8 330.869 802.008 330.869ZM802.382 308.028C839.452 308.028 860.047 282.566 860.047 237.258V233.888C860.047 187.831 839.452 163.118 802.757 163.118C765.687 163.118 745.093 188.206 745.093 233.888V237.258C745.093 282.94 765.313 308.028 802.382 308.028Z" fill="currentColor"/>
+        <path d="M618.403 73.2527C649.258 73.2529 673.028 85.2279 686.944 105.624C689.671 109.618 697.159 108.576 697.895 103.796L701.904 77.7461H723.995V133.167C719.482 136.951 706.175 141.903 697.838 159.66C696.791 161.891 692.939 161.642 692.341 159.252C681.663 116.567 657.452 97.9653 622.147 97.9653C572.346 97.9654 541.267 133.539 541.267 197.568V206.553C541.267 270.957 572.72 306.155 622.52 306.156C647.155 306.156 668.232 298.917 682.488 283.043C683.774 281.611 686.217 282.087 686.809 283.918C689.262 291.515 692.316 298.701 695.931 305.436C678.305 321.329 653.421 330.868 621.773 330.869C551.003 330.869 503.448 283.315 503.448 202.436C503.448 123.054 551.378 73.2527 618.403 73.2527Z" fill="currentColor"/>
+        <path d="M1889.19 330.869C1833.78 330.869 1796.33 292.301 1796.33 235.386C1796.33 179.219 1834.52 140.277 1890.69 140.277C1945.36 140.277 1982.8 178.845 1982.8 235.386C1982.8 291.927 1944.99 330.869 1889.19 330.869ZM1889.57 308.028C1926.64 308.028 1947.23 282.566 1947.23 237.258V233.888C1947.23 187.832 1926.64 163.118 1889.94 163.118C1852.87 163.118 1832.28 188.206 1832.28 233.888V237.258C1832.28 282.94 1852.5 308.028 1889.57 308.028Z" fill="currentColor"/>
+        <path d="M1710.28 73.2526C1741.14 73.2529 1764.91 85.2279 1778.82 105.624C1781.55 109.618 1789.04 108.576 1789.77 103.796L1793.78 77.7461H1815.87V133.167C1811.36 136.951 1798.05 141.903 1789.72 159.66C1788.67 161.891 1784.82 161.642 1784.22 159.252C1773.54 116.567 1749.33 97.9653 1714.03 97.9653C1664.23 97.9654 1633.15 133.539 1633.15 197.568V206.553C1633.15 270.957 1664.6 306.155 1714.4 306.156C1739.04 306.156 1760.11 298.917 1774.37 283.043C1775.65 281.611 1778.1 282.087 1778.69 283.918C1781.14 291.515 1784.2 298.701 1787.81 305.436C1770.18 321.329 1745.3 330.868 1713.65 330.868C1642.88 330.868 1595.33 283.315 1595.33 202.436C1595.33 123.054 1643.26 73.2526 1710.28 73.2526Z" fill="currentColor"/>
+        <path d="M2714.44 296.045C2714.44 303.159 2716.31 304.658 2719.68 304.658H2740.27L2747.32 328.724H2678.84V297.316C2678.86 296.914 2678.86 296.49 2678.86 296.045V181.466C2678.86 169.859 2676.99 166.488 2670.63 166.488H2652.28V144.771H2672.5C2689.72 144.771 2706.57 142.9 2714.44 141.402V296.045Z" fill="currentColor"/>
+        <path d="M2696.09 70.6311C2709.94 70.6313 2720.05 81.4906 2720.05 94.596C2720.05 108.076 2709.94 118.935 2696.09 118.935C2681.86 118.935 2672.12 108.076 2672.12 94.596C2672.12 81.4905 2681.86 70.6311 2696.09 70.6311Z" fill="currentColor"/>
+        <path d="M345.238 41.8999C348.438 40.0526 352.38 40.0526 355.58 41.8999L397.853 66.3064C401.052 68.1537 403.023 71.5675 403.023 75.262V124.075C403.023 127.77 401.052 131.183 397.853 133.031L355.58 157.437C352.38 159.284 348.438 159.284 345.238 157.437L302.965 133.031C299.766 131.183 297.795 127.77 297.795 124.075V75.262C297.795 71.5675 299.766 68.1537 302.965 66.3064L345.238 41.8999Z" fill="currentColor"/>
+        <path d="M169.282 3.51829C172.481 1.67121 176.423 1.67146 179.622 3.51829L221.897 27.9256C225.096 29.773 227.068 33.1867 227.068 36.8808V85.6932C227.068 89.3873 225.096 92.801 221.897 94.6484L179.622 119.056C176.423 120.903 172.481 120.903 169.282 119.056L139.731 101.993C132.668 97.9144 123.972 97.8818 116.878 101.907C109.678 105.993 105.229 113.633 105.229 121.912V156.958C105.229 160.652 103.257 164.065 100.058 165.913L69.5914 183.501C62.7444 187.454 58.5264 194.759 58.5264 202.665C58.5264 210.571 62.744 217.876 69.5906 221.829L100.058 239.42C103.257 241.267 105.229 244.681 105.229 248.375V281.557C105.229 289.746 109.629 297.302 116.751 301.343C123.767 305.323 132.366 305.291 139.351 301.258L169.282 283.978C172.481 282.131 176.423 282.131 179.622 283.978L208.56 300.685C215.749 304.835 224.598 304.869 231.818 300.773C239.149 296.614 243.678 288.837 243.678 280.409V248.375C243.678 244.681 245.649 241.267 248.848 239.42L291.121 215.013C294.32 213.165 298.262 213.166 301.461 215.013L343.737 239.42C346.935 241.267 348.907 244.681 348.907 248.375V297.187C348.907 300.882 346.935 304.295 343.737 306.143L301.461 330.55C298.262 332.397 294.32 332.397 291.121 330.55L260.677 312.972C253.797 309 245.327 308.968 238.417 312.888C231.402 316.868 227.068 324.311 227.068 332.376V366.153C227.068 369.847 225.096 373.261 221.897 375.108L179.622 399.515C176.423 401.362 172.481 401.363 169.282 399.515L127.009 375.108C123.81 373.261 121.839 369.847 121.839 366.153V333.524C121.839 325.22 117.376 317.556 110.153 313.459C103.038 309.423 94.3183 309.456 87.2346 313.546L57.7833 330.55C54.5839 332.397 50.6423 332.397 47.443 330.55L5.17017 306.143C1.97067 304.295 0 300.882 0 297.187V248.375C0 244.681 1.97063 241.267 5.17017 239.42L32.6877 223.53C40.1416 219.226 44.7333 211.273 44.7333 202.666C44.7333 194.058 40.1412 186.104 32.6868 181.8L5.17017 165.913C1.97068 164.066 0 160.652 0 156.958V108.145C0 104.451 1.97063 101.037 5.17017 99.19L47.443 74.7827C50.6423 72.9356 54.5839 72.9358 57.7833 74.7827L84.6147 90.2741C92.2352 94.6739 101.616 94.7092 109.269 90.3668C117.038 85.9588 121.839 77.7154 121.839 68.7828V36.8808C121.839 33.1863 123.81 29.7729 127.009 27.9256L169.282 3.51829Z" fill="currentColor"/>
+      </svg>
+    </div>
     <div class="footer-tagline">Bringing together evidence and innovation to improve outcomes at scale.</div>
   </div>
   <div class="footer-contact">
@@ -1494,7 +540,6 @@ nav { padding: 8px 0; }
 </div><!-- #app -->
 
 <!-- Print button -->
-<button class="print-btn" onclick="downloadPDF()">↓ Download PDF</button>
 
 <script>
 function downloadPDF() {
@@ -1514,26 +559,43 @@ function downloadPDF() {
 }
 </script>
 
+<!-- About This Report modal -->
+<div id="about-overlay" onclick="closeAboutModal()"></div>
+<div id="about-modal" role="dialog" aria-modal="true" aria-label="About This Report">
+  <button class="drawer-close" onclick="closeAboutModal()" aria-label="Close">&times;</button>
+  <div class="about-modal-eyebrow">About This Report</div>
+  <p>This report has two purposes:</p>
+  <ol class="about-list">
+    <li>Articulate a working model of the mechanisms through which Snorkl produces impact. From product through teacher implementation, and student use to intended student outcomes.</li>
+    <li>Use that model as the analytical foundation to identify and prioritize opportunities for impact measurement.</li>
+  </ol>
+  <p>Our aim is not to evaluate Snorkl's impact, but to help Snorkl's leadership see clearly where the causal chain is well understood, where it is assumed but untested, and where the most useful measurement investments should go — in what order, and why. Throughout, we favor measurement that can be built into how the company already operates, rather than externally imposed research projects that consume scarce startup time.</p>
+  <div class="about-sources">
+    <div class="about-sources-label">Sources</div>
+    <ul>
+      <li>Discovery conversation with Snorkl co-founder Jon Laven, June 1, 2026</li>
+      <li>Snorkl's pre-conversation questionnaire response</li>
+      <li>Publicly available information at snorkl.app</li>
+    </ul>
+  </div>
+</div>
+
 <!-- Node detail panel -->
-<div id="dp-overlay" onclick="discardAndClose()"></div>
+<div id="dp-overlay" onclick="closePanel()"></div>
 <div id="dp-panel">
   <div class="dp-header">
+    <button class="drawer-close" onclick="closePanel()" aria-label="Close">&times;</button>
     <div class="dp-cat" id="dp-cat"></div>
-    <div class="dp-title"><span id="dp-title-text"></span><span id="dp-edited" style="display:none;font-size:var(--text-xs);font-family:monospace;font-weight:600;color:#7c3aed;background:#f3e8ff;padding:2px 7px;border-radius:3px;margin-left:8px;vertical-align:middle;">edited</span></div>
+    <div class="dp-title"><span id="dp-title-text"></span></div>
   </div>
   <div class="dp-body">
     <div class="dp-tip" id="dp-tip"></div>
     <div class="badge" id="dp-badge"></div>
-    <div style="font-size:var(--text-xs);font-family:monospace;color:#718096;margin-bottom:10px;">✎ Click either field below to edit</div>
     <div class="dp-sec-lbl">What we know</div>
-    <div class="dp-content dp-editable" id="dp-know" contenteditable="true" spellcheck="false"></div>
+    <div class="dp-content" id="dp-know"></div>
     <div id="dp-gap-wrap" style="display:none">
       <div class="dp-sec-lbl gap">Open questions</div>
-      <div class="dp-content gap dp-editable" id="dp-gaps" contenteditable="true" spellcheck="false"></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px;">
-      <button class="dp-close-btn" style="background:var(--ink)" onclick="saveAndClose()">Save &amp; Close</button>
-      <button class="dp-close-btn" style="background:transparent;color:var(--ink);border-color:#ddd" onclick="discardAndClose()">Discard</button>
+      <div class="dp-content gap" id="dp-gaps"></div>
     </div>
   </div>
 </div>
@@ -1568,20 +630,40 @@ Object.keys(navMap).forEach(id => {
   if (el) observer.observe(el);
 });
 
-// Fade the TOC in once the reader scrolls past the About band (i.e. it has
-// scrolled fully ABOVE the viewport), and back out when About returns to view.
-// The boundingClientRect check distinguishes "scrolled past" (above) from
-// "not yet reached" (below the fold on load).
-const aboutBand = document.getElementById('about');
-const tocEl = document.querySelector('.toc-card');
-if (aboutBand && tocEl) {
-  // rootMargin shrinks the viewport top by 160px so the TOC reveals a bit
-  // earlier — while the tail of About is still leaving the top.
-  new IntersectionObserver(([entry]) => {
-    const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 0;
-    tocEl.classList.toggle('toc-visible', scrolledPast);
-  }, { threshold: 0, rootMargin: '-160px 0px 0px 0px' }).observe(aboutBand);
-}
+// TOC sticky pin point: keep --toc-pin at the viewport offset that vertically
+// centers the card. The CSS handles the two states (rest = eyebrow-aligned via
+// margin-top + natural flow; scrolled = pinned centered at --toc-pin); JS only
+// keeps the centered offset correct as the card height / viewport changes.
+(function () {
+  const toc = document.getElementById('sidebar');
+  if (!toc) return;
+  const card = toc.querySelector('.toc-card') || toc;
+  function setPin() {
+    const h = Math.min(card.offsetHeight, window.innerHeight - 48);
+    const pin = Math.max(24, (window.innerHeight - h) / 2);
+    toc.style.setProperty('--toc-pin', pin + 'px');
+  }
+  setPin();
+  window.addEventListener('resize', setPin);
+  // Re-measure once fonts/layout settle (card height depends on loaded fonts).
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(setPin);
+  window.addEventListener('load', setPin);
+})();
+
+// Sticky header: hide on scroll down, reappear on scroll up; frosted background
+// once scrolled off the very top.
+(function () {
+  const header = document.querySelector('.cover-topbar');
+  if (!header) return;
+  let lastY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    header.classList.toggle('scrolled', y > 24);
+    if (y > lastY && y > 120) header.classList.add('hidden');
+    else if (y < lastY) header.classList.remove('hidden');
+    lastY = y;
+  }, { passive: true });
+})();
 
 // ── NODE DETAIL PANEL ─────────────────────────────────────────────────────
 let currentId = null;
@@ -1743,8 +825,6 @@ Key moderators of implementation quality:
   }
 };
 
-let _origKnow = '', _origGaps = '';
-
 function show(id) {
   const d = nodes[id];
   if (!d) return;
@@ -1758,56 +838,39 @@ function show(id) {
   badge.textContent = d.badgeText;
   badge.className = 'badge ' + (d.badge === 'ok' ? 'b-ok' : d.badge === 'par' ? 'b-par' : 'b-gap');
 
-  const knowEl = document.getElementById('dp-know');
-  knowEl.textContent = d.know;
-  _origKnow = d.know;
+  document.getElementById('dp-know').textContent = d.know;
 
   const gw = document.getElementById('dp-gap-wrap');
-  const gapsEl = document.getElementById('dp-gaps');
   if (d.gaps) {
     gw.style.display = 'block';
-    gapsEl.textContent = d.gaps;
-    _origGaps = d.gaps;
+    document.getElementById('dp-gaps').textContent = d.gaps;
   } else {
     gw.style.display = 'none';
-    _origGaps = '';
   }
 
-  document.getElementById('dp-edited').style.display = d.edited ? 'inline' : 'none';
-  document.getElementById('dp-panel').style.display = 'block';
-  document.getElementById('dp-overlay').style.display = 'block';
+  document.getElementById('dp-panel').classList.add('open');
+  document.getElementById('dp-overlay').classList.add('open');
   document.getElementById('dp-panel').scrollTop = 0;
 }
 
-function saveAndClose() {
-  if (currentId) {
-    const d = nodes[currentId];
-    const newKnow = document.getElementById('dp-know').textContent;
-    const newGaps = document.getElementById('dp-gaps').textContent;
-    if (newKnow !== _origKnow || (d.gaps !== null && newGaps !== _origGaps)) {
-      d.edited = true;
-    }
-    d.know = newKnow;
-    if (d.gaps !== null) d.gaps = newGaps;
-  }
-  closePanel();
-}
-
-function discardAndClose() {
-  document.getElementById('dp-know').textContent = _origKnow;
-  if (currentId && nodes[currentId] && nodes[currentId].gaps !== null) {
-    document.getElementById('dp-gaps').textContent = _origGaps;
-  }
-  closePanel();
-}
-
 function closePanel() {
-  document.getElementById('dp-panel').style.display = 'none';
-  document.getElementById('dp-overlay').style.display = 'none';
+  document.getElementById('dp-panel').classList.remove('open');
+  document.getElementById('dp-overlay').classList.remove('open');
   currentId = null;
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') discardAndClose(); });
+function openAboutModal() {
+  document.getElementById('about-modal').classList.add('open');
+  document.getElementById('about-overlay').classList.add('open');
+}
+function closeAboutModal() {
+  document.getElementById('about-modal').classList.remove('open');
+  document.getElementById('about-overlay').classList.remove('open');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { setFullscreen(false); closePanel(); hidePriorityPopup(); closeAboutModal(); }
+});
 
 // ── PRIORITY DATA FOR MEASUREMENT VIEW ───────────────────────────────────
 const priorityData = {
@@ -1846,19 +909,28 @@ const priorityData = {
 };
 
 // ── VIEW TOGGLE ───────────────────────────────────────────────────────────
-function switchView(view) {
-  document.getElementById('view-model').classList.toggle('active', view === 'model');
-  document.getElementById('view-meas').classList.toggle('active', view === 'meas');
-  document.getElementById('btn-model').classList.toggle('active', view === 'model');
-  document.getElementById('btn-meas').classList.toggle('active',  view === 'meas');
-  if (view !== 'meas') hidePriorityPopup();
+// Toggle the measurement overlay (badges + connectors + dim layers).
+function toggleBadges(on) {
+  const layer = document.getElementById('meas-layer');
+  if (layer) layer.style.display = on ? '' : 'none';
+}
+
+// ── DIAGRAM FULL SCREEN ───────────────────────────────────────────────────
+function setFullscreen(on) {
+  const fig = document.getElementById('model-figure');
+  if (fig) fig.classList.toggle('is-fullscreen', on);
+}
+function toggleFullscreen(e) {
+  if (e) e.stopPropagation();
+  const fig = document.getElementById('model-figure');
+  if (fig) setFullscreen(!fig.classList.contains('is-fullscreen'));
 }
 
 // ── BADGE HOVER: dim/highlight nodes ─────────────────────────────────────
 let _hoveredPriority = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  const measSvg = document.getElementById('meas-svg');
+  const measSvg = document.getElementById('model-svg');
   if (!measSvg) return;
 
   measSvg.querySelectorAll('.priority-badge-group').forEach(badge => {
@@ -1884,6 +956,16 @@ document.addEventListener('DOMContentLoaded', () => {
       measSvg.querySelectorAll('.dim-overlay').forEach(o => o.style.opacity = '0');
     });
   });
+
+  // Clicking empty space inside the diagram expands it full-screen
+  // (clicks on a box, badge, or the full-screen button are excluded).
+  const fig = document.getElementById('model-figure');
+  if (fig) {
+    fig.addEventListener('click', (e) => {
+      if (e.target.closest('[onclick]')) return;
+      if (!fig.classList.contains('is-fullscreen')) setFullscreen(true);
+    });
+  }
 });
 
 // ── PRIORITY POPUP ────────────────────────────────────────────────────────
@@ -1895,7 +977,7 @@ function openPriorityCard(pid) {
   popup.innerHTML = `
     <span class="pp-close-x" onclick="hidePriorityPopup()">&#215;</span>
     <span class="pp-badge" style="background:${d.color}">${d.label}</span>
-    <span style="font-size:var(--text-xs);font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    <span style="font-size:var(--text-xs);font-weight:700;letter-spacing: var(--track-caps);text-transform:uppercase;
       padding:2px 8px;border-radius:4px;background:var(--cobalt-l);color:var(--cobalt);
       margin-left:6px">${d.tag}</span>
     <div class="pp-title" style="margin-top:8px">${d.title}</div>
@@ -1904,18 +986,17 @@ function openPriorityCard(pid) {
       &#8594; See full detail in the report
     </span>
   `;
-  popup.style.display = 'block';
-  document.getElementById('pp-overlay').style.display = 'block';
+  popup.classList.add('open');
+  document.getElementById('pp-overlay').classList.add('open');
 }
 
 function hidePriorityPopup() {
-  document.getElementById('priority-popup').style.display = 'none';
-  document.getElementById('pp-overlay').style.display = 'none';
+  document.getElementById('priority-popup').classList.remove('open');
+  document.getElementById('pp-overlay').classList.remove('open');
 }
 
 function jumpToCard(cardId) {
   hidePriorityPopup();
-  switchView('model');
   setTimeout(() => {
     const card = document.getElementById(cardId);
     if (card) {

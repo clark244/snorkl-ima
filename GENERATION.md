@@ -1,8 +1,10 @@
 # Generating a Client Report (AI-assisted)
 
-`index.html` is the **canonical template** for an Impact Measurement Assessment. It is
-self-contained on purpose — one file, no build step, no external assets — so it opens
-anywhere, emails cleanly, and exports to PDF without broken links. Keep it that way.
+`index.html` is the **canonical template** for an Impact Measurement Assessment. There is
+no build step. The markup, JS, and SVG live in `index.html`; all CSS lives alongside it in
+`styles.css` (linked from the `<head>`). Keep these two files together — `index.html`
+references `styles.css` by relative path, so they must travel as a pair. The fonts load from
+Typekit/Google CDNs; everything else is local.
 
 The currently-filled version (Snorkl) doubles as a **gold-standard example**: every
 content region is filled with real, well-formed copy. To make a new client report, you
@@ -12,12 +14,28 @@ clone the file and **rewrite the content regions** while leaving the **chrome** 
 
 ## How to generate a new report
 
-1. Copy `index.html` → `dist/<client>.html` (keep the original as the template).
+1. Copy `index.html` → `dist/<client>.html` **and** copy `styles.css` alongside it (keep the
+   originals as the template). The copied HTML still links `styles.css` by relative path.
 2. Feed an LLM: (a) the source material for the new client — discovery notes,
    questionnaire, public info; (b) this guide; (c) the filled Snorkl file as the example.
 3. Instruct it to rewrite **only** the content regions listed below, preserving the chrome
    and all the coupling rules.
 4. Run the **post-generation checklist** at the bottom before sending.
+
+### Exporting a portable single file (for email / PDF)
+
+The working copy links `styles.css`, so the two files must stay together. To produce **one
+self-contained `.html`** (CSS inlined, no local dependencies) for emailing or PDF export:
+
+```
+python3 bundle.py                      # -> dist/snorkl-bundled.html
+python3 bundle.py dist/<client>.html   # custom output path
+```
+
+`bundle.py` needs only system Python 3 — no install, no `package.json`. It reads
+`index.html` + `styles.css`, inlines the CSS back into a `<style>` block, and writes the
+bundle to `dist/` (gitignored). It never modifies the source files. Open the bundled file
+and print-to-PDF from there. (CDN fonts still load over the network as before.)
 
 The model is *clone + rewrite-in-place*, not *regenerate from scratch*. The chrome (layout,
 CSS, JS logic, SVG geometry) is hard-won and identical for every client — never rebuild it.
@@ -73,7 +91,7 @@ content swap; do it deliberately and eyeball the result.
 
 ## Do NOT touch (chrome — identical for every client)
 
-- The entire `<style>` block (all CSS, including `--measure` and the layout variables).
+- The entire `styles.css` file (all CSS, including `--measure` and the layout variables).
 - All JS **functions/logic**: `show()`, `switchView()`, `toggleCard()`, the scroll-spy
   `IntersectionObserver` + `navMap`, the detail-panel editing logic, `openPriorityCard()`.
   (You edit the JS **data** — `nodes`, `priorityData` — never the functions.)
