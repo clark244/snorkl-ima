@@ -449,7 +449,6 @@ nav { padding: 8px 0; }
   max-width: var(--measure);
 }
 .model-table,
-.matrix-wrap,
 .figure-wrap,
 .priority-cards,
 .next-steps-grid {
@@ -620,30 +619,6 @@ nav { padding: 8px 0; }
   margin-bottom: 3px;
 }
 
-.matrix-wrap { margin: 20px 0; overflow-x: auto; border: 1.5px solid var(--rule); border-radius: 8px; }
-.matrix-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
-.matrix-table th {
-  padding: 10px 10px;
-  background: var(--ink);
-  color: #fff;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: var(--track-caps);
-  text-transform: uppercase;
-  text-align: center;
-}
-.matrix-table th:nth-child(3) { text-align: left; }
-.matrix-table td {
-  padding: 9px 10px;
-  border-bottom: 1px solid var(--rule);
-  text-align: center;
-  vertical-align: middle;
-}
-.matrix-table tr:last-child td { border-bottom: none; }
-.matrix-table tr:nth-child(even) td { background: var(--cobalt-ll); }
-.matrix-table td:nth-child(3) { text-align: left; font-weight: 600; color: var(--ink); }
-.matrix-table td:nth-child(4) { font-size: var(--text-sm); }
-.m-badge { display:inline-block; font-size:var(--text-xs); font-weight:700; color:#fff; padding:2px 8px; border-radius:4px; }
 .m-dot-full { color: var(--cobalt); font-size: var(--text-base); }
 .m-dot-open { color: #c0cce0; font-size: var(--text-base); }
 .m-dot-none { color: #dde4ee; font-size: var(--text-sm); }
@@ -716,6 +691,66 @@ nav { padding: 8px 0; }
 .tag-cobalt { background: var(--cobalt-l); color: var(--cobalt); }
 .tag-amber  { background: var(--amber-l);  color: var(--amber); }
 .tag-mid    { background: #f1f5f9; color: var(--muted); }
+
+/* ── PRIORITY MATRIX (accordion carrying the at-a-glance columns) ──────────
+   The four evidence dots live in each card header as a fixed-width grid so they
+   line up across cards; --pm-dots-w is the shared column-block width the key row
+   mirrors. */
+.priority-matrix { --pm-dots-w: 340px; }
+/* Column key sits above the cards, right-aligned so the dot labels land over the
+   dot grid. The focus label fills the left, matching the card title column. */
+.priority-matrix-key {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 0 18px 10px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pm-key-focus { flex: 1; padding-bottom: 4px; }
+.pm-key-dots {
+  flex: 0 0 var(--pm-dots-w);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px 6px;
+  text-align: center;
+  line-height: 1.15;
+  /* reserve the trailing chevron + the header's 14px flex gap so the label
+     columns land directly over the dot columns */
+  margin-right: calc(var(--text-xs) + 2px + 14px);
+}
+.pm-key-dots > span { overflow-wrap: anywhere; }
+/* Superheader banner spanning the four evidence columns. */
+.pm-key-super {
+  grid-column: 1 / -1;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--cobalt);
+}
+/* The dot grid inside each header — same width + columns as the key. */
+.pm-dots {
+  flex: 0 0 var(--pm-dots-w);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+.pm-dots > span { line-height: 1; }
+/* The tag moved from the header into the body; make it a standalone chip. */
+.priority-card-body > .priority-card-tag {
+  display: inline-block;
+  margin-top: 16px;
+}
+
+@media (max-width: 799px) {
+  /* Stacked layout: drop the fixed dot grid to natural width and hide the key
+     row (the per-dot title tooltips + legend still convey the mapping). */
+  .priority-matrix-key { display: none; }
+  .pm-dots { flex: 0 0 auto; grid-auto-flow: column; grid-template-columns: none; }
+}
 
 .priority-chevron { font-size: var(--text-xs); color: var(--muted); transition: transform 0.2s; margin-left: 2px; }
 .priority-card.open .priority-chevron { transform: rotate(180deg); }
