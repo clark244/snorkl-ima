@@ -46,19 +46,25 @@ CSS, JS logic, SVG geometry) is hard-won and identical for every client — neve
 
 These carry client-specific content. Locations are approximate — search by the anchor text.
 
-| # | Region | Where | Notes |
-|---|--------|-------|-------|
-| 1 | Cover + sidebar meta | `cover-client`, `cover-meta-value`, `sidebar-meta` | Client name, "prepared for" contact, date. **"Cobalt Collective" is the report author — constant, do not change.** |
-| 2 | Key Findings (4 cards) | `class="kf-card"` | The executive summary. |
-| 3 | Recommendation at a Glance | `id="recommendation"` | Intro paragraph **+ the strategy matrix** (`matrix-table`). The matrix dots (`●`/`○`/`–`) and horizons encode judgments — set them deliberately per client. |
-| 4 | §01 About This Report | `id="about"` | Mostly boilerplate; swap client name, source dates, and the discovery-conversation reference. |
-| 5 | §02 Process Model — prose | `id="model"` intro `<p>` | The narrative framing of the diagram. |
-| 6 | §02 Process Model — **the diagram** | the two `<svg>` blocks + JS data | **The hardest region. See "The diagram trap" below.** |
-| 7 | §03 Evidence Landscape | `id="evidence-table"` + closing `<p>` | Table rows = the client's existing evidence assets. |
-| 8 | §04 Measurement Opportunities | `id="opportunities"` intro `<p>`s | Includes the buyer-reality paragraph. |
-| 9 | §04 The Four Priorities (cards) | `class="priority-card"` | The detailed payload. |
-| 10 | §05 Recommended Next Steps | `next-steps-list` | |
-| 11 | Sidebar nav labels | `<nav>` in `id="sidebar"` | Must **mirror** the section titles and the four priority titles. |
+**Word counts are targets, not hard limits.** They come from the filled Snorkl file, which
+is tuned to the layout's rhythm — the cards, matrix cells, and diagram boxes are sized for
+copy in these ranges. Land inside the range and the report keeps its density and spacing;
+run long and cards grow uneven, prose blows past the `--measure` width, or diagram labels
+overflow their boxes. When in doubt, cut toward the low end — this is an executive brief.
+
+| # | Region | Where | Words (target) | Notes |
+|---|--------|-------|----------------|-------|
+| 1 | Cover + sidebar meta | `cover-client`, `cover-meta-value`, `sidebar-meta` | labels only, no prose | Client name, "prepared for" contact, date. **"Cobalt Collective" is the report author — constant, do not change.** |
+| 2 | Key Findings (4 cards) | `class="kf-card"` | per card: title **8–14**, desc **20–28** (≈**100** total desc) | The executive summary. Keep the four descriptions balanced in length so the cards align. |
+| 3 | Measurement Strategy by Priority | `id="priorities"` intro `<p>` **+ the matrix dots/horizons** in the priority headers | intro **40–70** | Merged into the priority accordion (no standalone table). The matrix dots (`●`/`○`/`–`) and horizons encode judgments — set them deliberately per client. |
+| 4 | "About This Report" modal | `about-modal` (the ⓘ dialog) | intro **60–90** | Mostly boilerplate; swap client name, source dates, and the discovery-conversation reference. |
+| 5 | §02 Process Model — prose | `id="model"` intro `<p>` | **55–85** | The narrative framing of the diagram. |
+| 6 | §02 Process Model — **the diagram** | the two `<svg>` blocks + JS data | box labels **2–5 words each**; each node `know`/`gaps` **30–60** | **The hardest region. See "The diagram trap" below.** Labels must fit their boxes — count words, not just characters. |
+| 7 | §03 Evidence Landscape | `id="evidence-table"` + closing `<p>` | **6 rows**; closing para **80–110** | Table rows = the client's existing evidence assets. Keep cell copy terse (a phrase, not a sentence). |
+| 8 | §04 Measurement Opportunities | `id="opportunities"` intro `<p>`s | **3 paras, ≈200 total** (buyer-reality para **80–90**) | Includes the buyer-reality paragraph. |
+| 9 | §04 The Four Priorities (cards) | `class="priority-card"` | per card body **170–230** (intro **90–140** + a **4-item** "What to measure" list + one italic note **25–40**) | The detailed payload. |
+| 10 | §05 Recommended Next Steps | `next-steps-list` | **6 steps, 25–45 each** | |
+| 11 | Sidebar nav labels | `<nav>` in `id="sidebar"` | labels only | Must **mirror** the section titles and the four priority titles. |
 
 ---
 
