@@ -729,7 +729,7 @@ nav { padding: 8px 0; }
   flex: 0 0 var(--pm-dots-w);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 5px 6px;
+  gap: 11px 6px;
   text-align: center;
   line-height: 1.15;
   /* reserve the trailing chevron + the header's 14px flex gap so the label
@@ -740,7 +740,7 @@ nav { padding: 8px 0; }
 /* Superheader banner spanning the four evidence columns. */
 .pm-key-super {
   grid-column: 1 / -1;
-  padding-bottom: 5px;
+  padding-bottom: 9px;
   border-bottom: 1px solid var(--rule);
   color: var(--cobalt);
 }
