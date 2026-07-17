@@ -1,0 +1,1144 @@
+/* ── RESET ──────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --cobalt:    #0055FF;
+  --cobalt-d:  #003DB8;
+  --cobalt-l:  #DDE8FF;
+  --cobalt-ll: #F3F7FF;
+  --amber:     #8F6B00;
+  --amber-l:   #FFF7D6;
+  --green:     #03A88F;
+  --green-l:   #D7FFF8;
+  --ink:       #1C1E14;
+  --mid:       #4E5545;
+  --muted:     #7A806F;
+  --rule:      #E3E7DD;
+  --bg:        #FFFFFF;
+  --sidebar-w: 252px;
+  --content-pad: 40px;
+  --measure: 840px;   /* prose line length ≈ 80–90 characters */
+  --content-max: 1100px;
+  --frame-max: 1920px;   /* the TOC + content columns cap at this; bands stay full-bleed */
+  --toc-gap: 128px;
+  --row-top: 32px;   /* top gap below the cover, shared by #layout and the KF band */
+  --serif: 'jubilat', Georgia, serif;     /* headers — Adobe Fonts */
+  --sans:  'Golos Text', system-ui, sans-serif;   /* body — Google Fonts */
+  --track-caps: 0.08em;   /* one tracking value for all uppercase labels */
+
+  /* Type scale — major third (×1.25), body = 1.25rem = 20px.
+     Every font-size references one of these tokens; nothing is hand-set.
+     Floor is pinned at 13px (--text-xs) per the no-smaller-than-13px rule. */
+  --text-xs:   0.8125rem;  /* 13px — eyebrows, badges, micro-labels (floor) */
+  --text-sm:   1rem;       /* 16px — captions, table/card body, dense text  */
+  --text-base: 1.25rem;    /* 20px — body prose (default reading size)      */
+  --text-lg:   1.5625rem;  /* 25px — sub-headers, lead-ins                  */
+  --text-xl:   1.9531rem;  /* 31px — section titles                         */
+  --text-2xl:  2.4414rem;  /* 39px — (reserved) / large headings            */
+  --text-3xl:  3.0518rem;  /* 49px — cover title                            */
+}
+
+/* Global size knob: the --text-* tokens are rem, so they all scale from this
+   one value. 100% = the scale above; raise it to enlarge everything (e.g.
+   106.25% = +6.25%). The diagram's SVG labels are fixed and do not scale. */
+html { font-size: 100%; scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.65; font-size: var(--text-base); }
+
+/* ── LAYOUT ─────────────────────────────────────────────── */
+#app { min-height: 100vh; overflow-x: clip; }   /* full-width; overflow-x clip contains the KF full-bleed breakout */
+
+/* Body row: sticky TOC on the left + content. Cover/footer sit outside this,
+   so they stay full-bleed. align-items:flex-start lets the TOC hug its own
+   height (and enables position:sticky) instead of stretching to match #main. */
+#layout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--toc-gap);
+  padding: var(--row-top) var(--content-pad) 0;
+  max-width: var(--frame-max);   /* TOC + content columns cap at the frame, centered */
+  margin-inline: auto;
+}
+
+/* ── SIDEBAR ────────────────────────────────────────────── */
+/* Always visible, two-state vertical position:
+   - At rest, the TOC's TOP edge lines up with the Key Findings eyebrow. The
+     margin-top matches .kf-section's top padding (20px) so the sidebar's natural
+     flow position sits level with the eyebrow rather than the section top.
+   - As the reader scrolls, the TOC flows up with the page until it reaches the
+     sticky pin point — `top: --toc-pin` — which JS keeps at the offset that
+     vertically centers the card in the viewport. From there it stays centered.
+   --toc-pin defaults to 50vh and is refined by JS once the card height is known. */
+#sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 20px;
+  position: sticky;
+  top: var(--toc-pin, 50vh);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+
+/* The TOC: links only, no card chrome — transparent and flush to the column.
+   (.toc-card carries no styles now: no background, border, or overflow clip —
+   the last would otherwise crop the hover highlight's 8px left overhang.) */
+
+nav { padding: 8px 0; }
+
+/* No highlight fill. The text is left-aligned with the divider lines (14px in).
+   Hover nudges the item right (indent); active is blue text + the same indent.
+   padding-left carries the indent so it animates smoothly. */
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 14px;
+  padding: 12px 0;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--mid);
+  cursor: pointer;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+  text-decoration: none;
+  line-height: 1.3;
+}
+.nav-item:hover { color: var(--ink); padding-left: 16px; }
+.nav-item.active { color: var(--cobalt); font-weight: 600; padding-left: 16px; }
+/* Active marker: a small teal hexagon pinned to the left of the item, its left
+   edge aligned with the divider lines. The item's left edge sits at margin-left
+   (14px) = the divider inset, so left:0 places the hexagon there. It's vertically
+   centered and sits independent of the active indent (which only pads the text). */
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 7px;
+  height: 8px;
+  background: url("data:image/svg+xml,%3Csvg width='7' height='8' viewBox='0 0 7 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.95347 0.136797C3.26946 -0.0456364 3.65877 -0.0456364 3.97475 0.136797L6.41757 1.54716C6.73356 1.7296 6.92821 2.06675 6.92821 2.43161V5.25235C6.92821 5.61721 6.73356 5.95436 6.41757 6.1368L3.97475 7.54716C3.65877 7.7296 3.26946 7.7296 2.95347 7.54716L0.510648 6.1368C0.194664 5.95436 9.77516e-06 5.61721 9.77516e-06 5.25235V2.43161C9.77516e-06 2.06675 0.194664 1.7296 0.510648 1.54716L2.95347 0.136797Z' fill='%2303D2B3'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+.nav-item.sub {
+  margin-left: 28px;
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+.nav-item.sub:hover { color: var(--ink); padding-left: 8px; }
+.nav-item.sub.active { color: var(--cobalt); font-weight: 600; padding-left: 8px; }
+
+.nav-badge {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  background: var(--cobalt-l);
+  color: var(--cobalt);
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: auto;
+}
+
+.nav-divider { height: 1px; background: var(--rule); margin: 0px 14px; }
+
+
+/* ── MAIN ───────────────────────────────────────────────── */
+#main { flex: 1; min-width: 0; }
+
+/* On wide screens, cap the body sections to a readable column and RIGHT-align
+   it — the TOC stays pinned at the left, the content hugs the right edge (one
+   --content-pad gutter), with the extra whitespace falling between them. */
+@media (min-width: 1080px) {
+  .section,
+  .kf-inner {
+    max-width: var(--content-max);
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+
+/* ── COVER ──────────────────────────────────────────────── */
+#cover {
+  background: linear-gradient(135deg, var(--ink) 0%, #1a2744 100%);
+  padding: 92px var(--content-pad) 48px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+/* On tall viewports the cover becomes a 60%-height hero; content stays
+   vertically centered. Short viewports fall back to natural (padded) height. */
+@media (min-height: 600px) {
+  #cover { min-height: 60vh; }
+}
+#cover::before {
+  content:'';
+  position:absolute;
+  top:-80px;right:-80px;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(26,111,255,0.14) 0%,transparent 70%);
+  pointer-events:none;
+}
+.cover-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: var(--cobalt);
+  margin-bottom: 10px;
+}
+.cover-client {
+  font-family: var(--serif);
+  font-size: var(--text-3xl);
+  font-weight: 400;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+.cover-subtitle {
+  font-size: var(--text-base);
+  color: rgba(255,255,255,0.4);
+  font-style: italic;
+  margin-bottom: 36px;
+}
+.cover-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 20px 40px;
+  width: fit-content;
+}
+.cover-meta-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  margin-bottom: 3px;
+}
+.cover-meta-value { font-size: var(--text-sm); font-weight: 600; color: rgba(255,255,255,0.82); }
+
+/* ── SECTION ────────────────────────────────────────────── */
+.section {
+  padding: 44px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.section:last-of-type { border-bottom: none; }
+
+/* Sticky header: logomark (far left) + an actions group (About + Download)
+   spanning the body column on the right. Fixed to the top; hides on scroll
+   down and reappears on scroll up. Transparent over the cover, frosted dark
+   once scrolled so it stays legible over the white page. */
+.cover-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  padding: 14px var(--content-pad);
+  background: transparent;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+.cover-topbar.scrolled {
+  background: rgba(13, 19, 31, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 14px rgba(0, 0, 0, 0.2);
+}
+.cover-topbar.hidden { transform: translateY(-100%); }
+.cover-logo {
+  flex-shrink: 0;
+  height: 22px;
+  color: #fff;
+  display: block;
+}
+.cover-logo svg { height: 100%; width: auto; display: block; }
+/* The actions box tracks the main content column. The topbar's inner box (set by
+   its padding-inline) equals the #layout inner box, so the content column is the
+   space AFTER the TOC sidebar + gap, right-aligned and capped at --content-max.
+   width:min() reproduces that column exactly — it's the lesser of the cap and the
+   space left of the TOC column — and margin-left:auto right-aligns it so the box
+   sits under the content on wide screens and lines up with the content's left
+   edge as the viewport narrows, instead of drifting with a fixed 1100px basis. */
+.cover-topbar-actions {
+  margin-left: auto;
+  flex: 0 0 auto;
+  width: min(var(--content-max), 100% - var(--sidebar-w) - var(--toc-gap));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.cover-about-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 22px;
+  font-family: var(--sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.cover-about-btn:hover { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.45); color: #fff; }
+.cover-about-btn svg { display: block; }
+/* The in-cover About button appears only below 860px (see the breakpoint), where
+   it replaces the topbar copy that gets hidden. Sits under the meta grid. */
+.cover-about-btn--meta { display: none; }
+.cover-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 24px;
+  font-family: var(--sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #fff;
+  background: var(--cobalt);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.cover-download-btn:hover { background: var(--cobalt-d); }
+.cover-download-btn svg { display: block; }
+
+/* About modal (centered dialog) */
+#about-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 25, 35, 0.4);
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+#about-overlay.open { opacity: 1; visibility: visible; }
+#about-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 640px;
+  max-width: 92vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 42px 44px 36px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 24px 70px rgba(15, 25, 35, 0.28);
+  z-index: 201;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -46%);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+}
+#about-modal.open { opacity: 1; visibility: visible; transform: translate(-50%, -50%); }
+.about-modal-eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: var(--cobalt);
+  margin-bottom: 16px;
+}
+#about-modal p { color: var(--mid); margin-bottom: 18px; line-height: 1.7; }
+#about-modal p:last-child { margin-bottom: 0; }
+/* Sources: a quiet, low-priority footnote-style list. */
+.about-sources { margin-top: 30px; }
+.about-sources-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 9px;
+}
+.about-sources ul { list-style: none; }
+.about-sources li {
+  position: relative;
+  padding-left: 15px;
+  font-size: var(--text-sm);
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 5px;
+}
+.about-sources li:last-child { margin-bottom: 0; }
+.about-sources li::before {
+  content: "·";
+  position: absolute;
+  left: 3px;
+  font-weight: 700;
+  color: var(--muted);
+}
+/* "Two purposes" as a numbered list with cobalt badges (matches Next Steps). */
+.about-list {
+  list-style: none;
+  counter-reset: about-item;
+  margin: 24px 0 26px 44px;
+}
+.about-list li {
+  counter-increment: about-item;
+  position: relative;
+  padding-left: 46px;
+  margin-bottom: 20px;
+  /* a touch under the section-header size, lighter weight */
+  font-family: var(--serif);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.about-list li:last-child { margin-bottom: 0; }
+.about-list li::before {
+  content: counter(about-item);
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--cobalt);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Logo in narrative */
+.narrative-logo {
+  height: 36px;
+  width: auto;
+  display: block;
+  margin-bottom: 18px;
+}
+
+.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+.section-num {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: var(--cobalt);
+  white-space: nowrap;
+}
+.section-title {
+  font-family: var(--serif);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.section-rule {
+  height: 2px;
+  margin-bottom: 22px;
+}
+
+/* Prose gets a readable measure; data/figures stay full width */
+.section > p,
+.section > ul,
+.section > ol,
+.track-intro {
+  max-width: var(--measure);
+}
+.model-table,
+.figure-wrap,
+.priority-cards,
+.next-steps-grid {
+  max-width: 100%;
+  width: 100%;
+}
+
+.section p { color: var(--mid); margin-bottom: 13px; }
+.section p:last-child { margin-bottom: 0; }
+.section p strong { color: var(--ink); }
+
+/* ── FIGURE ─────────────────────────────────────────────── */
+.figure-wrap {
+  position: relative;
+  margin: 22px 0;
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+/* Hover hints the diagram is interactive: a light dot grid behind it. */
+.figure-wrap:hover {
+  border-color: var(--cobalt-l);
+  background-color: #fff;
+  background-image: radial-gradient(circle, rgba(15, 25, 35, 0.07) 1px, transparent 1.4px);
+  background-size: 18px 18px;
+}
+/* The diagram SVG only — a direct child. The `>` keeps this off the button's
+   icon SVGs (nested inside .fs-btn), which manage their own display state. */
+.figure-wrap > svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Full-screen overlay (kept below the detail/priority drawers at z-index 200+) */
+.figure-wrap.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  padding: 28px;
+  overflow: hidden;
+}
+.figure-wrap.is-fullscreen > svg { width: 100%; height: 100%; }
+
+/* Full-screen toggle button */
+.fs-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 6;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  color: var(--muted);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(15, 25, 35, 0.07);
+  transition: color 0.15s, border-color 0.15s;
+}
+.fs-btn:hover { color: var(--cobalt); border-color: var(--cobalt); }
+.fs-ico { width: 17px; height: 17px; }
+/* Default (not fullscreen): show expand, hide collapse. */
+.fs-ico-expand { display: block; }
+.fs-ico-collapse { display: none; }
+/* Fullscreen: swap them. */
+.is-fullscreen .fs-ico-expand { display: none; }
+.is-fullscreen .fs-ico-collapse { display: block; }
+.figure-hint {
+  font-size: var(--text-sm);
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 6px;
+  margin-bottom: 0 !important;
+}
+
+/* ── TABLES ─────────────────────────────────────────────── */
+.model-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: var(--text-sm);
+}
+.model-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+}
+.model-table td {
+  padding: 11px 14px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule);
+  line-height: 1.55;
+  color: var(--mid);
+}
+.model-table tr:last-child td { border-bottom: none; }
+.model-table tr:nth-child(even) td { background: var(--cobalt-ll); }
+.model-table td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; width: 175px; }
+/* Fixed layout so the two content columns are exactly equal width
+   (auto layout was sizing them by content, making the text density differ). */
+#evidence-table { table-layout: fixed; }
+#evidence-table th:first-child,
+#evidence-table td:first-child { white-space: normal; width: 165px; }
+#evidence-table td { font-size: var(--text-sm); }
+#evidence-table th { font-size: var(--text-xs); }
+.ev-asset { font-weight: 600; color: var(--ink); }
+/* Inline source icon + hover/focus tooltip */
+.ev-src {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  color: var(--muted);
+  cursor: help;
+  position: relative;
+  vertical-align: middle;
+}
+.ev-src svg { display: block; }
+.ev-src:hover, .ev-src:focus-visible { color: var(--cobalt); outline: none; }
+.ev-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  width: max-content;
+  max-width: 230px;
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  padding: 8px 11px;
+  border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(15, 25, 35, 0.18);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 60;
+}
+.ev-src:hover .ev-tip,
+.ev-src:focus-visible .ev-tip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+.ev-tip-label {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 3px;
+}
+
+.m-dot-full { color: var(--cobalt); font-size: var(--text-base); }
+.m-dot-open { color: #c0cce0; font-size: var(--text-base); }
+.m-dot-none { color: #dde4ee; font-size: var(--text-sm); }
+.matrix-legend { font-size: var(--text-sm); color: var(--muted); margin-bottom: 14px; }
+
+/* ── SUBSECTION HEADER ──────────────────────────────────── */
+.sub-header {
+  font-family: var(--serif);
+  font-size: var(--text-lg);
+  font-weight: 400;
+  color: var(--ink);
+  margin: 30px 0 4px;
+}
+.sub-rule { height: 1.5px; margin-bottom: 16px; }
+
+/* ── PRIORITY CARDS ─────────────────────────────────────── */
+.priority-cards { display: flex; flex-direction: column; gap: 10px; }
+
+/* The matrix variant reads as one continuous list — rows separated by divider
+   lines, rather than four separate cards with gaps. */
+.priority-matrix { gap: 0; }
+
+.priority-card {
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.priority-card:hover { box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
+.priority-card.open  { box-shadow: 0 3px 16px rgba(0,0,0,0.09); }
+
+/* Inside the matrix, strip the per-card chrome and separate rows with a rule. */
+.priority-matrix .priority-card {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+.priority-matrix .priority-card + .priority-card { border-top: 1px solid var(--rule); }
+
+.priority-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  background: #fff;
+  transition: background 0.15s;
+}
+.priority-card-header:hover { background: var(--cobalt-ll); }
+.priority-card.open .priority-card-header { background: var(--cobalt-ll); }
+
+.priority-badge {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: #fff;
+  padding: 3px 9px;
+  border-radius: 5px;
+  white-space: nowrap;
+  min-width: 34px;
+  text-align: center;
+}
+.priority-card-title { font-size: var(--text-base); font-weight: 600; color: var(--ink); flex: 1; line-height: 1.3; }
+.priority-card-horizon {
+  font-size: var(--text-xs);
+  color: var(--muted);
+  white-space: nowrap;
+  border: 1px solid var(--rule);
+  padding: 2px 9px;
+  border-radius: 20px;
+}
+.priority-card-tag {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.tag-green  { background: var(--green-l);  color: var(--green); }
+.tag-cobalt { background: var(--cobalt-l); color: var(--cobalt); }
+.tag-amber  { background: var(--amber-l);  color: var(--amber); }
+.tag-mid    { background: #f1f5f9; color: var(--muted); }
+
+/* ── PRIORITY MATRIX (accordion carrying the at-a-glance columns) ──────────
+   The four evidence dots live in each card header as a fixed-width grid so they
+   line up across cards; --pm-dots-w is the shared column-block width the key row
+   mirrors. */
+.priority-matrix { --pm-dots-w: 340px; }
+/* Column key sits above the cards, right-aligned so the dot labels land over the
+   dot grid. The focus label fills the left, matching the card title column. */
+.priority-matrix-key {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 12px 18px 10px;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pm-key-focus { flex: 1; padding-bottom: 4px; }
+.pm-key-dots {
+  flex: 0 0 var(--pm-dots-w);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 11px 6px;
+  text-align: center;
+  line-height: 1.15;
+  /* reserve the trailing chevron + the header's 14px flex gap so the label
+     columns land directly over the dot columns */
+  margin-right: calc(var(--text-xs) + 2px + 14px);
+}
+.pm-key-dots > span { overflow-wrap: anywhere; }
+/* Superheader banner spanning the four evidence columns. */
+.pm-key-super {
+  grid-column: 1 / -1;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--cobalt);
+}
+/* The dot grid inside each header — same width + columns as the key. */
+.pm-dots {
+  flex: 0 0 var(--pm-dots-w);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+.pm-dots > span { line-height: 1; }
+/* The tag moved from the header into the body; make it a standalone chip. */
+.priority-card-body > .priority-card-tag {
+  display: inline-block;
+  margin-top: 16px;
+}
+
+@media (max-width: 799px) {
+  /* Stacked layout: drop the fixed dot grid to natural width and hide the key
+     row (the per-dot title tooltips + legend still convey the mapping). */
+  .priority-matrix-key { display: none; }
+  .pm-dots { flex: 0 0 auto; grid-auto-flow: column; grid-template-columns: none; }
+}
+
+.priority-chevron { font-size: var(--text-xs); color: var(--muted); transition: transform 0.2s; margin-left: 2px; }
+.priority-card.open .priority-chevron { transform: rotate(180deg); }
+
+.priority-card-body {
+  display: none;
+  padding: 4px 18px 18px;
+  border-top: 1px solid var(--rule);
+  background: #fff;
+}
+.priority-card.open .priority-card-body { display: block; }
+
+.priority-card-body p {
+  font-size: var(--text-sm);
+  color: var(--mid);
+  margin-top: 14px;
+  margin-bottom: 8px;
+  max-width: 100%;
+}
+.priority-card-body p.italic {
+  font-style: italic;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  border-left: 2px solid var(--cobalt-l);
+  padding-left: 12px;
+  margin-top: 12px;
+}
+.priority-card-body h4 {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 16px;
+  margin-bottom: 7px;
+}
+.priority-card-body ul { list-style: none; padding: 0; margin: 0; }
+.priority-card-body ul li {
+  font-size: var(--text-sm);
+  color: var(--mid);
+  padding: 4px 0 4px 16px;
+  position: relative;
+  max-width: 100%;
+}
+.priority-card-body ul li::before { content:"·"; position:absolute; left:3px; color:var(--cobalt); font-weight:700; }
+
+/* ── NEXT STEPS ─────────────────────────────────────────── */
+.next-steps-list { margin-top: 20px; }
+.next-step { display: flex; gap: 12px; margin-bottom: 13px; align-items: flex-start; }
+.next-step-num {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: #fff;
+  background: var(--cobalt);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.next-step-body { font-size: var(--text-sm); color: var(--mid); line-height: 1.55; }
+.next-step-body strong { color: var(--ink); }
+
+/* ── FOOTER ─────────────────────────────────────────────── */
+#report-footer {
+  background: var(--ink);
+  padding: 28px var(--content-pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+/* Bands span the full screen (backgrounds), but their inner content is held to
+   the centered --frame-max column so it lines up with the body columns above.
+   Placed after the base padding shorthands so it wins. */
+#cover,
+#report-footer,
+.cover-topbar {
+  padding-inline: max(var(--content-pad), calc((100% - var(--frame-max)) / 2 + var(--content-pad)));
+}
+.footer-logo { height: 22px; color: #fff; }
+.footer-logo svg { height: 100%; width: auto; display: block; }
+.footer-tagline { font-size: var(--text-xs); color: rgba(255,255,255,0.3); margin-top: 9px; font-style: italic; }
+.footer-contact { font-size: var(--text-sm); color: rgba(255,255,255,0.45); text-align: right; }
+.footer-contact a { color: var(--cobalt); text-decoration: none; }
+
+/* ── NODE DETAIL PANEL ──────────────────────────────────── */
+#dp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 25, 35, 0.4);
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+#dp-overlay.open { opacity: 1; visibility: visible; }
+/* Right-side drawer */
+#dp-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 460px;
+  max-width: 92vw;
+  background: #fff;
+  overflow-y: auto;
+  z-index: 201;
+  box-shadow: -12px 0 40px rgba(15, 25, 35, 0.18);
+  transform: translateX(100%);
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#dp-panel.open { transform: translateX(0); }
+.drawer-close {
+  position: absolute;
+  top: 13px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 2;
+}
+.drawer-close:hover { color: var(--ink); background: var(--rule); }
+.dp-header { padding: 16px 48px 12px 20px; border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: #fff; z-index: 1; }
+.dp-cat { font-family: monospace; font-size: var(--text-xs); font-weight: 600; letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.dp-title { font-size: var(--text-base); font-weight: 600; color: var(--ink); }
+.dp-body { padding: 16px 20px 20px; }
+.dp-tip { background: var(--cobalt-ll); border-left: 3px solid var(--cobalt); padding: 10px 14px; border-radius: 0 4px 4px 0; margin-bottom: 14px; font-size: var(--text-sm); color: var(--mid); line-height: 1.6; font-style: italic; }
+.badge { display: inline-block; font-family: monospace; font-size: var(--text-xs); font-weight: 600; letter-spacing: var(--track-caps); padding: 2px 8px; border-radius: 3px; margin-bottom: 12px; }
+.b-ok  { background: var(--green-l); color: #065f46; }
+.b-par { background: #fef3c7; color: #92400e; }
+.b-gap { background: #fee2e2; color: #991b1b; }
+.dp-sec-lbl { font-family: monospace; font-size: var(--text-xs); font-weight: 600; letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--muted); margin: 14px 0 5px; }
+.dp-sec-lbl.gap { color: #b45309; }
+.dp-content { font-size: var(--text-sm); line-height: 1.65; color: var(--ink); white-space: pre-wrap; }
+.dp-content.gap { font-size: var(--text-sm); color: #92400e; font-style: italic; }
+
+/* ── FIGURE TOGGLE ──────────────────────────────────────────── */
+.figure-controls { margin-bottom: 14px; }
+.badge-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--mid);
+  cursor: pointer;
+  user-select: none;
+}
+.badge-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.badge-toggle .switch {
+  width: 38px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--rule);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+.badge-toggle .switch::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 25, 35, 0.25);
+  transition: transform 0.2s ease;
+}
+.badge-toggle input:checked + .switch { background: var(--cobalt); }
+.badge-toggle input:checked + .switch::before { transform: translateX(16px); }
+.badge-toggle input:focus-visible + .switch { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+
+.figure-view { display: none; }
+.figure-view.active { display: block; }
+
+.meas-hint {
+  font-size: var(--text-sm);
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 6px;
+  margin-bottom: 0 !important;
+}
+
+/* priority popup in measurement view */
+/* Right-side drawer */
+#priority-popup {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 440px;
+  max-width: 92vw;
+  padding: 58px 30px 30px;
+  background: #fff;
+  box-shadow: -12px 0 40px rgba(15, 25, 35, 0.18);
+  z-index: 300;
+  overflow-y: auto;
+  font-size: var(--text-sm);
+  transform: translateX(100%);
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#priority-popup.open { transform: translateX(0); }
+#pp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 25, 35, 0.4);
+  z-index: 299;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+#pp-overlay.open { opacity: 1; visibility: visible; }
+.pp-close-x {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: color 0.15s, background 0.15s;
+}
+.pp-close-x:hover { color: var(--ink); background: var(--rule); }
+#priority-popup .pp-badge {
+  display: inline-block;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 7px;
+}
+#priority-popup .pp-title {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+#priority-popup .pp-body {
+  color: var(--mid);
+  line-height: 1.55;
+  font-size: var(--text-sm);
+}
+#priority-popup .pp-link {
+  display: block;
+  margin-top: 10px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--cobalt);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.figure-meas-wrap {
+  position: relative;
+  margin: 0;
+}
+
+/* ── PRINT ──────────────────────────────────────────────── */
+/* Hidden on screen, restored in print */
+.print-only { display: none; }
+
+@media print {
+  #sidebar, .cover-topbar { display: none !important; }
+  .print-only { display: block !important; }
+  /* TOC is hidden in print, so drop the layout row + screen-centering offset
+     and let content flow full-width. */
+  #layout { display: block !important; padding: 0 !important; }
+  #main { margin-left: 0 !important; }
+  .section, .kf-inner { max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
+  #cover, #report-footer { padding-left: var(--content-pad) !important; padding-right: var(--content-pad) !important; }
+  .kf-section::before { display: none !important; }
+  .priority-card-body { display: block !important; }
+  .priority-chevron { display: none; }
+  #cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #report-footer { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* Below 1280px the layout gutter (the space left of the TOC and right of the
+   content — content/cards now sit flush to the column edges) ramps linearly
+   with the viewport: 16px at 860px up to 40px at 1280px, fluid with no
+   breakpoint jump. Fixed 40px above 1280px; the 860px rule pins 16px under. */
+@media (max-width: 1280px) {
+  :root {
+    --content-pad: clamp(16px, calc(16px + (100vw - 860px) * 24 / 420), 40px);
+    --toc-gap: clamp(16px, calc(16px + (100vw - 860px) * 112 / 420), 128px);
+  }
+}
+
+@media (max-width: 860px) {
+  :root { --sidebar-w: 0px; --content-pad: 16px; --toc-gap: 0px; }
+  #sidebar { display: none; }
+  .cover-meta-grid { grid-template-columns: 1fr 1fr; }
+  /* Move About out of the cramped topbar and under the meta grid; leave only
+     the Download button in the topbar. With one button, shrink the actions box
+     to its content and let margin-left:auto right-align it flush to the topbar
+     padding (the wide-screen width:100% would overflow past the logo). */
+  .cover-topbar-actions .cover-about-btn { display: none; }
+  .cover-topbar-actions { width: auto; justify-content: flex-end; }
+  .cover-about-btn--meta { display: inline-flex; align-self: flex-start; margin-top: 28px; }
+}
+
+/* ── KEY FINDINGS ───────────────────────────────────────── */
+/* .kf-section spans the full width of #main (no max-width/margin), so its left
+   edge is deterministically at #main's left edge. .kf-inner does the centering. */
+.kf-section {
+  position: relative;
+  padding: 20px 0 40px 0;
+}
+.kf-inner { padding: 0; }
+.kf-card { min-width: 0; }   /* prevent grid items from blowing out the column */
+/* Full-bleed tinted background. .kf-section's left edge sits exactly #main's
+   left offset (content-pad + TOC + gap) from the screen edge, so shifting the
+   band left by that offset pins it to the screen edge; 100vw fills across. */
+.kf-section::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: calc(-1 * var(--row-top));
+  bottom: 0;
+  left: calc(-1 * (max(0px, (100vw - var(--frame-max)) / 2) + var(--content-pad) + var(--sidebar-w) + var(--toc-gap)));
+  width: 100vw;
+  background: var(--cobalt-ll);
+  border-bottom: 1px solid var(--rule);
+}
+.kf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+/* Collapse the key-findings cards to a single column on narrow viewports. */
+@media (max-width: 799px) {
+  .kf-grid { grid-template-columns: 1fr; }
+}
+.kf-card {
+  background: #fff;
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.kf-num {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: #fff;
+  background: var(--cobalt);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.kf-title {
+  font-family: var(--serif);
+  font-size: var(--text-base);
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.kf-desc {
+  font-size: var(--text-sm);
+  color: var(--mid);
+  line-height: 1.55;
+}

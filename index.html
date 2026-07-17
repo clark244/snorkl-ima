@@ -5,830 +5,147 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Impact Measurement Assessment — Snorkl</title>
 <link rel="preconnect" href="https://fonts.googleapis.com/">
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
-<style>
-/* ── RESET ──────────────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-:root {
-  --cobalt:    #1a6fff;
-  --cobalt-d:  #1458cc;
-  --cobalt-l:  #e8f0ff;
-  --cobalt-ll: #f4f7ff;
-  --amber:     #d97706;
-  --amber-l:   #fffbeb;
-  --green:     #059669;
-  --green-l:   #d1fae5;
-  --ink:       #0f1923;
-  --mid:       #4a5568;
-  --muted:     #718096;
-  --rule:      #e2e8f0;
-  --bg:        #ffffff;
-  --sidebar-w: 252px;
-  --content-pad: 52px;
-  --serif: 'Source Serif 4', Georgia, serif;
-  --sans:  'Source Sans 3', system-ui, sans-serif;
-}
-
-html { scroll-behavior: smooth; }
-body { font-family: var(--sans); background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 15px; }
-
-/* ── LAYOUT ─────────────────────────────────────────────── */
-#app { display: flex; min-height: 100vh; }
-
-/* ── SIDEBAR ────────────────────────────────────────────── */
-#sidebar {
-  width: var(--sidebar-w);
-  min-height: 100vh;
-  background: var(--ink);
-  position: fixed;
-  top: 0; left: 0;
-  display: flex;
-  flex-direction: column;
-  z-index: 100;
-  overflow-y: auto;
-}
-
-.sidebar-brand {
-  padding: 28px 20px 22px;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-.sidebar-org {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-  margin-bottom: 3px;
-}
-.sidebar-doc {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #fff;
-  line-height: 1.3;
-}
-.sidebar-meta {
-  font-size: 11px;
-  color: rgba(255,255,255,0.3);
-  margin-top: 5px;
-}
-
-nav { padding: 12px 0; flex: 1; }
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 20px;
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.5);
-  cursor: pointer;
-  transition: all 0.15s;
-  border-left: 2px solid transparent;
-  text-decoration: none;
-  line-height: 1.3;
-}
-.nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
-.nav-item.active { color: #fff; border-left-color: var(--cobalt); background: rgba(26,111,255,0.12); }
-.nav-item.sub {
-  padding-left: 34px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.38);
-}
-.nav-item.sub:hover { color: rgba(255,255,255,0.75); }
-.nav-item.sub.active { color: rgba(255,255,255,0.9); border-left-color: var(--cobalt); }
-
-.nav-badge {
-  font-size: 10px;
-  font-weight: 700;
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.45);
-  padding: 1px 6px;
-  border-radius: 10px;
-  margin-left: auto;
-}
-.nav-item.active .nav-badge { background: var(--cobalt); color: #fff; }
-
-.nav-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 6px 16px; }
-
-.sidebar-footer {
-  padding: 14px 20px;
-  border-top: 1px solid rgba(255,255,255,0.07);
-  font-size: 11px;
-  color: rgba(255,255,255,0.22);
-  line-height: 1.5;
-}
-
-/* ── MAIN ───────────────────────────────────────────────── */
-#main { margin-left: var(--sidebar-w); flex: 1; }
-
-/* ── COVER ──────────────────────────────────────────────── */
-#cover {
-  background: linear-gradient(135deg, var(--ink) 0%, #1a2744 100%);
-  padding: 56px var(--content-pad) 48px;
-  position: relative;
-  overflow: hidden;
-}
-#cover::before {
-  content:'';
-  position:absolute;
-  top:-80px;right:-80px;
-  width:400px;height:400px;
-  background:radial-gradient(circle,rgba(26,111,255,0.14) 0%,transparent 70%);
-  pointer-events:none;
-}
-.cover-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--cobalt);
-  margin-bottom: 10px;
-}
-.cover-client {
-  font-family: var(--serif);
-  font-size: 40px;
-  font-weight: 600;
-  color: #fff;
-  line-height: 1.15;
-  margin-bottom: 4px;
-}
-.cover-subtitle {
-  font-size: 15px;
-  color: rgba(255,255,255,0.4);
-  font-style: italic;
-  margin-bottom: 36px;
-}
-.cover-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  gap: 20px 40px;
-  width: fit-content;
-}
-.cover-meta-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.28);
-  margin-bottom: 3px;
-}
-.cover-meta-value { font-size: 13.5px; font-weight: 600; color: rgba(255,255,255,0.82); }
-
-/* ── SECTION ────────────────────────────────────────────── */
-.section {
-  padding: 44px var(--content-pad);
-  border-bottom: 1px solid var(--rule);
-}
-.section:last-of-type { border-bottom: none; }
-
-/* Logo in narrative */
-.narrative-logo {
-  height: 36px;
-  width: auto;
-  display: block;
-  margin-bottom: 18px;
-}
-
-.section-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
-.section-num {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--cobalt);
-  white-space: nowrap;
-}
-.section-title {
-  font-family: var(--serif);
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--ink);
-  line-height: 1.2;
-}
-.section-rule {
-  height: 2px;
-  background: linear-gradient(90deg, var(--cobalt) 0%, transparent 100%);
-  margin-bottom: 22px;
-  border-radius: 1px;
-}
-
-.section p,
-.section ul,
-.section ol,
-.model-table,
-.matrix-wrap,
-.figure-wrap,
-.priority-cards,
-.next-steps-grid,
-.track-intro {
-  max-width: 100%;
-  width: 100%;
-}
-
-.section p { color: var(--mid); margin-bottom: 13px; }
-.section p:last-child { margin-bottom: 0; }
-.section p strong { color: var(--ink); }
-
-/* ── FIGURE ─────────────────────────────────────────────── */
-.figure-wrap {
-  margin: 22px 0;
-  border: 1.5px solid var(--rule);
-  border-radius: 8px;
-  overflow: hidden;
-  background: #fff;
-  cursor: pointer;
-}
-.figure-wrap svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-.figure-hint {
-  font-size: 12px;
-  color: var(--muted);
-  font-style: italic;
-  margin-top: 6px;
-  margin-bottom: 0 !important;
-}
-
-/* ── TABLES ─────────────────────────────────────────────── */
-.model-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  font-size: 13.5px;
-}
-.model-table th {
-  text-align: left;
-  padding: 10px 14px;
-  background: var(--ink);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.model-table td {
-  padding: 11px 14px;
-  vertical-align: top;
-  border-bottom: 1px solid var(--rule);
-  line-height: 1.55;
-  color: var(--mid);
-}
-.model-table tr:last-child td { border-bottom: none; }
-.model-table tr:nth-child(even) td { background: var(--cobalt-ll); }
-.model-table td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; width: 175px; }
-#evidence-table td:first-child { white-space: normal; width: 160px; }
-#evidence-table td { font-size: 12.5px; }
-#evidence-table th { font-size: 10px; }
-
-.matrix-wrap { margin: 20px 0; overflow-x: auto; border: 1.5px solid var(--rule); border-radius: 8px; }
-.matrix-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.matrix-table th {
-  padding: 10px 10px;
-  background: var(--ink);
-  color: #fff;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-align: center;
-}
-.matrix-table th:nth-child(3) { text-align: left; }
-.matrix-table td {
-  padding: 9px 10px;
-  border-bottom: 1px solid var(--rule);
-  text-align: center;
-  vertical-align: middle;
-}
-.matrix-table tr:last-child td { border-bottom: none; }
-.matrix-table tr:nth-child(even) td { background: var(--cobalt-ll); }
-.matrix-table td:nth-child(3) { text-align: left; font-weight: 600; color: var(--ink); }
-.matrix-table td:nth-child(4) { font-size: 12px; }
-.m-badge { display:inline-block; font-size:11px; font-weight:700; color:#fff; padding:2px 8px; border-radius:4px; }
-.m-dot-full { color: var(--cobalt); font-size: 15px; }
-.m-dot-open { color: #c0cce0; font-size: 15px; }
-.m-dot-none { color: #dde4ee; font-size: 13px; }
-.matrix-legend { font-size: 12px; color: var(--muted); padding: 9px 14px; border-top: 1px solid var(--rule); background: var(--cobalt-ll); }
-
-/* ── SUBSECTION HEADER ──────────────────────────────────── */
-.sub-header {
-  font-family: var(--serif);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--ink);
-  margin: 30px 0 4px;
-}
-.sub-rule { height: 1.5px; background: linear-gradient(90deg, var(--cobalt) 0%, transparent 100%); margin-bottom: 16px; border-radius: 1px; }
-
-/* ── PRIORITY CARDS ─────────────────────────────────────── */
-.priority-cards { display: flex; flex-direction: column; gap: 10px; }
-
-.priority-card {
-  border: 1.5px solid var(--rule);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: box-shadow 0.2s;
-}
-.priority-card:hover { box-shadow: 0 3px 16px rgba(0,0,0,0.07); }
-.priority-card.open  { box-shadow: 0 3px 16px rgba(0,0,0,0.09); }
-
-.priority-card-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
-  cursor: pointer;
-  user-select: none;
-  background: #fff;
-  transition: background 0.15s;
-}
-.priority-card-header:hover { background: var(--cobalt-ll); }
-.priority-card.open .priority-card-header { background: var(--cobalt-ll); }
-
-.priority-badge {
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-  padding: 3px 9px;
-  border-radius: 5px;
-  white-space: nowrap;
-  min-width: 34px;
-  text-align: center;
-}
-.priority-card-title { font-size: 14.5px; font-weight: 600; color: var(--ink); flex: 1; line-height: 1.3; }
-.priority-card-horizon {
-  font-size: 11px;
-  color: var(--muted);
-  white-space: nowrap;
-  border: 1px solid var(--rule);
-  padding: 2px 9px;
-  border-radius: 20px;
-}
-.priority-card-tag {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-.tag-green  { background: var(--green-l);  color: var(--green); }
-.tag-cobalt { background: var(--cobalt-l); color: var(--cobalt); }
-.tag-amber  { background: var(--amber-l);  color: var(--amber); }
-.tag-mid    { background: #f1f5f9; color: var(--muted); }
-
-.priority-chevron { font-size: 10px; color: var(--muted); transition: transform 0.2s; margin-left: 2px; }
-.priority-card.open .priority-chevron { transform: rotate(180deg); }
-
-.priority-card-body {
-  display: none;
-  padding: 4px 18px 18px;
-  border-top: 1px solid var(--rule);
-  background: #fff;
-}
-.priority-card.open .priority-card-body { display: block; }
-
-.priority-card-body p {
-  font-size: 13.5px;
-  color: var(--mid);
-  margin-top: 14px;
-  margin-bottom: 8px;
-  max-width: 100%;
-}
-.priority-card-body p.italic {
-  font-style: italic;
-  color: var(--muted);
-  font-size: 13px;
-  border-left: 2px solid var(--cobalt-l);
-  padding-left: 12px;
-  margin-top: 12px;
-}
-.priority-card-body h4 {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 16px;
-  margin-bottom: 7px;
-}
-.priority-card-body ul { list-style: none; padding: 0; margin: 0; }
-.priority-card-body ul li {
-  font-size: 13.5px;
-  color: var(--mid);
-  padding: 4px 0 4px 16px;
-  position: relative;
-  max-width: 100%;
-}
-.priority-card-body ul li::before { content:"·"; position:absolute; left:3px; color:var(--cobalt); font-weight:700; }
-
-/* ── NEXT STEPS ─────────────────────────────────────────── */
-.next-steps-list { margin-top: 20px; }
-.next-step { display: flex; gap: 12px; margin-bottom: 13px; align-items: flex-start; }
-.next-step-num {
-  font-size: 11px;
-  font-weight: 700;
-  color: #fff;
-  background: var(--cobalt);
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-.next-step-body { font-size: 13.5px; color: var(--mid); line-height: 1.55; }
-.next-step-body strong { color: var(--ink); }
-
-/* ── FOOTER ─────────────────────────────────────────────── */
-#report-footer {
-  background: var(--ink);
-  padding: 28px var(--content-pad);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.footer-brand { font-size: 14px; font-weight: 600; color: #fff; }
-.footer-tagline { font-size: 11.5px; color: rgba(255,255,255,0.3); margin-top: 2px; font-style: italic; }
-.footer-contact { font-size: 13px; color: rgba(255,255,255,0.45); text-align: right; }
-.footer-contact a { color: var(--cobalt); text-decoration: none; }
-
-/* ── NODE DETAIL PANEL ──────────────────────────────────── */
-#dp-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-  z-index: 200;
-}
-#dp-panel {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  border: 2px solid var(--ink);
-  border-radius: 6px;
-  width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-  z-index: 201;
-  box-shadow: 6px 6px 0 var(--ink);
-}
-.dp-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: #fff; z-index: 1; }
-.dp-cat { font-family: monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
-.dp-title { font-size: 17px; font-weight: 600; color: var(--ink); }
-.dp-body { padding: 16px 20px 20px; }
-.dp-tip { background: var(--cobalt-ll); border-left: 3px solid var(--cobalt); padding: 10px 14px; border-radius: 0 4px 4px 0; margin-bottom: 14px; font-size: 12px; color: var(--mid); line-height: 1.6; font-style: italic; }
-.badge { display: inline-block; font-family: monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 3px; margin-bottom: 12px; }
-.b-ok  { background: var(--green-l); color: #065f46; }
-.b-par { background: #fef3c7; color: #92400e; }
-.b-gap { background: #fee2e2; color: #991b1b; }
-.dp-sec-lbl { font-family: monospace; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 14px 0 5px; }
-.dp-sec-lbl.gap { color: #b45309; }
-.dp-content { font-size: 13px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; }
-.dp-editable {
-  border: 1.5px solid transparent;
-  border-radius: 3px;
-  padding: 6px 8px;
-  margin: -6px -8px;
-  outline: none;
-  transition: border-color 0.15s, background 0.15s;
-  cursor: text;
-  min-height: 1.4em;
-}
-.dp-editable:focus { border-color: var(--cobalt); background: var(--cobalt-ll); }
-.dp-editable:hover:not(:focus) { border-color: var(--rule); }
-.dp-content.gap { font-size: 12px; color: #92400e; font-style: italic; }
-.dp-close-btn {
-  display: block; width: 100%; margin-top: 18px; padding: 8px;
-  font-family: var(--sans); font-size: 12px; font-weight: 600;
-  border: 2px solid var(--ink); border-radius: 3px;
-  background: var(--ink); color: #fff; cursor: pointer;
-}
-.dp-close-btn:hover { background: var(--cobalt); border-color: var(--cobalt); }
-
-/* ── FIGURE TOGGLE ──────────────────────────────────────────── */
-.figure-toggle-bar {
-  display: flex;
-  gap: 0;
-  margin-bottom: 12px;
-  border: 1.5px solid var(--rule);
-  border-radius: 6px;
-  overflow: hidden;
-  width: fit-content;
-}
-.fig-toggle-btn {
-  padding: 7px 18px;
-  font-family: var(--sans);
-  font-size: 12px;
-  font-weight: 600;
-  border: none;
-  background: #fff;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.15s;
-  letter-spacing: 0.03em;
-}
-.fig-toggle-btn:first-child { border-right: 1.5px solid var(--rule); }
-.fig-toggle-btn.active {
-  background: var(--cobalt);
-  color: #fff;
-}
-.fig-toggle-btn:hover:not(.active) { background: var(--cobalt-ll); color: var(--cobalt); }
-
-.figure-view { display: none; }
-.figure-view.active { display: block; }
-
-.meas-hint {
-  font-size: 12px;
-  color: var(--muted);
-  font-style: italic;
-  margin-top: 6px;
-  margin-bottom: 0 !important;
-}
-
-/* priority popup in measurement view */
-#priority-popup {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  border: 2px solid var(--ink);
-  border-radius: 6px;
-  padding: 20px 20px 16px;
-  width: 360px;
-  box-shadow: 6px 6px 0 var(--ink);
-  z-index: 300;
-  font-size: 13px;
-}
-#pp-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.25);
-  z-index: 299;
-}
-.pp-close-x {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--muted);
-  cursor: pointer;
-  line-height: 1;
-  padding: 2px 4px;
-  border-radius: 3px;
-  transition: color 0.15s, background 0.15s;
-}
-.pp-close-x:hover { color: var(--ink); background: var(--rule); }
-#priority-popup .pp-badge {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-bottom: 7px;
-}
-#priority-popup .pp-title {
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 8px;
-  line-height: 1.3;
-}
-#priority-popup .pp-body {
-  color: var(--mid);
-  line-height: 1.55;
-  font-size: 12.5px;
-}
-#priority-popup .pp-link {
-  display: block;
-  margin-top: 10px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--cobalt);
-  cursor: pointer;
-  text-decoration: underline;
-}
-.figure-meas-wrap {
-  position: relative;
-  margin: 0;
-}
-
-/* ── PRINT ──────────────────────────────────────────────── */
-.print-btn {
-  position: fixed;
-  bottom: 22px; right: 22px;
-  background: var(--cobalt);
-  color: #fff;
-  border: none;
-  padding: 9px 16px;
-  border-radius: 6px;
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(26,111,255,0.35);
-  z-index: 190;
-  transition: background 0.15s;
-}
-.print-btn:hover { background: var(--cobalt-d); }
-
-/* Hidden on screen, restored in print */
-.print-only { display: none; }
-
-@media print {
-  #sidebar,.print-btn { display: none !important; }
-  .print-only { display: block !important; }
-  #main { margin-left: 0 !important; }
-  .priority-card-body { display: block !important; }
-  .priority-chevron { display: none; }
-  #cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  #report-footer { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-}
-
-@media (max-width: 860px) {
-  :root { --sidebar-w: 0px; --content-pad: 24px; }
-  #sidebar { display: none; }
-  .cover-meta-grid { grid-template-columns: 1fr 1fr; }
-}
-
-/* ── KEY FINDINGS ───────────────────────────────────────── */
-.kf-section {
-  background: var(--cobalt-ll);
-  padding: 40px var(--content-pad);
-  border-bottom: 1px solid var(--rule);
-}
-.kf-header {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--cobalt);
-  margin-bottom: 16px;
-}
-.kf-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.kf-card {
-  background: #fff;
-  border: 1.5px solid var(--rule);
-  border-radius: 8px;
-  padding: 18px 20px;
-}
-.kf-num {
-  font-size: 11px;
-  font-weight: 700;
-  color: #fff;
-  background: var(--cobalt);
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-.kf-title {
-  font-family: var(--serif);
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 6px;
-  line-height: 1.3;
-}
-.kf-desc {
-  font-size: 13.5px;
-  color: var(--mid);
-  line-height: 1.55;
-}
-</style>
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://use.typekit.net/ezo0rqt.css">
+<link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body>
 <div id="pp-overlay" onclick="hidePriorityPopup()"></div>
 <div id="app">
 
-<!-- ── SIDEBAR ───────────────────────────────────────────────────── -->
-<aside id="sidebar">
-  <div class="sidebar-brand">
-    <div class="sidebar-org">Cobalt Collective</div>
-    <div class="sidebar-doc">Impact Measurement Assessment</div>
-    <div class="sidebar-meta">Snorkl · June 1, 2026</div>
+<!-- ── COVER (full-bleed banner) ─────────────────────────────────── -->
+<div id="cover">
+  <div class="cover-topbar">
+    <a class="cover-logo" href="#" aria-label="Cobalt Collective">
+      <svg viewBox="0 0 3114 401" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M3113.65 241.751H2972.12C2972.86 280.319 2993.83 308.028 3033.15 308.028C3064.6 308.028 3082.2 291.927 3090.44 265.716L3112.16 274.702C3103.17 306.53 3077.33 330.869 3030.53 330.869C2969.87 330.869 2935.79 290.803 2935.79 235.386C2935.79 179.594 2973.24 140.277 3027.91 140.277C3081.83 140.277 3113.65 175.849 3113.65 232.765V241.751ZM3027.91 162.369C2994.58 162.369 2974.74 183.713 2972.12 221.906H3078.08C3077.33 182.215 3060.11 162.369 3027.91 162.369Z" fill="currentColor"/>
+        <path d="M2795.74 175.849C2798.73 184.462 2828.31 254.483 2843.29 288.931L2890.09 176.224C2892.72 170.607 2888.97 166.488 2884.1 166.488H2863.51V144.771H2941.39V166.488H2924.54C2920.05 166.488 2916.31 168.361 2913.68 175.101L2848.53 328.622H2825.69L2759.79 175.101C2757.17 167.986 2754.92 166.488 2751.18 166.488H2733.2V144.771H2820.45V166.488H2802.1C2796.48 166.488 2793.49 169.484 2795.74 175.849Z" fill="currentColor"/>
+        <path d="M2624.76 330.495C2588.82 330.495 2574.21 315.891 2574.21 278.821V166.489H2546.88V147.017L2564.85 145.894C2574.96 144.396 2580.2 141.026 2581.33 130.168L2584.7 97.2165H2609.79V144.771H2652.76V166.489H2608.66V278.447C2608.66 299.041 2616.53 306.905 2634.12 306.905C2643.11 306.905 2648.35 305.033 2653.22 303.535V326.001C2647.6 327.874 2637.12 330.495 2624.76 330.495Z" fill="currentColor"/>
+        <path d="M2490.04 212.919C2490.04 200.563 2497.91 191.576 2510.26 189.704C2504.27 172.479 2488.17 162.369 2460.46 162.369C2421.9 162.369 2398.68 188.206 2398.68 232.016V236.509C2398.68 280.693 2419.65 307.653 2458.59 307.653C2489.3 307.653 2508.77 293.424 2517 265.341L2538.35 274.328C2528.61 307.653 2503.15 330.869 2457.47 330.869C2397.93 330.869 2362.36 294.173 2362.36 235.011C2362.36 177.347 2400.18 140.277 2458.97 140.277C2508.02 140.277 2539.85 164.99 2539.85 203.184C2539.85 221.906 2528.61 234.637 2512.51 234.637C2499.41 234.637 2490.04 225.276 2490.04 212.919Z" fill="currentColor"/>
+        <path d="M2342.6 241.751H2201.07C2201.81 280.319 2222.78 308.028 2262.1 308.028C2293.55 308.028 2311.15 291.927 2319.39 265.716L2341.11 274.702C2332.12 306.53 2306.28 330.869 2259.48 330.869C2198.82 330.869 2164.74 290.803 2164.74 235.386C2164.74 179.594 2202.19 140.277 2256.86 140.277C2310.78 140.277 2342.6 175.849 2342.6 232.765V241.751ZM2256.86 162.369C2223.53 162.369 2203.69 183.713 2201.07 221.906H2307.03C2306.28 182.215 2289.06 162.369 2256.86 162.369Z" fill="currentColor"/>
+        <path d="M2069.57 326.375V304.658H2090.91C2093.91 304.658 2096.15 303.534 2096.15 296.045V109.573C2096.15 101.709 2094.66 99.4627 2090.91 99.4627H2068.82V77.745H2089.79C2107.01 77.745 2123.86 75.8728 2131.73 74.375V296.045C2131.73 303.534 2133.6 304.658 2136.97 304.658H2157.56V326.375H2069.57Z" fill="currentColor"/>
+        <path d="M1983.63 326.375V304.658H2004.97C2007.96 304.658 2010.21 303.534 2010.21 296.045V109.573C2010.21 101.709 2008.71 99.4626 2004.97 99.4626H1982.88V77.7449H2003.85C2021.07 77.7449 2037.92 75.8727 2045.78 74.3749V296.045C2045.78 303.534 2047.66 304.658 2051.03 304.658H2071.62V326.375H1983.63Z" fill="currentColor"/>
+        <path d="M1478.13 330.495C1442.18 330.495 1427.58 315.891 1427.58 278.821V166.489H1400.24V147.017L1418.22 145.894C1428.33 144.396 1433.57 141.026 1434.69 130.168L1438.06 97.2165H1463.15V144.771H1503.22V166.489H1462.03V278.447C1462.03 299.041 1469.89 306.905 1487.49 306.905C1496.48 306.905 1501.72 305.033 1506.59 303.535V326.001C1500.97 327.874 1490.48 330.495 1478.13 330.495Z" fill="currentColor"/>
+        <path d="M1309.02 326.375V304.658H1330.37C1333.36 304.658 1335.61 303.534 1335.61 296.045V109.573C1335.61 101.709 1334.11 99.4627 1330.37 99.4627H1308.27V77.745H1329.24C1346.47 77.745 1363.32 75.8728 1371.18 74.375V296.045C1371.18 303.534 1373.05 304.658 1376.42 304.658H1397.02V326.375H1309.02Z" fill="currentColor"/>
+        <path d="M1206.25 162.369C1188.65 162.369 1176.29 165.739 1168.43 172.105C1174.42 175.849 1178.16 182.589 1178.16 191.201C1178.16 204.307 1168.43 212.919 1155.7 212.919C1141.09 212.919 1131.73 203.558 1131.73 187.831C1131.73 156.004 1168.43 140.277 1211.49 140.277C1263.54 140.277 1286.38 158.625 1286.38 202.809V296.046C1286.38 302.037 1287.87 304.658 1291.62 304.658H1312.21V326.375H1259.04C1255.3 316.265 1253.43 306.155 1251.55 290.803C1241.44 314.393 1214.11 330.869 1183.03 330.869C1148.96 330.869 1127.24 310.274 1127.24 282.94C1127.24 239.879 1169.55 223.029 1250.81 213.294V203.184C1250.81 174.351 1236.95 162.369 1206.25 162.369ZM1195.39 307.279C1228.71 307.279 1250.81 282.566 1250.81 246.619V231.641C1191.64 238.381 1161.69 248.866 1161.69 277.323C1161.69 295.297 1175.17 307.279 1195.39 307.279Z" fill="currentColor"/>
+        <path d="M1024.32 330.869C994.961 330.869 972.524 318.362 959.024 297.385C956.574 293.579 950.07 294.212 948.932 298.594C945.549 311.623 942.217 323.889 941.94 326.375H920.597C922.095 315.891 922.844 297.918 922.844 264.218V109.573C922.844 101.709 921.72 99.4627 917.602 99.4627H895.884V77.745H916.104C932.954 77.745 950.927 75.8728 958.416 74.375V183.338C970.398 156.378 993.613 140.277 1025.82 140.277C1075.99 140.277 1107.82 177.721 1107.82 235.386C1107.82 293.05 1074.87 330.869 1024.32 330.869ZM1014.58 306.53C1048.66 306.53 1071.12 282.191 1071.12 238.007V233.139C1071.12 188.955 1048.66 164.616 1014.58 164.616C981.631 164.616 958.416 189.329 958.416 233.139V238.007C958.416 281.442 982.006 306.53 1014.58 306.53Z" fill="currentColor"/>
+        <path d="M802.008 330.869C746.59 330.869 709.146 292.301 709.146 235.386C709.146 179.219 747.339 140.277 803.506 140.277C858.174 140.277 895.619 178.845 895.619 235.386C895.619 291.927 857.8 330.869 802.008 330.869ZM802.382 308.028C839.452 308.028 860.047 282.566 860.047 237.258V233.888C860.047 187.831 839.452 163.118 802.757 163.118C765.687 163.118 745.093 188.206 745.093 233.888V237.258C745.093 282.94 765.313 308.028 802.382 308.028Z" fill="currentColor"/>
+        <path d="M618.403 73.2527C649.258 73.2529 673.028 85.2279 686.944 105.624C689.671 109.618 697.159 108.576 697.895 103.796L701.904 77.7461H723.995V133.167C719.482 136.951 706.175 141.903 697.838 159.66C696.791 161.891 692.939 161.642 692.341 159.252C681.663 116.567 657.452 97.9653 622.147 97.9653C572.346 97.9654 541.267 133.539 541.267 197.568V206.553C541.267 270.957 572.72 306.155 622.52 306.156C647.155 306.156 668.232 298.917 682.488 283.043C683.774 281.611 686.217 282.087 686.809 283.918C689.262 291.515 692.316 298.701 695.931 305.436C678.305 321.329 653.421 330.868 621.773 330.869C551.003 330.869 503.448 283.315 503.448 202.436C503.448 123.054 551.378 73.2527 618.403 73.2527Z" fill="currentColor"/>
+        <path d="M1889.19 330.869C1833.78 330.869 1796.33 292.301 1796.33 235.386C1796.33 179.219 1834.52 140.277 1890.69 140.277C1945.36 140.277 1982.8 178.845 1982.8 235.386C1982.8 291.927 1944.99 330.869 1889.19 330.869ZM1889.57 308.028C1926.64 308.028 1947.23 282.566 1947.23 237.258V233.888C1947.23 187.832 1926.64 163.118 1889.94 163.118C1852.87 163.118 1832.28 188.206 1832.28 233.888V237.258C1832.28 282.94 1852.5 308.028 1889.57 308.028Z" fill="currentColor"/>
+        <path d="M1710.28 73.2526C1741.14 73.2529 1764.91 85.2279 1778.82 105.624C1781.55 109.618 1789.04 108.576 1789.77 103.796L1793.78 77.7461H1815.87V133.167C1811.36 136.951 1798.05 141.903 1789.72 159.66C1788.67 161.891 1784.82 161.642 1784.22 159.252C1773.54 116.567 1749.33 97.9653 1714.03 97.9653C1664.23 97.9654 1633.15 133.539 1633.15 197.568V206.553C1633.15 270.957 1664.6 306.155 1714.4 306.156C1739.04 306.156 1760.11 298.917 1774.37 283.043C1775.65 281.611 1778.1 282.087 1778.69 283.918C1781.14 291.515 1784.2 298.701 1787.81 305.436C1770.18 321.329 1745.3 330.868 1713.65 330.868C1642.88 330.868 1595.33 283.315 1595.33 202.436C1595.33 123.054 1643.26 73.2526 1710.28 73.2526Z" fill="currentColor"/>
+        <path d="M2714.44 296.045C2714.44 303.159 2716.31 304.658 2719.68 304.658H2740.27L2747.32 328.724H2678.84V297.316C2678.86 296.914 2678.86 296.49 2678.86 296.045V181.466C2678.86 169.859 2676.99 166.488 2670.63 166.488H2652.28V144.771H2672.5C2689.72 144.771 2706.57 142.9 2714.44 141.402V296.045Z" fill="currentColor"/>
+        <path d="M2696.09 70.6311C2709.94 70.6313 2720.05 81.4906 2720.05 94.596C2720.05 108.076 2709.94 118.935 2696.09 118.935C2681.86 118.935 2672.12 108.076 2672.12 94.596C2672.12 81.4905 2681.86 70.6311 2696.09 70.6311Z" fill="currentColor"/>
+        <path d="M345.238 41.8999C348.438 40.0526 352.38 40.0526 355.58 41.8999L397.853 66.3064C401.052 68.1537 403.023 71.5675 403.023 75.262V124.075C403.023 127.77 401.052 131.183 397.853 133.031L355.58 157.437C352.38 159.284 348.438 159.284 345.238 157.437L302.965 133.031C299.766 131.183 297.795 127.77 297.795 124.075V75.262C297.795 71.5675 299.766 68.1537 302.965 66.3064L345.238 41.8999Z" fill="currentColor"/>
+        <path d="M169.282 3.51829C172.481 1.67121 176.423 1.67146 179.622 3.51829L221.897 27.9256C225.096 29.773 227.068 33.1867 227.068 36.8808V85.6932C227.068 89.3873 225.096 92.801 221.897 94.6484L179.622 119.056C176.423 120.903 172.481 120.903 169.282 119.056L139.731 101.993C132.668 97.9144 123.972 97.8818 116.878 101.907C109.678 105.993 105.229 113.633 105.229 121.912V156.958C105.229 160.652 103.257 164.065 100.058 165.913L69.5914 183.501C62.7444 187.454 58.5264 194.759 58.5264 202.665C58.5264 210.571 62.744 217.876 69.5906 221.829L100.058 239.42C103.257 241.267 105.229 244.681 105.229 248.375V281.557C105.229 289.746 109.629 297.302 116.751 301.343C123.767 305.323 132.366 305.291 139.351 301.258L169.282 283.978C172.481 282.131 176.423 282.131 179.622 283.978L208.56 300.685C215.749 304.835 224.598 304.869 231.818 300.773C239.149 296.614 243.678 288.837 243.678 280.409V248.375C243.678 244.681 245.649 241.267 248.848 239.42L291.121 215.013C294.32 213.165 298.262 213.166 301.461 215.013L343.737 239.42C346.935 241.267 348.907 244.681 348.907 248.375V297.187C348.907 300.882 346.935 304.295 343.737 306.143L301.461 330.55C298.262 332.397 294.32 332.397 291.121 330.55L260.677 312.972C253.797 309 245.327 308.968 238.417 312.888C231.402 316.868 227.068 324.311 227.068 332.376V366.153C227.068 369.847 225.096 373.261 221.897 375.108L179.622 399.515C176.423 401.362 172.481 401.363 169.282 399.515L127.009 375.108C123.81 373.261 121.839 369.847 121.839 366.153V333.524C121.839 325.22 117.376 317.556 110.153 313.459C103.038 309.423 94.3183 309.456 87.2346 313.546L57.7833 330.55C54.5839 332.397 50.6423 332.397 47.443 330.55L5.17017 306.143C1.97067 304.295 0 300.882 0 297.187V248.375C0 244.681 1.97063 241.267 5.17017 239.42L32.6877 223.53C40.1416 219.226 44.7333 211.273 44.7333 202.666C44.7333 194.058 40.1412 186.104 32.6868 181.8L5.17017 165.913C1.97068 164.066 0 160.652 0 156.958V108.145C0 104.451 1.97063 101.037 5.17017 99.19L47.443 74.7827C50.6423 72.9356 54.5839 72.9358 57.7833 74.7827L84.6147 90.2741C92.2352 94.6739 101.616 94.7092 109.269 90.3668C117.038 85.9588 121.839 77.7154 121.839 68.7828V36.8808C121.839 33.1863 123.81 29.7729 127.009 27.9256L169.282 3.51829Z" fill="currentColor"/>
+      </svg>
+    </a>
+    <div class="cover-topbar-actions">
+      <button class="cover-about-btn" type="button" onclick="openAboutModal()">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg>
+        About This Report
+      </button>
+      <button class="cover-download-btn" type="button" onclick="downloadPDF()">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10"/></svg>
+        Download PDF
+      </button>
+    </div>
   </div>
-  <nav>
-    <a class="nav-item" href="#keyfindings">Key Findings</a>
-    <div class="nav-divider"></div>
-    <a class="nav-item" href="#about">01 &nbsp; About This Report</a>
-    <a class="nav-item active" href="#model">02 &nbsp; Impact Process Model</a>
-    <div class="nav-divider"></div>
-    <a class="nav-item" href="#evidence">03 &nbsp; Evidence Landscape</a>
-    <div class="nav-divider"></div>
-    <a class="nav-item" href="#opportunities">04 &nbsp; Measurement Opportunities</a>
-    <a class="nav-item sub" href="#card-p1">1 — Measure Implementation Quality</a>
-    <a class="nav-item sub" href="#card-p2">2 — Implementation → Outcomes</a>
-    <a class="nav-item sub" href="#card-p3">3 — PD → Implementation</a>
-    <a class="nav-item sub" href="#card-p4">4 — Oral Language &amp; Metacognition</a>
-    <div class="nav-divider"></div>
-    <a class="nav-item" href="#nextsteps">05 &nbsp; Recommended Next Steps</a>
-  </nav>
-  <div class="sidebar-footer">Working Draft &nbsp;·&nbsp; cobaltcollective.org</div>
+  <div class="cover-label">Impact Measurement Assessment</div>
+  <div class="cover-client">Impact Measurement Assessment | Snorkl</div>
+  <div class="cover-subtitle">Working Draft</div>
+  <div class="cover-meta-grid">
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Prepared for</div>
+      <div class="cover-meta-value">Jon Laven, Co-Founder &amp; COO</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="cover-meta-label">Date</div>
+      <div class="cover-meta-value">June 1, 2026</div>
+    </div>
+  </div>
+  <button class="cover-about-btn cover-about-btn--meta" type="button" onclick="openAboutModal()">
+    <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg>
+    About This Report
+  </button>
+</div>
+
+<!-- ── BODY: table of contents + content ─────────────────────────── -->
+<div id="layout">
+
+<!-- ── TABLE OF CONTENTS (sticky) ────────────────────────────────── -->
+<aside id="sidebar">
+  <div class="toc-card">
+    <nav>
+      <a class="nav-item active" href="#keyfindings">Key Findings</a>
+      <div class="nav-divider"></div>
+      <a class="nav-item" href="#model">Impact Process Model</a>
+      <div class="nav-divider"></div>
+      <a class="nav-item" href="#evidence">Evidence Landscape</a>
+      <div class="nav-divider"></div>
+      <a class="nav-item" href="#opportunities">Measurement Opportunities</a>
+      <div class="nav-divider"></div>
+      <a class="nav-item" href="#nextsteps">Recommended Next Steps</a>
+    </nav>
+  </div>
 </aside>
 
 <!-- ── MAIN ──────────────────────────────────────────────────────── -->
 <main id="main">
 
-  <!-- COVER -->
-  <div id="cover">
-    <div class="cover-label">Impact Measurement Assessment</div>
-    <div class="cover-client">Snorkl</div>
-    <div class="cover-subtitle">Working Draft</div>
-    <div class="cover-meta-grid">
-      <div class="cover-meta-item">
-        <div class="cover-meta-label">Prepared by</div>
-        <div class="cover-meta-value">Cobalt Collective</div>
-      </div>
-      <div class="cover-meta-item">
-        <div class="cover-meta-label">Prepared for</div>
-        <div class="cover-meta-value">Jon Laven, Co-Founder &amp; COO</div>
-      </div>
-      <div class="cover-meta-item">
-        <div class="cover-meta-label">Date</div>
-        <div class="cover-meta-value">June 1, 2026</div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- KEY FINDINGS -->
+  <!-- KEY FINDINGS — .kf-section is full-width (its ::before bleeds the bg
+       to the screen); .kf-inner constrains the cards to the centered column. -->
   <div class="kf-section" id="keyfindings">
-    <div class="kf-header">Key Findings</div>
-    <div class="kf-grid">
-      <div class="kf-card">
-        <div class="kf-num">1</div>
-        <div class="kf-title">The active ingredients can be identified from data Snorkl already has</div>
-        <div class="kf-desc">The core question — which student behaviors within the tool (voice, feedback, revision) are associated with learning gains — is testable using data Snorkl’s backend already captures. The gap is not data collection but instrumentation: turning usage logs into an implementation quality signal that distinguishes high-fidelity from low-fidelity use.</div>
-      </div>
-      <div class="kf-card">
-        <div class="kf-num">2</div>
-        <div class="kf-title">Internally owned measurement complements the external research already underway</div>
-        <div class="kf-desc">The Gates/WestEd QED study, the NSVF/Lean Lab qualitative work, and the IM/AIR ENCORE study will contribute to Snorkl’s evidence base. Complementary internal measurement can address questions those studies weren’t designed for: what high-quality implementation looks like in practice, which active ingredients drive outcomes, and whether PD moves teachers toward those practices.</div>
-      </div>
-      <div class="kf-card">
-        <div class="kf-num">3</div>
-        <div class="kf-title">The buyer landscape is shifting — and the evidence bar is rising with it</div>
-        <div class="kf-desc">Today’s primary buyer is the tech director, for whom usage volume is often sufficient. But academic buyers and larger districts increasingly require evidence of impact on state tests, interim assessments, and ELL scores. Snorkl doesn’t need to win that argument today, but it needs to be ready as the buyer mix shifts.</div>
-      </div>
-      <div class="kf-card">
-        <div class="kf-num">4</div>
-        <div class="kf-title">Snorkl’s verbal response archive is a genuinely differentiated asset</div>
-        <div class="kf-desc">A longitudinal archive of students explaining their reasoning aloud is something almost no other tool has. It is a direct window into oral-language development and metacognitive skill — constructs that are hard to measure elsewhere and increasingly valued by districts.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 01 ABOUT -->
-  <section class="section" id="about">
+   <div class="kf-inner">
     <div class="section-header">
-      <span class="section-num">01</span>
-      <h2 class="section-title">About This Report</h2>
+      <h2 class="section-title">Key Findings</h2>
     </div>
     <div class="section-rule"></div>
-    <p>This report has two purposes: first, to articulate a working model of the mechanisms through which Snorkl produces impact — from product through teacher implementation and student use to intended student outcomes; and second, to use that model to identify and prioritize opportunities for impact measurement. The model is the analytical foundation. The measurement priorities follow directly from it.</p>
-    <p>The analysis draws on three sources: a discovery conversation with Snorkl co-founder Jon Laven on June 1, 2026; Snorkl's pre-conversation questionnaire response; and publicly available information at snorkl.app. It is a first-pass working draft, not a final assessment. We expect it to sharpen as Snorkl shares more about its internal data, district relationships, and strategic priorities.</p>
-    <p>Our aim is not to evaluate Snorkl's impact, but to help Snorkl's leadership see clearly where the causal chain is well understood, where it is assumed but untested, and where the most useful measurement investments should go — in what order, and why. Throughout, we favor measurement that can be built into how the company already operates, rather than externally imposed research projects that consume scarce startup time.</p>
-  </section>
+    <div class="kf-grid">
+      <div class="kf-card">
+        <div class="kf-title">The active ingredients can be identified from data Snorkl already has</div>
+        <div class="kf-desc">Whether voice, feedback, and revision drive learning gains is testable from usage logs Snorkl already captures. The gap is instrumentation, not data collection.</div>
+      </div>
+      <div class="kf-card">
+        <div class="kf-title">Internally owned measurement complements the external research already underway</div>
+        <div class="kf-desc">External studies (Gates, NSVF, IM/AIR) build the evidence base. Internal measurement answers what they can’t — what good implementation looks like and what drives outcomes.</div>
+      </div>
+      <div class="kf-card">
+        <div class="kf-title">The buyer landscape is shifting — and the evidence bar is rising with it</div>
+        <div class="kf-desc">Today’s tech-director buyer accepts usage data; academic buyers and larger districts increasingly want outcome evidence. Snorkl should be ready as the mix shifts.</div>
+      </div>
+      <div class="kf-card">
+        <div class="kf-title">Snorkl’s verbal response archive is a genuinely differentiated asset</div>
+        <div class="kf-desc">A longitudinal archive of students reasoning aloud is rare — a direct window into oral-language and metacognitive growth that districts increasingly value.</div>
+      </div>
+    </div>
+   </div>
+  </div>
 
   <!-- 02 PROCESS MODEL -->
   <section class="section" id="model">
     <div class="section-header">
-      <span class="section-num">02</span>
       <h2 class="section-title">The Impact Process Model</h2>
     </div>
     <div class="section-rule"></div>
-    <p>The figure below maps Snorkl's causal chain — from product to intended outcome — and the context in which the product and its users interact. Snorkl has two user populations: teachers, whose implementation choices are the key mediating variable, and students, whose in-tool behavior is shaped by those choices. Amber-bordered boxes represent areas where provisional logic exists but has not yet been formalized or measured. The "active ingredient" is the voice-plus-feedback-plus-revision loop — and whether teachers use the tool in a way that activates it.</p>
-    <div class="figure-toggle-bar">
-      <button class="fig-toggle-btn active" id="btn-model" onclick="switchView('model')">▶ Model View</button>
-      <button class="fig-toggle-btn" id="btn-meas" onclick="switchView('meas')">● Measurement View</button>
+    <p>The figure below maps Snorkl's causal chain — from product to intended outcome — and the context in which the product and its users interact. Snorkl has two user populations: teachers, whose implementation choices are the key mediating variable, and students, whose in-tool behavior is shaped by those choices. The "active ingredient" is the voice-plus-feedback-plus-revision loop — and whether teachers use the tool in a way that activates it.</p>
+    <div class="figure-controls">
+      <label class="badge-toggle">
+        <input type="checkbox" id="toggle-badges" checked onchange="toggleBadges(this.checked)">
+        <span class="switch"></span>
+        <span>Show measurement priorities</span>
+      </label>
     </div>
 
-    <!-- MODEL VIEW -->
+    <!-- COMBINED MODEL + MEASUREMENT VIEW -->
     <div class="figure-view active" id="view-model">
-      <p class="figure-hint">ℹ️ Click any box to see detailed notes and open questions.</p>
-      <div class="figure-wrap">
-<svg viewBox="0 0 980 530" xmlns="http://www.w3.org/2000/svg" width="980" height="530">
+      <p class="figure-hint">ℹ️ Click any box for model detail; click a numbered badge for the measurement priority it maps to.</p>
+      <div class="figure-wrap" id="model-figure">
+        <button class="fs-btn" type="button" onclick="toggleFullscreen(event)" aria-label="Toggle full screen" title="Full screen">
+          <svg class="fs-ico fs-ico-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+          <svg class="fs-ico fs-ico-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M16 3v3a2 2 0 0 0 2 2h3"/><path d="M8 21v-3a2 2 0 0 0-2-2H3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg>
+        </button>
+<svg id="model-svg" viewBox="0 0 980 530" xmlns="http://www.w3.org/2000/svg" width="980" height="530">
   <defs>
     <marker id="ah-ink" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
       <polygon points="0 0,8 3,0 6" fill="#1a1a1a"/>
@@ -836,9 +153,12 @@ nav { padding: 12px 0; flex: 1; }
     <marker id="ah-ctx" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
       <polygon points="0 0,8 3,0 6" fill="#059669"/>
     </marker>
+    <filter id="badge-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.3)"/>
+    </filter>
   </defs>
 
-  <rect width="980" height="530" fill="white"/>
+  <rect width="980" height="530" fill="transparent"/>
 
   <!-- ══ ROW 1: IMPLEMENTATION CONTEXT ══ -->
   <rect x="270" y="18" width="440" height="68" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
@@ -926,138 +246,50 @@ nav { padding: 12px 0; flex: 1; }
   <rect x="181" y="258" width="270" height="72" fill="transparent" style="cursor:pointer" onclick="show('mech1')" rx="4"/>
   <rect x="529" y="258" width="270" height="72" fill="transparent" style="cursor:pointer" onclick="show('mech2')" rx="4"/>
   <rect x="270" y="378" width="440" height="68" fill="transparent" style="cursor:pointer" onclick="show('user')" rx="4"/>
+
+  <!-- ══ MEASUREMENT OVERLAY (toggleable via the checkbox above) ══ -->
+  <g id="meas-layer">
+    <!-- dim overlays -->
+    <rect class="dim-overlay" data-node="behavior" x="383" y="148" width="214" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="outcome" x="731" y="148" width="210" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="mech1" x="181" y="258" width="270" height="72" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="mech2" x="529" y="258" width="270" height="72" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="product" x="40" y="148" width="210" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="impl" x="270" y="18" width="440" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+    <rect class="dim-overlay" data-node="user" x="270" y="378" width="440" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
+
+    <!-- connector lines (shown on badge hover); origin = each badge's corner -->
+    <line class="connector-line" data-priority="1" x1="401" y1="166" x2="490" y2="182" stroke="#1a6fff" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="2" x1="749" y1="166" x2="836" y2="182" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="2" x1="749" y1="166" x2="664" y2="258" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="3" x1="199" y1="276" x2="490" y2="200" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="3" x1="199" y1="276" x2="316" y2="294" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="4" x1="547" y1="276" x2="664" y2="294" stroke="#718096" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+    <line class="connector-line" data-priority="4" x1="547" y1="276" x2="836" y2="200" stroke="#718096" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
+
+    <!-- priority badges — each pinned to the top-left corner of its primary box -->
+    <g class="priority-badge-group" data-priority="1" onclick="openPriorityCard('1')" style="cursor:pointer">
+      <circle cx="401" cy="166" r="16" fill="#1a6fff" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+      <text x="401" y="166" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">1</text>
+    </g>
+    <g class="priority-badge-group" data-priority="2" onclick="openPriorityCard('2')" style="cursor:pointer">
+      <circle cx="749" cy="166" r="16" fill="#059669" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+      <text x="749" y="166" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">2</text>
+    </g>
+    <g class="priority-badge-group" data-priority="3" onclick="openPriorityCard('3')" style="cursor:pointer">
+      <circle cx="199" cy="276" r="16" fill="#d97706" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+      <text x="199" y="276" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">3</text>
+    </g>
+    <g class="priority-badge-group" data-priority="4" onclick="openPriorityCard('4')" style="cursor:pointer">
+      <circle cx="547" cy="276" r="16" fill="#718096" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
+      <text x="547" y="276" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">4</text>
+    </g>
+  </g>
 </svg>
       </div>
+      <div id="priority-popup"></div>
     </div><!-- /view-model -->
 
-    <!-- MEASUREMENT VIEW -->
-    <div class="figure-view" id="view-meas">
-      <p class="meas-hint">ℹ️ Hover a badge to highlight the connected model element. Click to see the full priority detail.</p>
-      <div class="figure-meas-wrap">
-        <div class="figure-wrap" style="margin:0">
-<svg id="meas-svg" viewBox="0 0 980 530" xmlns="http://www.w3.org/2000/svg" width="980" height="530">
-  <defs>
-    <marker id="ah-ink2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-      <polygon points="0 0,8 3,0 6" fill="#1a1a1a"/>
-    </marker>
-    <marker id="ah-ctx2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-      <polygon points="0 0,8 3,0 6" fill="#059669"/>
-    </marker>
-    <filter id="badge-shadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.3)"/>
-    </filter>
-  </defs>
-
-  <rect width="980" height="530" fill="white"/>
-
-  <!-- ══ ROW 1: IMPLEMENTATION CONTEXT ══ -->
-  <rect x="270" y="18" width="440" height="68" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
-  <text x="490" y="36" text-anchor="middle" font-family="Arial" font-size="10.5" font-weight="700" fill="#065f46" letter-spacing="1">IMPLEMENTATION CONTEXT</text>
-  <text x="490" y="53" text-anchor="middle" font-family="Arial" font-size="12" font-weight="500" fill="#065f46">K–12 classrooms · all subjects · math, world languages, ELL wedges</text>
-  <text x="490" y="69" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#065f46">10,000+ schools · HQIM partnerships (IM, JUMP) · free PD · buyer = tech director</text>
-
-  <line x1="370" y1="86" x2="145" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-  <line x1="490" y1="86" x2="490" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-  <line x1="610" y1="86" x2="838" y2="148" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-
-  <!-- ══ ROW 2: MAIN CHAIN ══ -->
-  <rect x="40" y="148" width="210" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-  <text x="145" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">PRODUCT</text>
-  <text x="145" y="184" text-anchor="middle" font-family="Arial" font-size="13.5" font-weight="700" fill="#1a1a1a">Snorkl</text>
-  <text x="145" y="201" text-anchor="middle" font-family="Arial" font-size="11" fill="#555555">Multimodal AI formative assessment</text>
-
-  <line x1="250" y1="182" x2="381" y2="182" stroke="#1a1a1a" stroke-width="2" marker-end="url(#ah-ink2)"/>
-  <text x="316" y="172" text-anchor="middle" font-family="Arial" font-size="9.5" fill="#888888">mechanism ↓</text>
-
-  <!-- USER BEHAVIOR — CONFIRMED -->
-  <rect x="383" y="148" width="214" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-  <text x="490" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">USER BEHAVIOR</text>
-  <text x="490" y="188" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">Students solve problems</text>
-  <text x="490" y="204" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">on Snorkl</text>
-
-  <line x1="597" y1="182" x2="729" y2="182" stroke="#1a1a1a" stroke-width="2" marker-end="url(#ah-ink2)"/>
-  <text x="664" y="172" text-anchor="middle" font-family="Arial" font-size="9.5" fill="#888888">mechanism ↓</text>
-
-  <rect x="731" y="148" width="210" height="68" rx="4" fill="white" stroke="#1a1a1a" stroke-width="2"/>
-  <text x="836" y="167" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="#888888" letter-spacing="1">INTENDED OUTCOME</text>
-  <text x="836" y="184" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">Students learn more,</text>
-  <text x="836" y="200" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#1a1a1a">explain thinking better</text>
-
-  <!-- ══ ROW 3 ══ -->
-  <!-- MECHANISM 1 — Teacher Instructional Practices (blue) -->
-  <rect x="181" y="258" width="270" height="72" rx="4" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
-  <rect x="181" y="258" width="270" height="19" rx="4" fill="#2563eb"/>
-  <rect x="181" y="269" width="270" height="8" fill="#2563eb"/>
-  <text x="316" y="271" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="white" letter-spacing="0.5">MECHANISM 1</text>
-  <text x="316" y="295" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">Teacher assigns problems, sets</text>
-  <text x="316" y="311" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">voice norms, coaches revision</text>
-
-  <!-- MECHANISM 2 — Explain→Feedback→Revise Loop (blue) -->
-  <rect x="529" y="258" width="270" height="72" rx="4" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
-  <rect x="529" y="258" width="270" height="19" rx="4" fill="#2563eb"/>
-  <rect x="529" y="269" width="270" height="8" fill="#2563eb"/>
-  <text x="664" y="271" text-anchor="middle" font-family="Arial" font-size="9.5" font-weight="700" fill="white" letter-spacing="0.5">MECHANISM 2</text>
-  <text x="664" y="295" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">Explain → feedback → revise</text>
-  <text x="664" y="311" text-anchor="middle" font-family="Arial" font-size="12" font-weight="600" fill="#1e40af">loop drives mastery</text>
-
-  <!-- ══ ROW 4 ══ -->
-  <rect x="270" y="378" width="440" height="68" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
-  <text x="490" y="397" text-anchor="middle" font-family="Arial" font-size="10.5" font-weight="700" fill="#065f46" letter-spacing="1">USER / POPULATION CONTEXT</text>
-  <text x="490" y="414" text-anchor="middle" font-family="Arial" font-size="11" font-weight="500" fill="#065f46">Teachers (assign, coach, read insights) &amp; students (record, revise)</text>
-  <text x="490" y="430" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#065f46">Implementation strength tracks teacher mindset &amp; coaching</text>
-
-  <polyline points="270,412 12,412 12,182 40,182" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-  <line x1="490" y1="378" x2="490" y2="216" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-  <polyline points="710,412 968,412 968,182 941,182" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ah-ctx2)"/>
-
-  <!-- LEGEND -->
-  <rect x="10" y="472" width="12" height="12" rx="2" fill="white" stroke="#1a1a1a" stroke-width="1.5"/>
-  <text x="28" y="483" font-family="Arial" font-size="11" fill="#888888">Confirmed</text>
-  <rect x="108" y="472" width="12" height="12" rx="2" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
-  <text x="126" y="483" font-family="Arial" font-size="11" fill="#888888">Context</text>
-  <rect x="196" y="472" width="12" height="12" rx="2" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
-  <text x="214" y="483" font-family="Arial" font-size="11" fill="#888888">Mechanism</text>
-
-  <!-- DIM OVERLAYS -->
-  <rect class="dim-overlay" data-node="behavior" x="383" y="148" width="214" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="outcome" x="731" y="148" width="210" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="mech1" x="181" y="258" width="270" height="72" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="mech2" x="529" y="258" width="270" height="72" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="product" x="40" y="148" width="210" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="impl" x="270" y="18" width="440" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-  <rect class="dim-overlay" data-node="user" x="270" y="378" width="440" height="68" rx="4" fill="rgba(255,255,255,0.65)" style="pointer-events:none;opacity:0;transition:opacity 0.2s"/>
-
-  <!-- PRIORITY BADGES -->
-  <g class="priority-badge-group" data-priority="1" onclick="openPriorityCard('1')" style="cursor:pointer">
-    <circle cx="420" cy="152" r="16" fill="#1a6fff" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
-    <text x="420" y="152" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">1</text>
-  </g>
-  <g class="priority-badge-group" data-priority="2" onclick="openPriorityCard('2')" style="cursor:pointer">
-    <circle cx="788" cy="152" r="16" fill="#059669" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
-    <text x="788" y="152" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">2</text>
-  </g>
-  <g class="priority-badge-group" data-priority="3" onclick="openPriorityCard('3')" style="cursor:pointer">
-    <circle cx="380" cy="240" r="16" fill="#d97706" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
-    <text x="380" y="240" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">3</text>
-  </g>
-  <g class="priority-badge-group" data-priority="4" onclick="openPriorityCard('4')" style="cursor:pointer">
-    <circle cx="730" cy="305" r="16" fill="#718096" stroke="white" stroke-width="2.5" filter="url(#badge-shadow)"/>
-    <text x="730" y="305" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="11" font-weight="700" fill="white">4</text>
-  </g>
-
-  <!-- CONNECTOR LINES -->
-  <line class="connector-line" data-priority="1" x1="420" y1="152" x2="490" y2="182" stroke="#1a6fff" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="2" x1="788" y1="152" x2="836" y2="182" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="2" x1="788" y1="168" x2="664" y2="258" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="3" x1="380" y1="240" x2="490" y2="200" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="3" x1="380" y1="256" x2="316" y2="258" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="4" x1="730" y1="305" x2="664" y2="294" stroke="#718096" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-  <line class="connector-line" data-priority="4" x1="730" y1="289" x2="836" y2="200" stroke="#718096" stroke-width="1.5" stroke-dasharray="4 3" opacity="0" style="pointer-events:none;transition:opacity 0.2s"/>
-</svg>
-        </div>
-        <div id="priority-popup"></div>
-      </div>
-    </div><!-- /view-meas -->
 
     <div class="print-only">
     <h3 class="sub-header">Model Description</h3>
@@ -1081,47 +313,52 @@ nav { padding: 12px 0; flex: 1; }
   <!-- 03 EVIDENCE LANDSCAPE -->
   <section class="section" id="evidence">
     <div class="section-header">
-      <span class="section-num">03</span>
       <h2 class="section-title">Evidence Landscape</h2>
     </div>
     <div class="section-rule"></div>
     <p>Before identifying measurement priorities, it is useful to take stock of what evidence Snorkl already has — or has in motion. Snorkl has invested meaningfully in external research partnerships. The table below catalogs these assets and their limitations.</p>
     <table class="model-table" id="evidence-table">
-      <thead><tr><th>Evidence Asset</th><th>Source</th><th>What It Shows</th><th>Limitations</th></tr></thead>
+      <thead><tr><th>Evidence Asset</th><th>What It Shows</th><th>Limitations</th></tr></thead>
       <tbody>
         <tr>
-          <td>NSVF / Lean Lab Qualitative Study</td>
-          <td>New Schools Venture Fund; Lean Lab (research partner)</td>
+          <td>
+            <div class="ev-asset">NSVF / Lean Lab Qualitative Study<span class="ev-src" tabindex="0" role="note" aria-label="Source: New Schools Venture Fund; Lean Lab (research partner)"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>New Schools Venture Fund; Lean Lab (research partner)</span></span></div>
+          </td>
           <td>Small qualitative study with 8 teachers at a Missouri school. Feedback interviews conducted; ~5–6 implemented with fidelity.</td>
           <td>Very small sample; Jon has not yet seen the final Lean Lab report. Qualitative only — no outcome data. Cannot support causal or correlational claims.</td>
         </tr>
         <tr>
-          <td>Gates Foundation / WestEd QED Study</td>
-          <td>Gates Foundation ENCORE grant ($750K); WestEd (research partner)</td>
+          <td>
+            <div class="ev-asset">Gates Foundation / WestEd QED Study<span class="ev-src" tabindex="0" role="note" aria-label="Source: Gates Foundation ENCORE grant ($750K); WestEd (research partner)"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>Gates Foundation ENCORE grant ($750K); WestEd (research partner)</span></span></div>
+          </td>
           <td>Quasi-experimental design planned for fall 2026. Two partner districts: Des Moines and Twin Rivers (CA). Originally scoped as feature-specific (Snorkl Coach, dashboards); Gates shifted to broader math achievement impact.</td>
           <td>In planning stage — no data yet. Process described by Jon as "rather messy" and more time-consuming than anticipated. Results not expected until 2027 at earliest.</td>
         </tr>
         <tr>
-          <td>Illustrative Mathematics / AIR ENCORE Study</td>
-          <td>Illustrative Mathematics (lead); AIR (research partner); Gates Foundation (funder)</td>
+          <td>
+            <div class="ev-asset">Illustrative Mathematics / AIR ENCORE Study<span class="ev-src" tabindex="0" role="note" aria-label="Source: Illustrative Mathematics (lead); AIR (research partner); Gates Foundation (funder)"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>Illustrative Mathematics (lead); AIR (research partner); Gates Foundation (funder)</span></span></div>
+          </td>
           <td>Examines instructional coherence of AI tools supplemental to HQIM curricula. Snorkl is one of two partner companies. Focus on curriculum alignment and implementation support.</td>
           <td>Snorkl is a participant, not the lead. Study scope is HQIM coherence, not Snorkl-specific impact. Snorkl will not own or control the findings or publication timeline.</td>
         </tr>
         <tr>
-          <td>Houston ISD Internal Data Pull</td>
-          <td>Houston ISD (district-initiated)</td>
+          <td>
+            <div class="ev-asset">Houston ISD Internal Data Pull<span class="ev-src" tabindex="0" role="note" aria-label="Source: Houston ISD (district-initiated)"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>Houston ISD (district-initiated)</span></span></div>
+          </td>
           <td>District correlated Snorkl usage data with internal academic metrics to justify continued purchasing. Houston subsequently requested pricing for expansion, suggesting positive results.</td>
           <td>Jon has not yet debriefed on the specifics. Analysis was district-initiated and district-controlled — methodology unknown. May be advocacy-driven rather than rigorous. Snorkl does not own the report.</td>
         </tr>
         <tr>
-          <td>Backend Behavioral Data (2+ Avg. Attempts)</td>
-          <td>Snorkl platform (internal)</td>
+          <td>
+            <div class="ev-asset">Backend Behavioral Data (2+ Avg. Attempts)<span class="ev-src" tabindex="0" role="note" aria-label="Source: Snorkl platform (internal)"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>Snorkl platform (internal)</span></span></div>
+          </td>
           <td>Platform records whether students use voice or whiteboard-only, number of attempts per activity (avg. 2+), revision behavior, and time on task. Admin dashboards show district-level usage.</td>
           <td>Currently treated as operational/usage data, not framed as impact evidence. No implementation-quality index derived from it. In-platform mastery scores confounded by time-on-task variation across classrooms.</td>
         </tr>
         <tr>
-          <td>Testimonials and Anecdotal Feedback</td>
-          <td>Customer conversations, classroom visits, Intercom support</td>
+          <td>
+            <div class="ev-asset">Testimonials and Anecdotal Feedback<span class="ev-src" tabindex="0" role="note" aria-label="Source: Customer conversations, classroom visits, Intercom support"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .5a7.5 7.5 0 100 15 7.5 7.5 0 000-15Zm0 13.6A6.1 6.1 0 118 1.9a6.1 6.1 0 010 12.2ZM7.1 6.9h1.8v5.2H7.1V6.9ZM8 3.7a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1Z"/></svg><span class="ev-tip"><span class="ev-tip-label">Source</span>Customer conversations, classroom visits, Intercom support</span></span></div>
+          </td>
           <td>Qualitative feedback from teachers on perceived value. Jon and co-founder conduct regular classroom visits observing implementation quality variation firsthand.</td>
           <td>Unsystematic. Not collected in a structured or analyzable format. Cannot support evidence claims for academic buyers or procurement processes requiring quantitative data.</td>
         </tr>
@@ -1133,58 +370,42 @@ nav { padding: 12px 0; flex: 1; }
   <!-- 04 MEASUREMENT OPPORTUNITIES -->
   <section class="section" id="opportunities">
     <div class="section-header">
-      <span class="section-num">04</span>
       <h2 class="section-title">Impact Measurement Opportunities</h2>
     </div>
     <div class="section-rule"></div>
     <p>A central finding of this analysis is that Snorkl's measurement opportunity is unusually well-defined. The constructs that matter — how the tool is used, and whether better use produces better outcomes — are all measurable with existing methods. There is no new instrument to invent. The challenge is to instrument and connect what Snorkl already has, and to do so in a way that serves the business without consuming the time and energy that external research partnerships have.</p>
     <p>This is reinforced by Snorkl's buyer reality. Today the primary buyer is the <strong>tech director</strong>, for whom usage alone is often sufficient — a low evidence bar. But academic buyers, and larger districts running formal procurement, increasingly want evidence of impact on state tests, interim assessments, and ELL scores. Snorkl does not yet need to win the hardest evidentiary argument; it needs to be ready for it as the buyer mix shifts. The priorities below are sequenced to build that readiness without over-investing ahead of demand.</p>
-    <p>We organize the opportunities as a single sequenced track of four priorities. Each is more powerful once the prior one is in place, but the first three can all begin within the next 6–12 months using data Snorkl largely already holds. The fourth is a longer-horizon differentiator.</p>
+    <p>The opportunities are organized as a single sequenced track of four priorities. The matrix below summarizes each priority and the business questions it answers — click any row to expand its full detail.</p>
 
-    <h3 class="sub-header">Measurement Strategy at a Glance</h3>
+    <h3 class="sub-header" id="priorities">Measurement Strategy by Priority</h3>
     <div class="sub-rule"></div>
-    <p style="font-size:13px;margin-bottom:12px;">● = primary driver &nbsp; ○ = contributing factor &nbsp; – = not applicable</p>
-    <div class="matrix-wrap">
-      <table class="matrix-table">
-        <thead>
-          <tr>
-            <th style="width:58px">Priority</th>
-            <th style="width:108px">Horizon</th>
-            <th>Measurement Focus</th>
-            <th style="width:88px">Renewal (Tech Buyer)</th>
-            <th style="width:88px">Academic / District Sales</th>
-            <th style="width:88px">Product &amp; PD Decisions</th>
-            <th style="width:88px">Field Differentiation</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td><span class="m-badge" style="background:var(--cobalt)">1</span></td><td style="font-size:12px;color:var(--green);font-weight:600">Now</td><td>Measure Implementation Quality</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td></tr>
-          <tr><td><span class="m-badge" style="background:var(--green)">2</span></td><td style="font-size:12px;color:var(--amber);font-weight:600">6–12 mo</td><td>Link Implementation to Student Outcomes</td><td class="m-dot-full">●</td><td class="m-dot-full">●</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td></tr>
-          <tr><td><span class="m-badge" style="background:var(--amber)">3</span></td><td style="font-size:12px;color:var(--amber);font-weight:600">6–12 mo</td><td>PD → Implementation Link</td><td class="m-dot-open">○</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td><td class="m-dot-none">–</td></tr>
-          <tr><td><span class="m-badge" style="background:#718096">4</span></td><td style="font-size:12px;color:var(--muted);font-weight:600">12–24 mo</td><td>Differentiated Measures (Oral Language / Metacognition)</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td><td class="m-dot-open">○</td><td class="m-dot-full">●</td></tr>
-        </tbody>
-      </table>
-      <div class="matrix-legend">● Primary driver &nbsp;&nbsp; ○ Contributing factor &nbsp;&nbsp; – Not applicable</div>
-    </div>
-  </section>
-
-  <!-- 04 THE FOUR PRIORITIES -->
-  <section class="section" id="priorities">
-    <div class="section-header">
-      <h2 class="section-title" style="font-size:21px">The Four Priorities</h2>
-    </div>
-    <div class="section-rule"></div>
-    <p>The priorities are sequenced: each is more meaningful if the prior one is in place. Priorities 1 through 3 draw largely on data Snorkl already holds and can begin in the near term; Priority 4 is a longer-horizon differentiator.</p>
-    <div class="priority-cards">
+    <div class="matrix-legend">● Primary driver &nbsp;&nbsp; ○ Contributing factor &nbsp;&nbsp; – Not applicable</div>
+    <div class="priority-cards priority-matrix">
+      <div class="priority-matrix-key" aria-hidden="true">
+        <span class="pm-key-focus">Measurement Focus</span>
+        <span class="pm-key-dots">
+          <span class="pm-key-super">What this evidence drives</span>
+          <span title="Renewal (Tech Buyer)">Renewal</span>
+          <span title="Academic / District Sales">Academic</span>
+          <span title="Product &amp; PD Decisions">Product / PD</span>
+          <span title="Field Differentiation">Field Diff.</span>
+        </span>
+      </div>
       <div class="priority-card" id="card-p1">
         <div class="priority-card-header" onclick="toggleCard('card-p1')">
           <span class="priority-badge" style="background:var(--cobalt)">1</span>
           <span class="priority-card-title">Measure Implementation Quality — The Behavioral Foundation</span>
           <span class="priority-card-horizon">Now</span>
-          <span class="priority-card-tag tag-cobalt">Start Here</span>
+          <span class="pm-dots">
+            <span class="m-dot-full" title="Renewal (Tech Buyer): Primary driver">●</span>
+            <span class="m-dot-open" title="Academic / District Sales: Contributing factor">○</span>
+            <span class="m-dot-open" title="Product &amp; PD Decisions: Contributing factor">○</span>
+            <span class="m-dot-open" title="Field Differentiation: Contributing factor">○</span>
+          </span>
           <span class="priority-chevron">▼</span>
         </div>
         <div class="priority-card-body">
+          <span class="priority-card-tag tag-cobalt">Start Here</span>
           <p>This is the right place to start because it requires no new data collection — only turning data Snorkl already captures into an analytic signal. Jon's single most-wanted answer is whether strong implementation produces better outcomes than weak or no implementation. That question is unanswerable until implementation quality is defined as a measurable variable rather than something observed anecdotally on classroom visits. The backend already knows whether a student used voice or whiteboard-only, how many attempts they made, and whether they revised — Snorkl reports an average of 2+ attempts per student. These are the operational signatures of the high-fidelity use Jon describes. A caution: in-platform mastery scores are not a clean outcome measure — a student who attempts an activity five times scores higher than one who attempts it once, reflecting time on task, not necessarily more learning. Keep implementation metrics (how the tool is used) separate from outcomes (Priority 2).</p>
           <h4>What to measure</h4>
           <ul>
@@ -1201,10 +422,16 @@ nav { padding: 12px 0; flex: 1; }
           <span class="priority-badge" style="background:var(--green)">2</span>
           <span class="priority-card-title">Link Implementation to Student Outcomes — The Core Evidence</span>
           <span class="priority-card-horizon">6–12 mo</span>
-          <span class="priority-card-tag tag-green">The Central Study</span>
+          <span class="pm-dots">
+            <span class="m-dot-full" title="Renewal (Tech Buyer): Primary driver">●</span>
+            <span class="m-dot-full" title="Academic / District Sales: Primary driver">●</span>
+            <span class="m-dot-full" title="Product &amp; PD Decisions: Primary driver">●</span>
+            <span class="m-dot-open" title="Field Differentiation: Contributing factor">○</span>
+          </span>
           <span class="priority-chevron">▼</span>
         </div>
         <div class="priority-card-body">
+          <span class="priority-card-tag tag-green">The Central Study</span>
           <p>This produces evidence larger academic buyers increasingly require. It connects the implementation-quality index from Priority 1 to external achievement data, asking whether classrooms that use Snorkl well show stronger growth than those that use it weakly or not at all.</p>
           <p>Student outcomes cannot be measured from Snorkl's internal data alone. The tractable path is the model used by Paloma (another Reach portfolio company): include de-identified data sharing in the terms of service, obtain district benchmark data (i-Ready, STAR, MAP, or state interim/WIDA scores) for fall and spring, and analyze growth internally. Houston ISD's own data pull is a likely prototype — obtaining that report is a concrete first step. Methodologically this is an ESSA Level III (correlational) design: credible, business-aligned, and directly actionable, and it can be strengthened where a district rolls out to some schools before others.</p>
           <h4>What to measure</h4>
@@ -1222,10 +449,16 @@ nav { padding: 12px 0; flex: 1; }
           <span class="priority-badge" style="background:var(--amber)">3</span>
           <span class="priority-card-title">The PD → Implementation Link — What Moves Fidelity</span>
           <span class="priority-card-horizon">6–12 mo</span>
-          <span class="priority-card-tag tag-amber">Informs the PD Decision</span>
+          <span class="pm-dots">
+            <span class="m-dot-open" title="Renewal (Tech Buyer): Contributing factor">○</span>
+            <span class="m-dot-open" title="Academic / District Sales: Contributing factor">○</span>
+            <span class="m-dot-full" title="Product &amp; PD Decisions: Primary driver">●</span>
+            <span class="m-dot-none" title="Field Differentiation: Not applicable">–</span>
+          </span>
           <span class="priority-chevron">▼</span>
         </div>
         <div class="priority-card-body">
+          <span class="priority-card-tag tag-amber">Informs the PD Decision</span>
           <p>Jon raised an open strategic question: how much should Snorkl invest in wraparound professional development, and should it be built internally or partnered out? Strategically collected data can inform that decision. With the implementation-quality index from Priority 1 in hand, Snorkl can test whether districts that received PD show stronger implementation than those that did not. In addition, understanding what dimensions of implementation are most strongly associated with outcomes (also Priority 2) can guide the focus of PD to help educators focus on the "active ingredients" of Snorkl.</p>
           <h4>What to measure</h4>
           <ul>
@@ -1242,10 +475,16 @@ nav { padding: 12px 0; flex: 1; }
           <span class="priority-badge" style="background:#718096">4</span>
           <span class="priority-card-title">Differentiated Measures — Oral Language &amp; Metacognition</span>
           <span class="priority-card-horizon">12–24 mo</span>
-          <span class="priority-card-tag tag-mid">High Value, Longer Horizon</span>
+          <span class="pm-dots">
+            <span class="m-dot-open" title="Renewal (Tech Buyer): Contributing factor">○</span>
+            <span class="m-dot-full" title="Academic / District Sales: Primary driver">●</span>
+            <span class="m-dot-open" title="Product &amp; PD Decisions: Contributing factor">○</span>
+            <span class="m-dot-full" title="Field Differentiation: Primary driver">●</span>
+          </span>
           <span class="priority-chevron">▼</span>
         </div>
         <div class="priority-card-body">
+          <span class="priority-card-tag tag-mid">High Value, Longer Horizon</span>
           <p>Snorkl sits on an asset almost no other tool has: a longitudinal archive of students explaining their reasoning aloud. That verbal data is a direct window into two things that are hard to measure elsewhere — oral-language development (especially for English language learners) and metacognitive skill. Districts are already using Snorkl specifically to track ELL oral-language proficiency over time. Developing a measure that converts recorded explanations into an oral-language or metacognition signal would be genuinely differentiated — the one place Snorkl could contribute something new to the field. It is sequenced last because it depends on the foundational work above and requires specialist measurement partnership.</p>
           <h4>What to measure</h4>
           <ul>
@@ -1263,7 +502,6 @@ nav { padding: 12px 0; flex: 1; }
   <!-- 05 NEXT STEPS -->
   <section class="section" id="nextsteps">
     <div class="section-header">
-      <span class="section-num">05</span>
       <h2 class="section-title">Recommended Next Steps</h2>
     </div>
     <div class="section-rule"></div>
@@ -1278,23 +516,47 @@ nav { padding: 12px 0; flex: 1; }
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer id="report-footer">
-    <div>
-      <div class="footer-brand">Cobalt Collective</div>
-      <div class="footer-tagline">Bringing together evidence and innovation to improve outcomes at scale.</div>
-    </div>
-    <div class="footer-contact">
-      cobaltcollective.org<br>
-      <a href="mailto:clark@cobaltcollective.org">clark@cobaltcollective.org</a>
-    </div>
-  </footer>
-
 </main>
+
+</div><!-- #layout -->
+
+<!-- ── FOOTER (full-bleed banner) ────────────────────────────────── -->
+<footer id="report-footer">
+  <div>
+    <div class="footer-logo">
+      <svg viewBox="0 0 3114 401" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cobalt Collective">
+        <path d="M3113.65 241.751H2972.12C2972.86 280.319 2993.83 308.028 3033.15 308.028C3064.6 308.028 3082.2 291.927 3090.44 265.716L3112.16 274.702C3103.17 306.53 3077.33 330.869 3030.53 330.869C2969.87 330.869 2935.79 290.803 2935.79 235.386C2935.79 179.594 2973.24 140.277 3027.91 140.277C3081.83 140.277 3113.65 175.849 3113.65 232.765V241.751ZM3027.91 162.369C2994.58 162.369 2974.74 183.713 2972.12 221.906H3078.08C3077.33 182.215 3060.11 162.369 3027.91 162.369Z" fill="currentColor"/>
+        <path d="M2795.74 175.849C2798.73 184.462 2828.31 254.483 2843.29 288.931L2890.09 176.224C2892.72 170.607 2888.97 166.488 2884.1 166.488H2863.51V144.771H2941.39V166.488H2924.54C2920.05 166.488 2916.31 168.361 2913.68 175.101L2848.53 328.622H2825.69L2759.79 175.101C2757.17 167.986 2754.92 166.488 2751.18 166.488H2733.2V144.771H2820.45V166.488H2802.1C2796.48 166.488 2793.49 169.484 2795.74 175.849Z" fill="currentColor"/>
+        <path d="M2624.76 330.495C2588.82 330.495 2574.21 315.891 2574.21 278.821V166.489H2546.88V147.017L2564.85 145.894C2574.96 144.396 2580.2 141.026 2581.33 130.168L2584.7 97.2165H2609.79V144.771H2652.76V166.489H2608.66V278.447C2608.66 299.041 2616.53 306.905 2634.12 306.905C2643.11 306.905 2648.35 305.033 2653.22 303.535V326.001C2647.6 327.874 2637.12 330.495 2624.76 330.495Z" fill="currentColor"/>
+        <path d="M2490.04 212.919C2490.04 200.563 2497.91 191.576 2510.26 189.704C2504.27 172.479 2488.17 162.369 2460.46 162.369C2421.9 162.369 2398.68 188.206 2398.68 232.016V236.509C2398.68 280.693 2419.65 307.653 2458.59 307.653C2489.3 307.653 2508.77 293.424 2517 265.341L2538.35 274.328C2528.61 307.653 2503.15 330.869 2457.47 330.869C2397.93 330.869 2362.36 294.173 2362.36 235.011C2362.36 177.347 2400.18 140.277 2458.97 140.277C2508.02 140.277 2539.85 164.99 2539.85 203.184C2539.85 221.906 2528.61 234.637 2512.51 234.637C2499.41 234.637 2490.04 225.276 2490.04 212.919Z" fill="currentColor"/>
+        <path d="M2342.6 241.751H2201.07C2201.81 280.319 2222.78 308.028 2262.1 308.028C2293.55 308.028 2311.15 291.927 2319.39 265.716L2341.11 274.702C2332.12 306.53 2306.28 330.869 2259.48 330.869C2198.82 330.869 2164.74 290.803 2164.74 235.386C2164.74 179.594 2202.19 140.277 2256.86 140.277C2310.78 140.277 2342.6 175.849 2342.6 232.765V241.751ZM2256.86 162.369C2223.53 162.369 2203.69 183.713 2201.07 221.906H2307.03C2306.28 182.215 2289.06 162.369 2256.86 162.369Z" fill="currentColor"/>
+        <path d="M2069.57 326.375V304.658H2090.91C2093.91 304.658 2096.15 303.534 2096.15 296.045V109.573C2096.15 101.709 2094.66 99.4627 2090.91 99.4627H2068.82V77.745H2089.79C2107.01 77.745 2123.86 75.8728 2131.73 74.375V296.045C2131.73 303.534 2133.6 304.658 2136.97 304.658H2157.56V326.375H2069.57Z" fill="currentColor"/>
+        <path d="M1983.63 326.375V304.658H2004.97C2007.96 304.658 2010.21 303.534 2010.21 296.045V109.573C2010.21 101.709 2008.71 99.4626 2004.97 99.4626H1982.88V77.7449H2003.85C2021.07 77.7449 2037.92 75.8727 2045.78 74.3749V296.045C2045.78 303.534 2047.66 304.658 2051.03 304.658H2071.62V326.375H1983.63Z" fill="currentColor"/>
+        <path d="M1478.13 330.495C1442.18 330.495 1427.58 315.891 1427.58 278.821V166.489H1400.24V147.017L1418.22 145.894C1428.33 144.396 1433.57 141.026 1434.69 130.168L1438.06 97.2165H1463.15V144.771H1503.22V166.489H1462.03V278.447C1462.03 299.041 1469.89 306.905 1487.49 306.905C1496.48 306.905 1501.72 305.033 1506.59 303.535V326.001C1500.97 327.874 1490.48 330.495 1478.13 330.495Z" fill="currentColor"/>
+        <path d="M1309.02 326.375V304.658H1330.37C1333.36 304.658 1335.61 303.534 1335.61 296.045V109.573C1335.61 101.709 1334.11 99.4627 1330.37 99.4627H1308.27V77.745H1329.24C1346.47 77.745 1363.32 75.8728 1371.18 74.375V296.045C1371.18 303.534 1373.05 304.658 1376.42 304.658H1397.02V326.375H1309.02Z" fill="currentColor"/>
+        <path d="M1206.25 162.369C1188.65 162.369 1176.29 165.739 1168.43 172.105C1174.42 175.849 1178.16 182.589 1178.16 191.201C1178.16 204.307 1168.43 212.919 1155.7 212.919C1141.09 212.919 1131.73 203.558 1131.73 187.831C1131.73 156.004 1168.43 140.277 1211.49 140.277C1263.54 140.277 1286.38 158.625 1286.38 202.809V296.046C1286.38 302.037 1287.87 304.658 1291.62 304.658H1312.21V326.375H1259.04C1255.3 316.265 1253.43 306.155 1251.55 290.803C1241.44 314.393 1214.11 330.869 1183.03 330.869C1148.96 330.869 1127.24 310.274 1127.24 282.94C1127.24 239.879 1169.55 223.029 1250.81 213.294V203.184C1250.81 174.351 1236.95 162.369 1206.25 162.369ZM1195.39 307.279C1228.71 307.279 1250.81 282.566 1250.81 246.619V231.641C1191.64 238.381 1161.69 248.866 1161.69 277.323C1161.69 295.297 1175.17 307.279 1195.39 307.279Z" fill="currentColor"/>
+        <path d="M1024.32 330.869C994.961 330.869 972.524 318.362 959.024 297.385C956.574 293.579 950.07 294.212 948.932 298.594C945.549 311.623 942.217 323.889 941.94 326.375H920.597C922.095 315.891 922.844 297.918 922.844 264.218V109.573C922.844 101.709 921.72 99.4627 917.602 99.4627H895.884V77.745H916.104C932.954 77.745 950.927 75.8728 958.416 74.375V183.338C970.398 156.378 993.613 140.277 1025.82 140.277C1075.99 140.277 1107.82 177.721 1107.82 235.386C1107.82 293.05 1074.87 330.869 1024.32 330.869ZM1014.58 306.53C1048.66 306.53 1071.12 282.191 1071.12 238.007V233.139C1071.12 188.955 1048.66 164.616 1014.58 164.616C981.631 164.616 958.416 189.329 958.416 233.139V238.007C958.416 281.442 982.006 306.53 1014.58 306.53Z" fill="currentColor"/>
+        <path d="M802.008 330.869C746.59 330.869 709.146 292.301 709.146 235.386C709.146 179.219 747.339 140.277 803.506 140.277C858.174 140.277 895.619 178.845 895.619 235.386C895.619 291.927 857.8 330.869 802.008 330.869ZM802.382 308.028C839.452 308.028 860.047 282.566 860.047 237.258V233.888C860.047 187.831 839.452 163.118 802.757 163.118C765.687 163.118 745.093 188.206 745.093 233.888V237.258C745.093 282.94 765.313 308.028 802.382 308.028Z" fill="currentColor"/>
+        <path d="M618.403 73.2527C649.258 73.2529 673.028 85.2279 686.944 105.624C689.671 109.618 697.159 108.576 697.895 103.796L701.904 77.7461H723.995V133.167C719.482 136.951 706.175 141.903 697.838 159.66C696.791 161.891 692.939 161.642 692.341 159.252C681.663 116.567 657.452 97.9653 622.147 97.9653C572.346 97.9654 541.267 133.539 541.267 197.568V206.553C541.267 270.957 572.72 306.155 622.52 306.156C647.155 306.156 668.232 298.917 682.488 283.043C683.774 281.611 686.217 282.087 686.809 283.918C689.262 291.515 692.316 298.701 695.931 305.436C678.305 321.329 653.421 330.868 621.773 330.869C551.003 330.869 503.448 283.315 503.448 202.436C503.448 123.054 551.378 73.2527 618.403 73.2527Z" fill="currentColor"/>
+        <path d="M1889.19 330.869C1833.78 330.869 1796.33 292.301 1796.33 235.386C1796.33 179.219 1834.52 140.277 1890.69 140.277C1945.36 140.277 1982.8 178.845 1982.8 235.386C1982.8 291.927 1944.99 330.869 1889.19 330.869ZM1889.57 308.028C1926.64 308.028 1947.23 282.566 1947.23 237.258V233.888C1947.23 187.832 1926.64 163.118 1889.94 163.118C1852.87 163.118 1832.28 188.206 1832.28 233.888V237.258C1832.28 282.94 1852.5 308.028 1889.57 308.028Z" fill="currentColor"/>
+        <path d="M1710.28 73.2526C1741.14 73.2529 1764.91 85.2279 1778.82 105.624C1781.55 109.618 1789.04 108.576 1789.77 103.796L1793.78 77.7461H1815.87V133.167C1811.36 136.951 1798.05 141.903 1789.72 159.66C1788.67 161.891 1784.82 161.642 1784.22 159.252C1773.54 116.567 1749.33 97.9653 1714.03 97.9653C1664.23 97.9654 1633.15 133.539 1633.15 197.568V206.553C1633.15 270.957 1664.6 306.155 1714.4 306.156C1739.04 306.156 1760.11 298.917 1774.37 283.043C1775.65 281.611 1778.1 282.087 1778.69 283.918C1781.14 291.515 1784.2 298.701 1787.81 305.436C1770.18 321.329 1745.3 330.868 1713.65 330.868C1642.88 330.868 1595.33 283.315 1595.33 202.436C1595.33 123.054 1643.26 73.2526 1710.28 73.2526Z" fill="currentColor"/>
+        <path d="M2714.44 296.045C2714.44 303.159 2716.31 304.658 2719.68 304.658H2740.27L2747.32 328.724H2678.84V297.316C2678.86 296.914 2678.86 296.49 2678.86 296.045V181.466C2678.86 169.859 2676.99 166.488 2670.63 166.488H2652.28V144.771H2672.5C2689.72 144.771 2706.57 142.9 2714.44 141.402V296.045Z" fill="currentColor"/>
+        <path d="M2696.09 70.6311C2709.94 70.6313 2720.05 81.4906 2720.05 94.596C2720.05 108.076 2709.94 118.935 2696.09 118.935C2681.86 118.935 2672.12 108.076 2672.12 94.596C2672.12 81.4905 2681.86 70.6311 2696.09 70.6311Z" fill="currentColor"/>
+        <path d="M345.238 41.8999C348.438 40.0526 352.38 40.0526 355.58 41.8999L397.853 66.3064C401.052 68.1537 403.023 71.5675 403.023 75.262V124.075C403.023 127.77 401.052 131.183 397.853 133.031L355.58 157.437C352.38 159.284 348.438 159.284 345.238 157.437L302.965 133.031C299.766 131.183 297.795 127.77 297.795 124.075V75.262C297.795 71.5675 299.766 68.1537 302.965 66.3064L345.238 41.8999Z" fill="currentColor"/>
+        <path d="M169.282 3.51829C172.481 1.67121 176.423 1.67146 179.622 3.51829L221.897 27.9256C225.096 29.773 227.068 33.1867 227.068 36.8808V85.6932C227.068 89.3873 225.096 92.801 221.897 94.6484L179.622 119.056C176.423 120.903 172.481 120.903 169.282 119.056L139.731 101.993C132.668 97.9144 123.972 97.8818 116.878 101.907C109.678 105.993 105.229 113.633 105.229 121.912V156.958C105.229 160.652 103.257 164.065 100.058 165.913L69.5914 183.501C62.7444 187.454 58.5264 194.759 58.5264 202.665C58.5264 210.571 62.744 217.876 69.5906 221.829L100.058 239.42C103.257 241.267 105.229 244.681 105.229 248.375V281.557C105.229 289.746 109.629 297.302 116.751 301.343C123.767 305.323 132.366 305.291 139.351 301.258L169.282 283.978C172.481 282.131 176.423 282.131 179.622 283.978L208.56 300.685C215.749 304.835 224.598 304.869 231.818 300.773C239.149 296.614 243.678 288.837 243.678 280.409V248.375C243.678 244.681 245.649 241.267 248.848 239.42L291.121 215.013C294.32 213.165 298.262 213.166 301.461 215.013L343.737 239.42C346.935 241.267 348.907 244.681 348.907 248.375V297.187C348.907 300.882 346.935 304.295 343.737 306.143L301.461 330.55C298.262 332.397 294.32 332.397 291.121 330.55L260.677 312.972C253.797 309 245.327 308.968 238.417 312.888C231.402 316.868 227.068 324.311 227.068 332.376V366.153C227.068 369.847 225.096 373.261 221.897 375.108L179.622 399.515C176.423 401.362 172.481 401.363 169.282 399.515L127.009 375.108C123.81 373.261 121.839 369.847 121.839 366.153V333.524C121.839 325.22 117.376 317.556 110.153 313.459C103.038 309.423 94.3183 309.456 87.2346 313.546L57.7833 330.55C54.5839 332.397 50.6423 332.397 47.443 330.55L5.17017 306.143C1.97067 304.295 0 300.882 0 297.187V248.375C0 244.681 1.97063 241.267 5.17017 239.42L32.6877 223.53C40.1416 219.226 44.7333 211.273 44.7333 202.666C44.7333 194.058 40.1412 186.104 32.6868 181.8L5.17017 165.913C1.97068 164.066 0 160.652 0 156.958V108.145C0 104.451 1.97063 101.037 5.17017 99.19L47.443 74.7827C50.6423 72.9356 54.5839 72.9358 57.7833 74.7827L84.6147 90.2741C92.2352 94.6739 101.616 94.7092 109.269 90.3668C117.038 85.9588 121.839 77.7154 121.839 68.7828V36.8808C121.839 33.1863 123.81 29.7729 127.009 27.9256L169.282 3.51829Z" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="footer-tagline">Bringing together evidence and innovation to improve outcomes at scale.</div>
+  </div>
+  <div class="footer-contact">
+    cobaltcollective.org<br>
+    <a href="mailto:clark@cobaltcollective.org">clark@cobaltcollective.org</a>
+  </div>
+</footer>
+
 </div><!-- #app -->
 
 <!-- Print button -->
-<button class="print-btn" onclick="downloadPDF()">↓ Download PDF</button>
 
 <script>
 function downloadPDF() {
@@ -1314,26 +576,43 @@ function downloadPDF() {
 }
 </script>
 
+<!-- About This Report modal -->
+<div id="about-overlay" onclick="closeAboutModal()"></div>
+<div id="about-modal" role="dialog" aria-modal="true" aria-label="About This Report">
+  <button class="drawer-close" onclick="closeAboutModal()" aria-label="Close">&times;</button>
+  <div class="about-modal-eyebrow">About This Report</div>
+  <p>This report has two purposes:</p>
+  <ol class="about-list">
+    <li>Articulate a working model of the mechanisms through which Snorkl produces impact. From product through teacher implementation, and student use to intended student outcomes.</li>
+    <li>Use that model as the analytical foundation to identify and prioritize opportunities for impact measurement.</li>
+  </ol>
+  <p>Our aim is not to evaluate Snorkl's impact, but to help Snorkl's leadership see clearly where the causal chain is well understood, where it is assumed but untested, and where the most useful measurement investments should go — in what order, and why. Throughout, we favor measurement that can be built into how the company already operates, rather than externally imposed research projects that consume scarce startup time.</p>
+  <div class="about-sources">
+    <div class="about-sources-label">Sources</div>
+    <ul>
+      <li>Discovery conversation with Snorkl co-founder Jon Laven, June 1, 2026</li>
+      <li>Snorkl's pre-conversation questionnaire response</li>
+      <li>Publicly available information at snorkl.app</li>
+    </ul>
+  </div>
+</div>
+
 <!-- Node detail panel -->
-<div id="dp-overlay" onclick="discardAndClose()"></div>
+<div id="dp-overlay" onclick="closePanel()"></div>
 <div id="dp-panel">
   <div class="dp-header">
+    <button class="drawer-close" onclick="closePanel()" aria-label="Close">&times;</button>
     <div class="dp-cat" id="dp-cat"></div>
-    <div class="dp-title"><span id="dp-title-text"></span><span id="dp-edited" style="display:none;font-size:10px;font-family:monospace;font-weight:600;color:#7c3aed;background:#f3e8ff;padding:2px 7px;border-radius:3px;margin-left:8px;vertical-align:middle;">edited</span></div>
+    <div class="dp-title"><span id="dp-title-text"></span></div>
   </div>
   <div class="dp-body">
     <div class="dp-tip" id="dp-tip"></div>
     <div class="badge" id="dp-badge"></div>
-    <div style="font-size:10px;font-family:monospace;color:#718096;margin-bottom:10px;">✎ Click either field below to edit</div>
     <div class="dp-sec-lbl">What we know</div>
-    <div class="dp-content dp-editable" id="dp-know" contenteditable="true" spellcheck="false"></div>
+    <div class="dp-content" id="dp-know"></div>
     <div id="dp-gap-wrap" style="display:none">
       <div class="dp-sec-lbl gap">Open questions</div>
-      <div class="dp-content gap dp-editable" id="dp-gaps" contenteditable="true" spellcheck="false"></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px;">
-      <button class="dp-close-btn" style="background:var(--ink)" onclick="saveAndClose()">Save &amp; Close</button>
-      <button class="dp-close-btn" style="background:transparent;color:var(--ink);border-color:#ddd" onclick="discardAndClose()">Discard</button>
+      <div class="dp-content gap" id="dp-gaps"></div>
     </div>
   </div>
 </div>
@@ -1346,15 +625,10 @@ function toggleCard(id) {
 
 // ── SCROLL SPY ────────────────────────────────────────────────────────────
 const navMap = {
-  keyfindings:   'a[href="#keyfindings"]',
-  about:         'a[href="#about"]',
+  keyfindings:    'a[href="#keyfindings"]',
   model:         'a[href="#model"]',
   evidence:      'a[href="#evidence"]',
   opportunities: 'a[href="#opportunities"]',
-  'card-p1':     'a[href="#card-p1"]',
-  'card-p2':     'a[href="#card-p2"]',
-  'card-p3':     'a[href="#card-p3"]',
-  'card-p4':     'a[href="#card-p4"]',
   nextsteps:     'a[href="#nextsteps"]',
 };
 
@@ -1372,6 +646,41 @@ Object.keys(navMap).forEach(id => {
   const el = document.getElementById(id);
   if (el) observer.observe(el);
 });
+
+// TOC sticky pin point: keep --toc-pin at the viewport offset that vertically
+// centers the card. The CSS handles the two states (rest = eyebrow-aligned via
+// margin-top + natural flow; scrolled = pinned centered at --toc-pin); JS only
+// keeps the centered offset correct as the card height / viewport changes.
+(function () {
+  const toc = document.getElementById('sidebar');
+  if (!toc) return;
+  const card = toc.querySelector('.toc-card') || toc;
+  function setPin() {
+    const h = Math.min(card.offsetHeight, window.innerHeight - 48);
+    const pin = Math.max(24, (window.innerHeight - h) / 2);
+    toc.style.setProperty('--toc-pin', pin + 'px');
+  }
+  setPin();
+  window.addEventListener('resize', setPin);
+  // Re-measure once fonts/layout settle (card height depends on loaded fonts).
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(setPin);
+  window.addEventListener('load', setPin);
+})();
+
+// Sticky header: hide on scroll down, reappear on scroll up; frosted background
+// once scrolled off the very top.
+(function () {
+  const header = document.querySelector('.cover-topbar');
+  if (!header) return;
+  let lastY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    header.classList.toggle('scrolled', y > 24);
+    if (y > lastY && y > 120) header.classList.add('hidden');
+    else if (y < lastY) header.classList.remove('hidden');
+    lastY = y;
+  }, { passive: true });
+})();
 
 // ── NODE DETAIL PANEL ─────────────────────────────────────────────────────
 let currentId = null;
@@ -1533,8 +842,6 @@ Key moderators of implementation quality:
   }
 };
 
-let _origKnow = '', _origGaps = '';
-
 function show(id) {
   const d = nodes[id];
   if (!d) return;
@@ -1548,56 +855,39 @@ function show(id) {
   badge.textContent = d.badgeText;
   badge.className = 'badge ' + (d.badge === 'ok' ? 'b-ok' : d.badge === 'par' ? 'b-par' : 'b-gap');
 
-  const knowEl = document.getElementById('dp-know');
-  knowEl.textContent = d.know;
-  _origKnow = d.know;
+  document.getElementById('dp-know').textContent = d.know;
 
   const gw = document.getElementById('dp-gap-wrap');
-  const gapsEl = document.getElementById('dp-gaps');
   if (d.gaps) {
     gw.style.display = 'block';
-    gapsEl.textContent = d.gaps;
-    _origGaps = d.gaps;
+    document.getElementById('dp-gaps').textContent = d.gaps;
   } else {
     gw.style.display = 'none';
-    _origGaps = '';
   }
 
-  document.getElementById('dp-edited').style.display = d.edited ? 'inline' : 'none';
-  document.getElementById('dp-panel').style.display = 'block';
-  document.getElementById('dp-overlay').style.display = 'block';
+  document.getElementById('dp-panel').classList.add('open');
+  document.getElementById('dp-overlay').classList.add('open');
   document.getElementById('dp-panel').scrollTop = 0;
 }
 
-function saveAndClose() {
-  if (currentId) {
-    const d = nodes[currentId];
-    const newKnow = document.getElementById('dp-know').textContent;
-    const newGaps = document.getElementById('dp-gaps').textContent;
-    if (newKnow !== _origKnow || (d.gaps !== null && newGaps !== _origGaps)) {
-      d.edited = true;
-    }
-    d.know = newKnow;
-    if (d.gaps !== null) d.gaps = newGaps;
-  }
-  closePanel();
-}
-
-function discardAndClose() {
-  document.getElementById('dp-know').textContent = _origKnow;
-  if (currentId && nodes[currentId] && nodes[currentId].gaps !== null) {
-    document.getElementById('dp-gaps').textContent = _origGaps;
-  }
-  closePanel();
-}
-
 function closePanel() {
-  document.getElementById('dp-panel').style.display = 'none';
-  document.getElementById('dp-overlay').style.display = 'none';
+  document.getElementById('dp-panel').classList.remove('open');
+  document.getElementById('dp-overlay').classList.remove('open');
   currentId = null;
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') discardAndClose(); });
+function openAboutModal() {
+  document.getElementById('about-modal').classList.add('open');
+  document.getElementById('about-overlay').classList.add('open');
+}
+function closeAboutModal() {
+  document.getElementById('about-modal').classList.remove('open');
+  document.getElementById('about-overlay').classList.remove('open');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { setFullscreen(false); closePanel(); hidePriorityPopup(); closeAboutModal(); }
+});
 
 // ── PRIORITY DATA FOR MEASUREMENT VIEW ───────────────────────────────────
 const priorityData = {
@@ -1636,19 +926,28 @@ const priorityData = {
 };
 
 // ── VIEW TOGGLE ───────────────────────────────────────────────────────────
-function switchView(view) {
-  document.getElementById('view-model').classList.toggle('active', view === 'model');
-  document.getElementById('view-meas').classList.toggle('active', view === 'meas');
-  document.getElementById('btn-model').classList.toggle('active', view === 'model');
-  document.getElementById('btn-meas').classList.toggle('active',  view === 'meas');
-  if (view !== 'meas') hidePriorityPopup();
+// Toggle the measurement overlay (badges + connectors + dim layers).
+function toggleBadges(on) {
+  const layer = document.getElementById('meas-layer');
+  if (layer) layer.style.display = on ? '' : 'none';
+}
+
+// ── DIAGRAM FULL SCREEN ───────────────────────────────────────────────────
+function setFullscreen(on) {
+  const fig = document.getElementById('model-figure');
+  if (fig) fig.classList.toggle('is-fullscreen', on);
+}
+function toggleFullscreen(e) {
+  if (e) e.stopPropagation();
+  const fig = document.getElementById('model-figure');
+  if (fig) setFullscreen(!fig.classList.contains('is-fullscreen'));
 }
 
 // ── BADGE HOVER: dim/highlight nodes ─────────────────────────────────────
 let _hoveredPriority = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  const measSvg = document.getElementById('meas-svg');
+  const measSvg = document.getElementById('model-svg');
   if (!measSvg) return;
 
   measSvg.querySelectorAll('.priority-badge-group').forEach(badge => {
@@ -1674,6 +973,16 @@ document.addEventListener('DOMContentLoaded', () => {
       measSvg.querySelectorAll('.dim-overlay').forEach(o => o.style.opacity = '0');
     });
   });
+
+  // Clicking empty space inside the diagram expands it full-screen
+  // (clicks on a box, badge, or the full-screen button are excluded).
+  const fig = document.getElementById('model-figure');
+  if (fig) {
+    fig.addEventListener('click', (e) => {
+      if (e.target.closest('[onclick]')) return;
+      if (!fig.classList.contains('is-fullscreen')) setFullscreen(true);
+    });
+  }
 });
 
 // ── PRIORITY POPUP ────────────────────────────────────────────────────────
@@ -1685,7 +994,7 @@ function openPriorityCard(pid) {
   popup.innerHTML = `
     <span class="pp-close-x" onclick="hidePriorityPopup()">&#215;</span>
     <span class="pp-badge" style="background:${d.color}">${d.label}</span>
-    <span style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    <span style="font-size:var(--text-xs);font-weight:700;letter-spacing: var(--track-caps);text-transform:uppercase;
       padding:2px 8px;border-radius:4px;background:var(--cobalt-l);color:var(--cobalt);
       margin-left:6px">${d.tag}</span>
     <div class="pp-title" style="margin-top:8px">${d.title}</div>
@@ -1694,18 +1003,17 @@ function openPriorityCard(pid) {
       &#8594; See full detail in the report
     </span>
   `;
-  popup.style.display = 'block';
-  document.getElementById('pp-overlay').style.display = 'block';
+  popup.classList.add('open');
+  document.getElementById('pp-overlay').classList.add('open');
 }
 
 function hidePriorityPopup() {
-  document.getElementById('priority-popup').style.display = 'none';
-  document.getElementById('pp-overlay').style.display = 'none';
+  document.getElementById('priority-popup').classList.remove('open');
+  document.getElementById('pp-overlay').classList.remove('open');
 }
 
 function jumpToCard(cardId) {
   hidePriorityPopup();
-  switchView('model');
   setTimeout(() => {
     const card = document.getElementById(cardId);
     if (card) {
