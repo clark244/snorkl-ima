@@ -637,9 +637,9 @@ nav { padding: 8px 0; }
 /* ── PRIORITY CARDS ─────────────────────────────────────── */
 .priority-cards { display: flex; flex-direction: column; gap: 10px; }
 
-/* The matrix variant reads as one continuous list — a single outer frame with a
-   divider line between rows, rather than four separate cards with gaps. */
-.priority-matrix { gap: 0; border: 1.5px solid var(--rule); border-radius: 8px; overflow: hidden; }
+/* The matrix variant reads as one continuous list — rows separated by divider
+   lines, rather than four separate cards with gaps. */
+.priority-matrix { gap: 0; }
 
 .priority-card {
   border: 1.5px solid var(--rule);
@@ -717,7 +717,6 @@ nav { padding: 8px 0; }
   gap: 14px;
   padding: 12px 18px 10px;
   border-bottom: 1px solid var(--rule);
-  background: var(--cobalt-ll);
   font-size: var(--text-xs);
   font-weight: 700;
   letter-spacing: var(--track-caps);
