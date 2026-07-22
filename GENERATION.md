@@ -1,5 +1,18 @@
 # Generating a Client Report (AI-assisted)
 
+> **⚠️ ARCHIVED — THIS REPO IS NOT THE TEMPLATE.**
+> `snorkl-ima` is a **completed client deliverable**. Do not start a new client report from
+> it, and do not treat this guide as current.
+>
+> The **template of record is `bfc-ima`**:
+> `git clone https://github.com/clark244/bfc-ima.git` — see its `GENERATION.md` for the
+> authoritative guide. (Clone it; a raw-URL fetch truncates around 80KB and silently drops
+> the trailing `<script>` block.)
+>
+> This file is retained only to document how the Snorkl build was produced. Parts of it are
+> known stale — notably the two-view figure (`switchView()` / `#view-meas`), which no longer
+> exists, and the PDF handling.
+
 `index.html` is the **canonical template** for an Impact Measurement Assessment. There is
 no build step. The markup, JS, and SVG live in `index.html`; all CSS lives alongside it in
 `styles.css` (linked from the `<head>`). Keep these two files together — `index.html`
